@@ -568,12 +568,13 @@ footer {
     }
 
     .hero-content {
-        padding: 1.5rem 1rem;
+        padding: 1rem 1rem;
     }
 
     .hero-logo {
-        max-width: 250px;
-        margin-bottom: 1.5rem;
+        max-width: 220px;
+        margin-bottom: 0.8rem;
+        margin-top: -0.5rem;
     }
 
     .hero h1 {
@@ -582,10 +583,17 @@ footer {
         margin-bottom: 1.5rem;
     }
 
-    /* Hide secondary text on mobile */
-    .hero-subtitle,
-    .hero-description {
+    /* Hide subtitle but show description on mobile */
+    .hero-subtitle {
         display: none !important;
+    }
+
+    .hero-description {
+        display: inline-block !important;
+        font-size: 0.95rem;
+        padding: 0.6rem 1rem;
+        margin-bottom: 1rem;
+        margin-top: 0;
     }
 
     .hero p {
