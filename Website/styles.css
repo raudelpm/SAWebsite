@@ -590,16 +590,21 @@ footer {
         flex-direction: column;
         align-items: center;
         width: 100%;
-        gap: 1rem;
+        gap: 0.8rem;
         margin-top: 1rem;
     }
 
+    /* Hide email button on mobile in hero */
+    .hero .btn-secondary.hero-email-btn {
+        display: none !important;
+    }
+
     .btn {
-        width: 85%;
-        max-width: 280px;
+        width: 75%;
+        max-width: 240px;
         justify-content: center;
-        padding: 0.9rem 1.5rem;
-        font-size: 1rem;
+        padding: 0.75rem 1.2rem;
+        font-size: 0.9rem;
     }
 
     .btn-quote {
