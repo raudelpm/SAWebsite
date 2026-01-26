@@ -179,6 +179,17 @@ nav {
     display: inline-block;
 }
 
+.hero-description {
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border-radius: 100px;
+    display: inline-block;
+}
+
 .cta-buttons {
     display: flex;
     gap: 1rem;
@@ -536,25 +547,26 @@ footer {
     }
 
     .hero {
-        height: 50vh;
-        min-height: 400px;
-        padding-top: 80px; /* Add padding to prevent nav overlap */
+        height: auto;
+        min-height: auto;
+        padding-top: 80px;
+        padding-bottom: 2rem;
     }
 
     .hero-content {
-        padding: 1rem;
+        padding: 1.5rem 1rem;
     }
 
     .hero h1 {
         font-size: 2rem;
         padding: 0.8rem 1.5rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
 
     /* Hide secondary text on mobile */
     .hero-subtitle,
     .hero-description {
-        display: none;
+        display: none !important;
     }
 
     .hero p {
