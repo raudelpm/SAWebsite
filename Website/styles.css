@@ -536,19 +536,25 @@ footer {
     }
 
     .hero {
-        height: 60vh;
-        min-height: 500px;
+        height: 50vh;
+        min-height: 400px;
         padding-top: 80px; /* Add padding to prevent nav overlap */
     }
 
     .hero-content {
-        padding-top: 1rem; /* Extra spacing for mobile */
+        padding: 1rem;
     }
 
     .hero h1 {
-        font-size: 2.5rem;
+        font-size: 2rem;
         padding: 0.8rem 1.5rem;
-        margin-top: 1rem; /* Add margin to prevent overlap */
+        margin-bottom: 2rem;
+    }
+
+    /* Hide secondary text on mobile */
+    .hero-subtitle,
+    .hero-description {
+        display: none;
     }
 
     .hero p {
@@ -572,12 +578,16 @@ footer {
         flex-direction: column;
         align-items: center;
         width: 100%;
-        gap: 1.5rem;
+        gap: 1rem;
+        margin-top: 1rem;
     }
 
     .btn {
-        width: 80%;
+        width: 85%;
+        max-width: 280px;
         justify-content: center;
+        padding: 0.9rem 1.5rem;
+        font-size: 1rem;
     }
 
     .btn-quote {
