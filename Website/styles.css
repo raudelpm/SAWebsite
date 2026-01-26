@@ -153,6 +153,17 @@ nav {
     position: relative;
 }
 
+.hero-logo {
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .hero h1 {
     font-size: 3.5rem;
     margin-bottom: 1rem;
@@ -555,6 +566,11 @@ footer {
 
     .hero-content {
         padding: 1.5rem 1rem;
+    }
+
+    .hero-logo {
+        max-width: 250px;
+        margin-bottom: 1.5rem;
     }
 
     .hero h1 {
