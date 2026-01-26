@@ -1,8 +1,10 @@
 {
+  "buildCommand": null,
+  "outputDirectory": "Website",
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/$1"
+      "destination": "/Website/$1"
     }
   ]
 }
