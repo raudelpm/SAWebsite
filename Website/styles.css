@@ -523,6 +523,11 @@ footer {
     scroll-margin-top: 100px;
 }
 
+/* Mobile break helper */
+.mobile-break {
+    display: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .menu-toggle {
@@ -602,7 +607,12 @@ footer {
     }
 
     .section-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        line-height: 1.3;
+    }
+    
+    .mobile-break {
+        display: inline;
     }
 
     .container {
