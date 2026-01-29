@@ -309,9 +309,9 @@ nav {
 .before-after-pair {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 1.25rem;
     align-items: start;
-    max-width: 520px;
+    max-width: 640px;
     margin: 0 auto;
     padding: 1.25rem;
     background: #f5f7fa;
@@ -326,7 +326,7 @@ nav {
     border-radius: 12px;
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
     background: #fff;
-    max-width: 250px;
+    max-width: 305px;
 }
 
 .before-after-card img {
@@ -353,7 +353,7 @@ nav {
 @media (max-width: 768px) {
     .before-after-pair {
         grid-template-columns: 1fr;
-        max-width: 320px;
+        max-width: 380px;
         padding: 1rem;
     }
 
