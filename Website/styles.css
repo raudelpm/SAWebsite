@@ -1229,6 +1229,34 @@ nav {
     line-height: 1.6;
 }
 
+/* Welcome band: Apple statement + Welcome heading + contact card */
+.home-welcome-photo-band {
+    position: relative;
+    padding: 2.5rem 0 3rem;
+    background: #e5eaee url('public/Photo%2029.jpeg') center / cover no-repeat;
+}
+
+.home-welcome-photo-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.78);
+    pointer-events: none;
+}
+
+.home-welcome-photo-band .container {
+    position: relative;
+    z-index: 1;
+}
+
+.home-welcome-photo-band__apple.apple-statement {
+    margin-top: 0;
+}
+
+.home-welcome-photo-band > .container > .section-title {
+    margin-top: 2.25rem;
+}
+
 /* Apple-style statement (Services) */
 .apple-statement {
     max-width: 980px;
@@ -1760,6 +1788,15 @@ footer {
     }
     .footer-item-icon {
         margin: 0;
+    }
+
+    .footer-item-icon {
+        grid-row: 1 / span 2;
+    }
+
+    .footer-item-label,
+    .footer-item-value {
+        grid-column: 2;
     }
 }
 
