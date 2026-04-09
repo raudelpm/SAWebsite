@@ -23,24 +23,26 @@
     <!-- Analytics loads after page so form gets full bandwidth -->
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
-                <span>SCREEN ARMORS</span>
-            </a>
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="services.html">Services</a></li>
-                <li><a href="insurance.html">Insurance & Registration</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="reviews.html">Reviews</a></li>
-                <li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
-            </ul>
-        </div>
-    </nav>
+	<!-- Navigation -->
+	<nav>
+		<div class="nav-container">
+			<a href="index.html" class="logo">
+				<img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+				<span>SCREEN ARMORS</span>
+			</a>
+			<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+			<ul class="nav-links" id="navLinks">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="services.html">Services</a></li>
+				<li><a href="areas-we-serve.html">Areas We Serve</a></li>
+				<li><a href="insurance.html">Insurance & Registration</a></li>
+				<li><a href="about.html">About Us</a></li>
+				<li><a href="reviews.html">Reviews</a></li>
+				<li><a href="faq.html">FAQ</a></li>
+				<li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
+			</ul>
+		</div>
+	</nav>
 
     <!-- Main Content -->
     <div class="container">
@@ -74,7 +76,7 @@
 
         <!-- Additional Information -->
         <div class="content-section" style="margin-top: 3rem;">
-            <h2 style="color: #1e3c72; margin-bottom: 1.5rem; text-align: center;">Why Choose SCREEN ARMORS?</h2>
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">Why Choose SCREEN ARMORS?</h2>
             <p>
                 At SCREEN ARMORS, we specialize in creating beautiful, durable screen enclosures, pool cages, and lanais. Our expert team provides professional construction, screening, and refurbishing services using only the highest quality aluminum materials.
             </p>
@@ -120,6 +122,38 @@
             const navLinks = document.getElementById('navLinks');
             navLinks.classList.toggle('active');
         }
+		// Transparent header: offset body + hide when scrolling down, show when scrolling up
+		(function() {
+			const navEl = document.querySelector('nav');
+			if (!navEl) return;
+			const TOP_REVEAL_PX = 8;
+			function setSpacer() {
+				const h = navEl.offsetHeight;
+				document.body.style.paddingTop = h + 'px';
+				document.documentElement.style.setProperty('--nav-height', h + 'px');
+			}
+			window.addEventListener('load', setSpacer);
+			window.addEventListener('resize', setSpacer);
+			setSpacer();
+			let lastY = window.scrollY;
+			window.addEventListener('scroll', function() {
+				const currentY = window.scrollY;
+				const navLinks = document.getElementById('navLinks');
+				const menuOpen = navLinks && navLinks.classList.contains('active');
+				if (menuOpen) {
+					lastY = currentY;
+					return;
+				}
+				if (currentY <= TOP_REVEAL_PX) {
+					navEl.classList.remove('nav-hidden');
+				} else if (currentY > lastY) {
+					navEl.classList.add('nav-hidden');
+				} else {
+					navEl.classList.remove('nav-hidden');
+				}
+				lastY = currentY;
+			}, { passive: true });
+		})();
 
         var thankYouUrl = 'thank-you.html';
         var redirectDone = false;

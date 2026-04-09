@@ -113,36 +113,40 @@
         Get Quote
     </a>
     
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
-                <span>SCREEN ARMORS</span>
-            </a>
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="services.html">Services</a></li>
-                <li><a href="insurance.html">Insurance & Registration</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="reviews.html">Reviews</a></li>
-                <li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
-            </ul>
-        </div>
-    </nav>
+	<!-- Navigation -->
+	<nav>
+		<div class="nav-container">
+			<a href="index.html" class="logo">
+				<img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+				<span>SCREEN ARMORS</span>
+			</a>
+			<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+			<ul class="nav-links" id="navLinks">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="services.html">Services</a></li>
+				<li><a href="areas-we-serve.html">Areas We Serve</a></li>
+				<li><a href="insurance.html">Insurance & Registration</a></li>
+				<li><a href="about.html">About Us</a></li>
+				<li><a href="reviews.html">Reviews</a></li>
+				<li><a href="faq.html">FAQ</a></li>
+				<li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
+			</ul>
+		</div>
+	</nav>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-bg-container">
-            <img src="public/Photo 1.jpeg" alt="Professional aluminum screen enclosure and pool cage installation" class="hero-bg-image" fetchpriority="high" decoding="async">
+        <div class="hero-bg-container hero-bg-slideshow">
+            <img src="public/Photo 1.jpeg" alt="Professional aluminum screen enclosure and pool cage installation" class="hero-bg-layer hero-bg-layer--a" fetchpriority="high" decoding="async">
+            <img src="public/photopool.jpeg" alt="" class="hero-bg-layer hero-bg-layer--b" loading="lazy" decoding="async">
+            <img src="public/Photo%2023.jpeg" alt="" class="hero-bg-layer hero-bg-layer--c" loading="lazy" decoding="async">
             <div class="screen-mesh-overlay"></div>
         </div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 class="sr-only">SCREEN ARMORS – Screen Enclosures, Pool Cages & Lanais in Sarasota & Bradenton</h1>
             <img src="public/Logo White No Background .png" alt="SCREEN ARMORS" class="hero-logo" decoding="async">
-            <p class="hero-subtitle">Your Trusted Screen Enclosure Specialists</p>
+            <p class="hero-subtitle">Elevating Your Screen Enclosure Experience</p>
             <p class="hero-service-area">Serving Sarasota, Manatee & Charlotte Counties</p>
             <div class="cta-buttons">
                 <a href="tel:941-404-9699" class="btn btn-primary">
@@ -155,8 +159,111 @@
                     ✉️ Email Us
                 </a>
             </div>
+            <p class="hero-fast-response">
+                <strong>Fast response guaranteed.</strong>
+                We assist immediately and reply to all form submissions in under 1 hour during business hours.
+            </p>
         </div>
     </section>
+
+    <!-- Completed Projects (before Services) -->
+    <section id="completed-projects" class="our-work-section" aria-labelledby="completed-projects-heading">
+        <div class="our-work-inner">
+            <h2 id="completed-projects-heading" class="section-title our-work-title">Completed Projects</h2>
+        </div>
+        <div class="our-work-grid">
+            <div class="our-work-card">
+                <img src="public/Photo%201.jpeg" alt="Aluminum pool cage and screen enclosure with beautiful pool area" width="400" height="400" loading="lazy" decoding="async">
+            </div>
+            <div class="our-work-card">
+                <img src="public/Photo%2028.jpeg" alt="Aluminum pool cage screen enclosure installation" width="400" height="400" loading="lazy" decoding="async">
+            </div>
+            <div class="our-work-card">
+                <img src="public/Photo%208.jpg" alt="Aluminum screen enclosure construction and installation" width="400" height="400" loading="lazy" decoding="async">
+            </div>
+            <div class="our-work-card">
+                <img src="public/Photo%209.jpg" alt="Refurbished screen enclosure" width="400" height="400" loading="lazy" decoding="async">
+            </div>
+        </div>
+    </section>
+
+    <!-- Services (after hero): full-width horizontal bands -->
+    <section class="home-services-showcase" aria-labelledby="home-services-heading">
+        <header class="home-services-header">
+            <div class="home-services-inner">
+                <h2 id="home-services-heading" class="section-title home-services-heading">Services</h2>
+            </div>
+        </header>
+        <div class="home-services-bands">
+            <a href="service-screening.html" class="home-service-tile home-service-tile--screening">
+                <span class="home-service-tile-bg" style="background-image: url('public/image%20%286%29.jpg')" aria-hidden="true"></span>
+                <span class="home-service-tile-overlay" aria-hidden="true"></span>
+                <span class="home-service-tile-body">
+                    <span class="home-service-tile-stack">
+                        <span class="home-service-tile-title">Screening</span>
+                        <span class="home-service-tile-desc">Installation &amp; replacement for pool cages, lanais and patios—quality mesh options and expert rescreening.</span>
+                    </span>
+                    <span class="home-service-tile-cta">Learn more →</span>
+                </span>
+            </a>
+            <a href="service-refurbishing.html" class="home-service-tile">
+                <span class="home-service-tile-bg" style="background-image: url('public/Photo%2022%20copy.PNG')" aria-hidden="true"></span>
+                <span class="home-service-tile-overlay" aria-hidden="true"></span>
+                <span class="home-service-tile-body">
+                    <span class="home-service-tile-stack">
+                        <span class="home-service-tile-title">Refurbishing</span>
+                        <span class="home-service-tile-desc">Pressure wash, paint and rescreen to restore your enclosure to like-new condition.</span>
+                    </span>
+                    <span class="home-service-tile-cta">Learn more →</span>
+                </span>
+            </a>
+            <a href="service-gutter.html" class="home-service-tile">
+                <span class="home-service-tile-bg" style="background-image: url('public/gutter.jpg')" aria-hidden="true"></span>
+                <span class="home-service-tile-overlay" aria-hidden="true"></span>
+                <span class="home-service-tile-body">
+                    <span class="home-service-tile-stack">
+                        <span class="home-service-tile-title">Gutter Services</span>
+                        <span class="home-service-tile-desc">Replacement, cleaning, leak sealing, and super gutter upgrades—built to handle Florida’s heavy rain.</span>
+                    </span>
+                    <span class="home-service-tile-cta">Learn more →</span>
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <div class="container" style="padding-top: 3rem; padding-bottom: 0;">
+        <h2 class="section-title">Why Choose Us</h2>
+        <div class="why-choose-section" style="margin-top: 0;">
+            <div class="why-choose-grid">
+                <div class="why-choose-card">
+                    <div class="why-choose-icon" aria-hidden="true">🧾</div>
+                    <h3>Free Estimates</h3>
+                    <p>Clear, detailed quotes with no surprises—built around your project and your goals.</p>
+                </div>
+                <div class="why-choose-card">
+                    <div class="why-choose-icon" aria-hidden="true">💻</div>
+                    <h3>Online Quotes</h3>
+                    <p>Request an estimate online anytime. Fast response during business hours.</p>
+                </div>
+                <div class="why-choose-card">
+                    <div class="why-choose-icon" aria-hidden="true">🛠️</div>
+                    <h3>Quality Workmanship</h3>
+                    <p>Premium materials and experienced installers—clean finish and lasting performance.</p>
+                </div>
+                <div class="why-choose-card">
+                    <div class="why-choose-icon" aria-hidden="true">🛡️</div>
+                    <h3>Warranty Included</h3>
+                    <p>We stand behind our work with coverage you can count on for peace of mind.</p>
+                </div>
+                <div class="why-choose-card">
+                    <div class="why-choose-icon" aria-hidden="true">⭐</div>
+                    <h3>Customer-First Service</h3>
+                    <p>Respectful crews, on-time communication, and results that make homeowners proud.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <div class="container">
@@ -192,7 +299,7 @@
             </a>
         </div>
 
-        <!-- Google Reviews Card (above Our Work) -->
+        <!-- Google Reviews Card (above Completed Projects) -->
         <div class="google-reviews-card-wrapper">
             <a href="https://www.google.com/maps/place/Screen+Armors/@27.208122,-82.2433506,15z/data=!4m6!3m5!1s0x86f95113f2e5f591:0x6b4ef2ce13b62417!8m2!3d27.208122!4d-82.2433506!16s%2Fg%2F11yj57ndg_?entry=ttu" target="_blank" rel="noopener noreferrer" class="nav-card google-reviews-card">
                 <div class="google-reviews-card-header">
@@ -206,46 +313,26 @@
             </a>
         </div>
 
-        <!-- Image Gallery -->
-        <h2 class="section-title">Our Work!!</h2>
-        <div class="image-gallery">
-            <div class="image-card">
-                <img src="public/Photo 1.jpeg" alt="Aluminum pool cage and screen enclosure with beautiful pool area" loading="lazy" decoding="async">
-            </div>
-            <div class="image-card">
-                <img src="public/Photo 3.jpeg" alt="Aluminum pool cage screen enclosure installation" loading="lazy" decoding="async">
-            </div>
-            <div class="image-card">
-                <img src="public/Photo 5.jpg" alt="Outdoor screen room" loading="lazy" decoding="async">
-            </div>
-            <div class="image-card">
-                <img src="public/Photo 8.jpg" alt="Aluminum screen enclosure construction and installation" loading="lazy" decoding="async">
-            </div>
-            <div class="image-card">
-                <img src="public/Photo 9.jpg" alt="Refurbished screen enclosure" loading="lazy" decoding="async">
-            </div>
-        </div>
-
         <!-- Navigation Cards -->
         <div class="navigation-cards-section">
             <div class="navigation-cards-grid">
-                <a href="service-construction.html" class="nav-card">
-                    <img src="public/Photo 28.jpeg" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
-                    <h3>Construction</h3>
-                    <p>New enclosures from the ground up</p>
-                </a>
                 <a href="service-screening.html" class="nav-card">
                     <img src="public/Photo 27.jpg" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
                     <h3>Screening</h3>
                     <p>Installation & replacement</p>
                 </a>
                 <a href="service-refurbishing.html" class="nav-card">
-                    <img src="public/Photo 25.JPG" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
+                    <img src="public/Photo 22 copy.PNG" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
                     <h3>Refurbishing</h3>
                     <p>Restore to like-new</p>
                 </a>
+                <a href="service-gutter.html" class="nav-card">
+                    <img src="public/gutter.jpg" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
+                    <h3>Gutter Services</h3>
+                    <p>Protect your home</p>
+                </a>
                 <a href="insurance.html" class="nav-card">
-                    <img src="public/:Registration Prove .jpg" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
+                    <img src="public/_Registration%20Prove%20.jpg" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
                     <h3>Insurance & Registration</h3>
                     <p>Fully Insured</p>
                 </a>
@@ -268,27 +355,6 @@
                 Contact us today to schedule a free consultation and see why homeowners throughout the region trust SCREEN ARMORS for all their screen enclosure needs.
             </p>
         </div>
-
-        <!-- FAQ Section -->
-        <h2 class="section-title">Frequently Asked Questions</h2>
-        <div class="faq-section">
-            <div class="faq-item">
-                <h3 class="faq-question">How long does screen replacement or rescreening take?</h3>
-                <p class="faq-answer">Screen replacement is normally done in one day. A full refurbishment typically takes about 3 to 4 days. New construction is usually a matter of 1 to 2 weeks. We'll confirm the timeline when we provide your free estimate.</p>
-            </div>
-            <div class="faq-item">
-                <h3 class="faq-question">Do I need a permit for a screen enclosure or pool cage?</h3>
-                <p class="faq-answer">Permits are not needed for screen installation, refurbishment, or repairs. For new construction, requirements can vary depending on location, size, and type of enclosure. We can advise you on what applies to your project.</p>
-            </div>
-            <div class="faq-item">
-                <h3 class="faq-question">Do you offer warranties on your work?</h3>
-                <p class="faq-answer">Yes. We offer a one-year warranty on labor. We use materials that have at least a 7-year manufacturer warranty.</p>
-            </div>
-            <div class="faq-item">
-                <h3 class="faq-question">What areas do you serve?</h3>
-                <p class="faq-answer">We serve Sarasota, Manatee, and Charlotte counties, including Parrish, Ellenton, Bradenton, Sarasota, Gulf Gate, Osprey, Nokomis, Venice, North Port, Port Charlotte, Punta Gorda, Englewood, and surrounding communities.</p>
-            </div>
-        </div>
     </div>
 
     <!-- Footer -->
@@ -310,6 +376,38 @@
             const navLinks = document.getElementById('navLinks');
             navLinks.classList.toggle('active');
         }
+		// Transparent header: offset body + hide when scrolling down, show when scrolling up
+		(function() {
+			const navEl = document.querySelector('nav');
+			if (!navEl) return;
+			const TOP_REVEAL_PX = 8;
+			function setSpacer() {
+				const h = navEl.offsetHeight;
+				document.body.style.paddingTop = h + 'px';
+				document.documentElement.style.setProperty('--nav-height', h + 'px');
+			}
+			window.addEventListener('load', setSpacer);
+			window.addEventListener('resize', setSpacer);
+			setSpacer();
+			let lastY = window.scrollY;
+			window.addEventListener('scroll', function() {
+				const currentY = window.scrollY;
+				const navLinks = document.getElementById('navLinks');
+				const menuOpen = navLinks && navLinks.classList.contains('active');
+				if (menuOpen) {
+					lastY = currentY;
+					return;
+				}
+				if (currentY <= TOP_REVEAL_PX) {
+					navEl.classList.remove('nav-hidden');
+				} else if (currentY > lastY) {
+					navEl.classList.add('nav-hidden');
+				} else {
+					navEl.classList.remove('nav-hidden');
+				}
+				lastY = currentY;
+			}, { passive: true });
+		})();
         // Load analytics after page is interactive so initial render is faster
         window.addEventListener('load', function() {
             window.dataLayer = window.dataLayer || [];

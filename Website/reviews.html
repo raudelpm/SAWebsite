@@ -23,24 +23,26 @@
         Get Quote
     </a>
     
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
-                <span>SCREEN ARMORS</span>
-            </a>
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="services.html">Services</a></li>
-                <li><a href="insurance.html">Insurance & Registration</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="reviews.html">Reviews</a></li>
-                <li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
-            </ul>
-        </div>
-    </nav>
+	<!-- Navigation -->
+	<nav>
+		<div class="nav-container">
+			<a href="index.html" class="logo">
+				<img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+				<span>SCREEN ARMORS</span>
+			</a>
+			<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+			<ul class="nav-links" id="navLinks">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="services.html">Services</a></li>
+				<li><a href="areas-we-serve.html">Areas We Serve</a></li>
+				<li><a href="insurance.html">Insurance & Registration</a></li>
+				<li><a href="about.html">About Us</a></li>
+				<li><a href="reviews.html">Reviews</a></li>
+				<li><a href="faq.html">FAQ</a></li>
+				<li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
+			</ul>
+		</div>
+	</nav>
 
     <!-- Hero Section -->
     <section class="hero" style="height: 40vh; min-height: 400px;">
@@ -65,10 +67,10 @@
 
         <!-- Google Reviews Section -->
         <div class="google-reviews-section" style="margin: 3rem 0;">
-            <h2 style="color: #1e3c72; margin-bottom: 2rem; text-align: center;">Google Reviews</h2>
+            <h2 style="margin-bottom: 2rem; text-align: center;">Google Reviews</h2>
             
             <!-- Google Reviews Widget Container -->
-            <div id="google-reviews-widget" style="background: #fff; border-radius: 15px; padding: 3rem; max-width: 700px; margin: 0 auto; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            <div id="google-reviews-widget" style="background: #fff; border-radius: 0; padding: 3rem; max-width: 700px; margin: 0 auto; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
                 <div style="text-align: center;">
                     <!-- Google Logo -->
                     <div style="margin-bottom: 1.5rem;">
@@ -80,7 +82,7 @@
                     <!-- Star Rating Display -->
                     <div style="margin-bottom: 1.5rem;">
                         <div style="font-size: 3.5rem; color: #ffd700; margin-bottom: 0.5rem; letter-spacing: 0.2rem;">★★★★★</div>
-                        <div style="font-size: 2rem; color: #1e3c72; font-weight: 700; margin-bottom: 0.25rem;">5.0</div>
+                        <div style="font-size: 2rem; color: #111; font-weight: 700; margin-bottom: 0.25rem;">5.0</div>
                         <p style="color: #666; font-size: 1rem; margin: 0;">Based on Google Reviews</p>
                     </div>
                     
@@ -175,14 +177,11 @@
             <div class="image-card">
                 <img src="public/Photo 11.jpg" alt="Expert screen enclosure" loading="lazy" decoding="async">
             </div>
-            <div class="image-card">
-                <img src="public/Photo 14.jpg" alt="Refurbished screen enclosure" loading="lazy" decoding="async">
-            </div>
         </div>
 
         <!-- Call to Action -->
         <div class="content-section" style="text-align: center; margin-top: 3rem;">
-            <h2 style="color: #1e3c72; margin-bottom: 1.5rem;">Join Our Satisfied Customers</h2>
+            <h2 style="margin-bottom: 1.5rem;">Join Our Satisfied Customers</h2>
             <p style="font-size: 1.2rem; margin-bottom: 2rem;">
                 Experience the SCREEN ARMORS difference for yourself. Contact us today to schedule your free consultation and see why so many homeowners trust us with their screen enclosure needs.
             </p>
@@ -219,6 +218,38 @@
             const navLinks = document.getElementById('navLinks');
             navLinks.classList.toggle('active');
         }
+		// Transparent header: offset body + hide when scrolling down, show when scrolling up
+		(function() {
+			const navEl = document.querySelector('nav');
+			if (!navEl) return;
+			const TOP_REVEAL_PX = 8;
+			function setSpacer() {
+				const h = navEl.offsetHeight;
+				document.body.style.paddingTop = h + 'px';
+				document.documentElement.style.setProperty('--nav-height', h + 'px');
+			}
+			window.addEventListener('load', setSpacer);
+			window.addEventListener('resize', setSpacer);
+			setSpacer();
+			let lastY = window.scrollY;
+			window.addEventListener('scroll', function() {
+				const currentY = window.scrollY;
+				const navLinks = document.getElementById('navLinks');
+				const menuOpen = navLinks && navLinks.classList.contains('active');
+				if (menuOpen) {
+					lastY = currentY;
+					return;
+				}
+				if (currentY <= TOP_REVEAL_PX) {
+					navEl.classList.remove('nav-hidden');
+				} else if (currentY > lastY) {
+					navEl.classList.add('nav-hidden');
+				} else {
+					navEl.classList.remove('nav-hidden');
+				}
+				lastY = currentY;
+			}, { passive: true });
+		})();
 
         // Google Reviews Widget - No longer needed as we're using direct embed
         // The widget is now embedded directly in the HTML above

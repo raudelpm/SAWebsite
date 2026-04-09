@@ -23,24 +23,26 @@
         Get Quote
     </a>
     
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
-                <span>SCREEN ARMORS</span>
-            </a>
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="services.html">Services</a></li>
-                <li><a href="insurance.html">Insurance & Registration</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="reviews.html">Reviews</a></li>
-                <li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
-            </ul>
-        </div>
-    </nav>
+	<!-- Navigation -->
+	<nav>
+		<div class="nav-container">
+			<a href="index.html" class="logo">
+				<img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+				<span>SCREEN ARMORS</span>
+			</a>
+			<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+			<ul class="nav-links" id="navLinks">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="services.html">Services</a></li>
+				<li><a href="areas-we-serve.html">Areas We Serve</a></li>
+				<li><a href="insurance.html">Insurance & Registration</a></li>
+				<li><a href="about.html">About Us</a></li>
+				<li><a href="reviews.html">Reviews</a></li>
+				<li><a href="faq.html">FAQ</a></li>
+				<li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
+			</ul>
+		</div>
+	</nav>
 
     <!-- Hero Section -->
     <section class="hero" style="height: 40vh; min-height: 400px;">
@@ -59,57 +61,26 @@
     <div class="container">
         <div class="content-section">
             <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">
-                At SCREEN ARMORS, we take professionalism and accountability seriously. We are fully insured to provide you with peace of mind on every project. Below you'll find our proof of insurance and business registration documents.
+                At SCREEN ARMORS, we take professionalism and accountability seriously. We are fully insured to provide you with peace of mind on every project. Click any credential below to open the official document in a new tab.
             </p>
         </div>
 
         <!-- Insurance Documents -->
         <h2 class="section-title">Our Credentials</h2>
         <div class="insurance-grid">
-            <div class="insurance-card" onclick="openLightbox('public/:Liability Prove.jpg', 'Liability Insurance Proof')">
+            <a class="insurance-card" href="public/_Liability%20Prove.jpg" target="_blank" rel="noopener noreferrer" aria-label="Open liability insurance certificate in a new tab">
                 <h3>Liability Insurance Proof</h3>
-                <div class="insurance-placeholder">
-                    <img src="public/:Liability Prove.jpg" alt="Liability Insurance Proof" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;" loading="lazy" decoding="async">
-                </div>
-                <p style="color: #666; margin-top: 1rem;">
+                <img class="insurance-doc-thumb" src="public/_Liability%20Prove.jpg" alt="" width="360" height="200" loading="lazy" decoding="async" aria-hidden="true">
+                <p style="color: #666; margin-top: 0;">
                     We carry full general liability insurance to protect both our team and your property. Our insurance policies are current and meet all state and local requirements.
                 </p>
-                <p style="color: #1e3c72; font-size: 0.9rem; margin-top: 0.5rem; font-style: italic;">Click to view full document</p>
-            </div>
-
-            <div class="insurance-card" onclick="openLightbox('public/:Works. Comp. Prove .jpg', 'Workers Compensation Proof')">
-                <h3>Workers Compensation Proof</h3>
-                <div class="insurance-placeholder">
-                    <img src="public/:Works. Comp. Prove .jpg" alt="Workers Compensation Proof" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;" loading="lazy" decoding="async">
-                </div>
-                <p style="color: #666; margin-top: 1rem;">
-                    SCREEN ARMORS maintains workers' compensation coverage to protect our team and ensure compliance with all state requirements.
-                </p>
-                <p style="color: #1e3c72; font-size: 0.9rem; margin-top: 0.5rem; font-style: italic;">Click to view full document</p>
-            </div>
-
-            <div class="insurance-card" onclick="openLightbox('public/:Registration Prove .jpg', 'Registration Proof')">
-                <h3>Registration Proof</h3>
-                <div class="insurance-placeholder">
-                    <img src="public/:Registration Prove .jpg" alt="Registration Proof" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;" loading="lazy" decoding="async">
-                </div>
-                <p style="color: #666; margin-top: 1rem;">
-                    SCREEN ARMORS is a registered business operating in compliance with all local, state, and federal regulations.
-                </p>
-                <p style="color: #1e3c72; font-size: 0.9rem; margin-top: 0.5rem; font-style: italic;">Click to view full document</p>
-            </div>
-        </div>
-
-        <!-- Lightbox Modal -->
-        <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
-            <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
-            <img class="lightbox-content" id="lightbox-img" src="" alt="">
-            <div class="lightbox-caption" id="lightbox-caption"></div>
+                <p style="color: var(--color-brand-red); font-size: 0.9rem; margin-top: 1rem; font-style: italic;">Click to view certificate (new tab)</p>
+            </a>
         </div>
 
         <!-- Additional Information -->
         <div class="content-section" style="margin-top: 3rem;">
-            <h2 style="color: #1e3c72; margin-bottom: 1.5rem; text-align: center;">Why This Matters</h2>
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">Why This Matters</h2>
             <p>
                 When you choose SCREEN ARMORS, you're choosing a company that operates with integrity and professionalism. Our insurance coverage protects you from liability in the unlikely event of an accident, ensuring that all work is performed to code and industry standards.
             </p>
@@ -137,7 +108,7 @@
 
         <!-- Contact Section -->
         <div class="content-section" style="text-align: center; margin-top: 3rem;">
-            <h2 style="color: #1e3c72; margin-bottom: 1.5rem;">Questions About Our Credentials?</h2>
+            <h2 style="margin-bottom: 1.5rem;">Questions About Our Credentials?</h2>
             <p style="font-size: 1.2rem; margin-bottom: 2rem;">
                 Contact us to request copies of our insurance certificates or business registration documents.
             </p>
@@ -175,34 +146,39 @@
             navLinks.classList.toggle('active');
         }
 
-        function openLightbox(imageSrc, caption) {
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            const lightboxCaption = document.getElementById('lightbox-caption');
-            
-            lightboxImg.src = imageSrc;
-            lightboxCaption.textContent = caption;
-            lightbox.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+		// Transparent header: offset body + hide when scrolling down, show when scrolling up
+		(function() {
+			const navEl = document.querySelector('nav');
+			if (!navEl) return;
+			const TOP_REVEAL_PX = 8;
+			function setSpacer() {
+				const h = navEl.offsetHeight;
+				document.body.style.paddingTop = h + 'px';
+				document.documentElement.style.setProperty('--nav-height', h + 'px');
+			}
+			window.addEventListener('load', setSpacer);
+			window.addEventListener('resize', setSpacer);
+			setSpacer();
+			let lastY = window.scrollY;
+			window.addEventListener('scroll', function() {
+				const currentY = window.scrollY;
+				const navLinks = document.getElementById('navLinks');
+				const menuOpen = navLinks && navLinks.classList.contains('active');
+				if (menuOpen) {
+					lastY = currentY;
+					return;
+				}
+				if (currentY <= TOP_REVEAL_PX) {
+					navEl.classList.remove('nav-hidden');
+				} else if (currentY > lastY) {
+					navEl.classList.add('nav-hidden');
+				} else {
+					navEl.classList.remove('nav-hidden');
+				}
+				lastY = currentY;
+			}, { passive: true });
+		})();
 
-        function closeLightbox(event) {
-            if (event.target.id === 'lightbox' || event.target.classList.contains('lightbox-close')) {
-                const lightbox = document.getElementById('lightbox');
-                lightbox.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        }
-
-        // Close lightbox with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const lightbox = document.getElementById('lightbox');
-                if (lightbox.style.display === 'flex') {
-                    closeLightbox({ target: { id: 'lightbox' } });
-                }
-            }
-        });
         window.addEventListener('load', function() {
             var s = document.createElement('script');
             s.async = true;

@@ -23,24 +23,26 @@
         Get Quote
     </a>
     
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
-                <span>SCREEN ARMORS</span>
-            </a>
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="services.html">Services</a></li>
-                <li><a href="insurance.html">Insurance & Registration</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="reviews.html">Reviews</a></li>
-                <li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
-            </ul>
-        </div>
-    </nav>
+	<!-- Navigation -->
+	<nav>
+		<div class="nav-container">
+			<a href="index.html" class="logo">
+				<img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+				<span>SCREEN ARMORS</span>
+			</a>
+			<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+			<ul class="nav-links" id="navLinks">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="services.html">Services</a></li>
+				<li><a href="areas-we-serve.html">Areas We Serve</a></li>
+				<li><a href="insurance.html">Insurance & Registration</a></li>
+				<li><a href="about.html">About Us</a></li>
+				<li><a href="reviews.html">Reviews</a></li>
+				<li><a href="faq.html">FAQ</a></li>
+				<li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
+			</ul>
+		</div>
+	</nav>
 
     <!-- Hero Section -->
     <section class="hero" style="height: 40vh; min-height: 400px;">
@@ -58,7 +60,7 @@
     <!-- Main Content -->
     <div class="container">
         <div class="content-section">
-            <h2 style="color: #1e3c72; margin-bottom: 1.5rem;">Expert Screen Installation & Replacement</h2>
+            <h2 style="margin-bottom: 1.5rem;">Expert Screen Installation & Replacement</h2>
             <p>
                 Professional screen installation and replacement services for existing structures. Whether you need to replace damaged screens, upgrade to better materials, or install screens on a new frame, our team has the expertise to get the job done right.
             </p>
@@ -68,7 +70,7 @@
         </div>
 
         <div class="content-section">
-            <h2 style="color: #1e3c72; margin-bottom: 1.5rem;">Screen Types We Offer</h2>
+            <h2 style="margin-bottom: 1.5rem;">Screen Types We Offer</h2>
             <p>
                 <strong>Standard Fiberglass Screens:</strong> Durable, cost-effective screens that provide excellent visibility and airflow while keeping insects out.
             </p>
@@ -84,7 +86,7 @@
         </div>
 
         <div class="content-section">
-            <h2 style="color: #1e3c72; margin-bottom: 1.5rem;">Our Screening Services</h2>
+            <h2 style="margin-bottom: 1.5rem;">Our Screening Services</h2>
             <p>
                 <strong>Screen Replacement:</strong> Replace worn, damaged, or torn screens with new, high-quality materials.
             </p>
@@ -100,7 +102,7 @@
         </div>
 
         <div class="content-section">
-            <h2 style="color: #1e3c72; margin-bottom: 1.5rem;">Why Choose SCREEN ARMORS for Screening?</h2>
+            <h2 style="margin-bottom: 1.5rem;">Why Choose SCREEN ARMORS for Screening?</h2>
             <p>
                 <strong>Precision Installation:</strong> Our team ensures every screen is installed with precision for a perfect fit.
             </p>
@@ -122,19 +124,13 @@
                 <img src="public/Photo 11.jpg" alt="Screen installation" loading="lazy" decoding="async">
             </div>
             <div class="image-card">
-                <img src="public/Photo 5.jpg" alt="Screen replacement" loading="lazy" decoding="async">
-            </div>
-            <div class="image-card">
                 <img src="public/Photo 8.jpg" alt="Professional screening" loading="lazy" decoding="async">
-            </div>
-            <div class="image-card">
-                <img src="public/Photo 4.jpg" alt="Quality screen work" loading="lazy" decoding="async">
             </div>
         </div>
 
         <!-- Call to Action -->
         <div class="content-section" style="text-align: center; margin-top: 3rem;">
-            <h2 style="color: #1e3c72; margin-bottom: 1.5rem;">Need Screen Installation or Replacement?</h2>
+            <h2 style="margin-bottom: 1.5rem;">Need Screen Installation or Replacement?</h2>
             <p style="font-size: 1.2rem; margin-bottom: 2rem;">
                 Contact us today for a free consultation and estimate on your screening project.
             </p>
@@ -171,6 +167,38 @@
             const navLinks = document.getElementById('navLinks');
             navLinks.classList.toggle('active');
         }
+		// Transparent header: offset body + hide when scrolling down, show when scrolling up
+		(function() {
+			const navEl = document.querySelector('nav');
+			if (!navEl) return;
+			const TOP_REVEAL_PX = 8;
+			function setSpacer() {
+				const h = navEl.offsetHeight;
+				document.body.style.paddingTop = h + 'px';
+				document.documentElement.style.setProperty('--nav-height', h + 'px');
+			}
+			window.addEventListener('load', setSpacer);
+			window.addEventListener('resize', setSpacer);
+			setSpacer();
+			let lastY = window.scrollY;
+			window.addEventListener('scroll', function() {
+				const currentY = window.scrollY;
+				const navLinks = document.getElementById('navLinks');
+				const menuOpen = navLinks && navLinks.classList.contains('active');
+				if (menuOpen) {
+					lastY = currentY;
+					return;
+				}
+				if (currentY <= TOP_REVEAL_PX) {
+					navEl.classList.remove('nav-hidden');
+				} else if (currentY > lastY) {
+					navEl.classList.add('nav-hidden');
+				} else {
+					navEl.classList.remove('nav-hidden');
+				}
+				lastY = currentY;
+			}, { passive: true });
+		})();
         window.addEventListener('load', function() {
             var s = document.createElement('script');
             s.async = true;
