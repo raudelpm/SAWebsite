@@ -117,14 +117,45 @@
     <!-- Footer -->
     <footer>
         <div class="footer-content">
-            <h3>SCREEN ARMORS</h3>
-            <p>Professional Screen Enclosure Specialists</p>
-            <p class="footer-service-area">Serving Sarasota, Manatee &amp; Charlotte Counties</p>
-            <div class="footer-contact">
-                <a href="tel:941-404-9699">📞 (941) 404-9699</a>
-                <a href="mailto:info@screenarmors.com">✉️ info@screenarmors.com</a>
+            <div class="footer-brand">
+                <img src="public/Logo White No Background .png" alt="SCREEN ARMORS" class="footer-logo" loading="lazy" decoding="async">
+                <p class="footer-title">SCREEN ARMORS</p>
+                <p class="footer-subtitle">Professional Screen Enclosure Specialists</p>
+                <p class="footer-service-area">Serving Sarasota, Manatee &amp; Charlotte Counties</p>
             </div>
-            <p style="margin-top: 1.5rem; opacity: 0.8;">&copy; 2024 SCREEN ARMORS. All rights reserved.</p>
+
+            <div class="footer-grid" aria-label="Contact information">
+                <div class="footer-item">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.07 21 3 13.93 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Phone</p>
+                    <p class="footer-item-value"><a href="tel:941-404-9699">(941) 404-9699</a></p>
+                </div>
+                <div class="footer-item">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v.01L12 13 22 6.01V6a2 2 0 0 0-2-2zm2 6.25-9.42 6.6a1 1 0 0 1-1.16 0L2 10.25V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7.75z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Email</p>
+                    <p class="footer-item-value"><a href="mailto:info@screenarmors.com">info@screenarmors.com</a></p>
+                </div>
+                <div class="footer-item">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Service Area</p>
+                    <p class="footer-item-value"><a href="areas-we-serve.html">View areas we serve</a></p>
+                </div>
+                <div class="footer-item">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10 10 10 0 0 1-10 10zm1-10.41V6a1 1 0 1 0-2 0v6a1 1 0 0 0 .29.71l3.5 3.5a1 1 0 0 0 1.42-1.42z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Get Quote</p>
+                    <p class="footer-item-value"><a href="quote.html">Request a free quote</a></p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">&copy; 2024 SCREEN ARMORS. All rights reserved.</div>
         </div>
     </footer>
 
@@ -146,23 +177,17 @@
 			window.addEventListener('load', setSpacer);
 			window.addEventListener('resize', setSpacer);
 			setSpacer();
-			let lastY = window.scrollY;
 			window.addEventListener('scroll', function() {
 				const currentY = window.scrollY;
 				const navLinks = document.getElementById('navLinks');
 				const menuOpen = navLinks && navLinks.classList.contains('active');
-				if (menuOpen) {
-					lastY = currentY;
-					return;
-				}
+				if (menuOpen) return;
+
 				if (currentY <= TOP_REVEAL_PX) {
-					navEl.classList.remove('nav-hidden');
-				} else if (currentY > lastY) {
-					navEl.classList.add('nav-hidden');
+					navEl.classList.remove('nav-compact');
 				} else {
-					navEl.classList.remove('nav-hidden');
+					navEl.classList.add('nav-compact');
 				}
-				lastY = currentY;
 			}, { passive: true });
 		})();
         window.addEventListener('load', function() {

@@ -159,6 +159,7 @@
                     ✉️ Email Us
                 </a>
             </div>
+            <img src="public/stars.png" alt="5-star rated service" class="hero-stars" width="240" height="52" loading="lazy" decoding="async">
             <p class="hero-fast-response">
                 <strong>Fast response guaranteed.</strong>
                 We assist immediately and reply to all form submissions in under 1 hour during business hours.
@@ -185,7 +186,36 @@
                 <img src="public/Photo%209.jpg" alt="Refurbished screen enclosure" width="400" height="400" loading="lazy" decoding="async">
             </div>
         </div>
+
+        <div class="our-work-more">
+            <button type="button" class="btn btn-quote our-work-more-btn" data-more-projects-open>
+                View more photos
+            </button>
+        </div>
     </section>
+
+    <!-- More Photos Modal -->
+    <div class="modal-backdrop" data-more-projects-modal aria-hidden="true">
+        <div class="modal-window" role="dialog" aria-modal="true" aria-label="More completed projects photos">
+            <button type="button" class="modal-close" aria-label="Close" data-more-projects-close>×</button>
+            <h2 class="section-title" style="margin-bottom: 1.75rem;">More Photos</h2>
+            <div class="modal-gallery" aria-label="Photo gallery">
+                <div class="modal-gallery-card"><img src="public/Photo%206.jpg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%207.jpg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%208.jpg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%209.jpg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%2010.jpg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%2017.jpg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%2018.jpg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%2019.jpg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%2023.jpeg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%2028.jpeg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%2046.jpeg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/Photo%2052.jpeg" alt="" loading="lazy" decoding="async"></div>
+                <div class="modal-gallery-card"><img src="public/photopool.jpeg" alt="" loading="lazy" decoding="async"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Services (after hero): full-width horizontal bands -->
     <section class="home-services-showcase" aria-labelledby="home-services-heading">
@@ -263,6 +293,17 @@
                 </div>
             </div>
         </div>
+
+        <div class="apple-statement" style="margin-top: 2.25rem;">
+            <p class="apple-statement-eyebrow">Designed for Florida homes</p>
+            <h3 class="apple-statement-headline">
+                Restore Your <span class="apple-accent">Screen.</span><br>
+                Renew Your <span class="apple-accent">Space.</span>
+            </h3>
+            <p class="apple-statement-subcopy">
+                Clean lines, durable materials, and a finish that looks right—season after season.
+            </p>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -299,50 +340,51 @@
             </a>
         </div>
 
-        <!-- Google Reviews Card (above Completed Projects) -->
-        <div class="google-reviews-card-wrapper">
-            <a href="https://www.google.com/maps/place/Screen+Armors/@27.208122,-82.2433506,15z/data=!4m6!3m5!1s0x86f95113f2e5f591:0x6b4ef2ce13b62417!8m2!3d27.208122!4d-82.2433506!16s%2Fg%2F11yj57ndg_?entry=ttu" target="_blank" rel="noopener noreferrer" class="nav-card google-reviews-card">
-                <div class="google-reviews-card-header">
-                    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google" class="google-reviews-card-logo" loading="lazy" decoding="async" width="92" height="30">
-                    <span class="google-reviews-card-stars">★★★★★</span>
-                    <span class="google-reviews-card-rating">5.0</span>
+        <!-- Reviews Carousel -->
+        <section class="home-reviews" aria-label="Customer testimonials">
+            <h2 class="section-title" style="margin-bottom: 1.75rem;">Customer Testimonials</h2>
+            <div class="reviews-carousel" data-carousel>
+                <button class="reviews-carousel-btn reviews-carousel-btn--prev" type="button" aria-label="Previous review" data-carousel-prev>‹</button>
+                <div class="reviews-carousel-viewport" data-carousel-viewport>
+                    <div class="reviews-carousel-track" data-carousel-track>
+                        <article class="reviews-carousel-slide" data-carousel-slide>
+                            <div class="review-stars" aria-hidden="true">★★★★★</div>
+                            <p class="review-text">"SCREEN ARMORS did an amazing job replacing all the screens on our pool cage. The team was professional, punctual, and the work was flawless. Our pool area looks brand new! Highly recommend their services."</p>
+                            <p class="review-author">- Sarah M., Sarasota</p>
+                        </article>
+                        <article class="reviews-carousel-slide" data-carousel-slide>
+                            <div class="review-stars" aria-hidden="true">★★★★★</div>
+                            <p class="review-text">"We needed a complete refurbishment of our lanai screen enclosure, and SCREEN ARMORS exceeded our expectations. They were thorough, cleaned up after themselves, and the finished product is beautiful. Great value for the quality of work."</p>
+                            <p class="review-author">- Michael R., Bradenton</p>
+                        </article>
+                        <article class="reviews-carousel-slide" data-carousel-slide>
+                            <div class="review-stars" aria-hidden="true">★★★★★</div>
+                            <p class="review-text">"From the initial consultation to the final installation, SCREEN ARMORS was professional and easy to work with. They built us a custom screen enclosure that perfectly matches our home. Couldn't be happier!"</p>
+                            <p class="review-author">- Jennifer L., Venice</p>
+                        </article>
+                        <article class="reviews-carousel-slide" data-carousel-slide>
+                            <div class="review-stars" aria-hidden="true">★★★★★</div>
+                            <p class="review-text">"After a storm damaged our pool cage, SCREEN ARMORS came out quickly, assessed the damage, and had us back up and running in no time. Their attention to detail and quality craftsmanship is outstanding."</p>
+                            <p class="review-author">- David K., Port Charlotte</p>
+                        </article>
+                        <article class="reviews-carousel-slide" data-carousel-slide>
+                            <div class="review-stars" aria-hidden="true">★★★★★</div>
+                            <p class="review-text">"I've used SCREEN ARMORS for multiple projects over the years, and they never disappoint. Their team is knowledgeable, reliable, and always delivers quality work. They're my go-to for all screen enclosure needs."</p>
+                            <p class="review-author">- Patricia W., North Port</p>
+                        </article>
+                        <article class="reviews-carousel-slide" data-carousel-slide>
+                            <div class="review-stars" aria-hidden="true">★★★★★</div>
+                            <p class="review-text">"The team at SCREEN ARMORS transformed our old, worn-out screen enclosure into something beautiful. They were respectful of our property, worked efficiently, and the results speak for themselves. Excellent service!"</p>
+                            <p class="review-author">- Robert T., Englewood</p>
+                        </article>
+                    </div>
                 </div>
-                <p class="google-reviews-card-quote">"Have you ever had a job done on your home that you're so thrilled with you want to tell everybody? Screen Armors did exactly that! Owner Raul followed through on every commitment he made. The curb appeal has improved so very much because of his rescreening job. Do your house a favor and improve it, get a hold of Screen Armors—your customer service is extraordinary!"</p>
-                <p class="google-reviews-card-author">— Elizabeth Schalk</p>
-                <span class="google-reviews-card-link">View all reviews on Google →</span>
-            </a>
-        </div>
-
-        <!-- Navigation Cards -->
-        <div class="navigation-cards-section">
-            <div class="navigation-cards-grid">
-                <a href="service-screening.html" class="nav-card">
-                    <img src="public/Photo 27.jpg" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
-                    <h3>Screening</h3>
-                    <p>Installation & replacement</p>
-                </a>
-                <a href="service-refurbishing.html" class="nav-card">
-                    <img src="public/Photo 22 copy.PNG" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
-                    <h3>Refurbishing</h3>
-                    <p>Restore to like-new</p>
-                </a>
-                <a href="service-gutter.html" class="nav-card">
-                    <img src="public/gutter.jpg" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
-                    <h3>Gutter Services</h3>
-                    <p>Protect your home</p>
-                </a>
-                <a href="insurance.html" class="nav-card">
-                    <img src="public/_Registration%20Prove%20.jpg" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
-                    <h3>Insurance & Registration</h3>
-                    <p>Fully Insured</p>
-                </a>
-                <a href="reviews.html" class="nav-card">
-                    <img src="public/Photo 1.jpeg" alt="" class="nav-card-img" width="280" height="120" loading="lazy" decoding="async">
-                    <h3>Reviews</h3>
-                    <p>What Our Customers Say</p>
-                </a>
+                <button class="reviews-carousel-btn reviews-carousel-btn--next" type="button" aria-label="Next review" data-carousel-next>›</button>
             </div>
-        </div>
+            <p style="text-align: center; margin-top: 1.25rem; margin-bottom: 0;">
+                <a href="reviews.html" class="btn btn-quote" style="text-transform: none; letter-spacing: 0;">Read more reviews</a>
+            </p>
+        </section>
 
         <div class="content-section">
             <p>
@@ -360,14 +402,45 @@
     <!-- Footer -->
     <footer>
         <div class="footer-content">
-            <h3>SCREEN ARMORS</h3>
-            <p>Professional Screen Enclosure Specialists</p>
-            <p class="footer-service-area">Serving Sarasota, Manatee & Charlotte Counties</p>
-            <div class="footer-contact">
-                <a href="tel:941-404-9699">📞 (941) 404-9699</a>
-                <a href="mailto:info@screenarmors.com">✉️ info@screenarmors.com</a>
+            <div class="footer-brand">
+                <img src="public/Logo White No Background .png" alt="SCREEN ARMORS" class="footer-logo" loading="lazy" decoding="async">
+                <p class="footer-title">SCREEN ARMORS</p>
+                <p class="footer-subtitle">Professional Screen Enclosure Specialists</p>
+                <p class="footer-service-area">Serving Sarasota, Manatee &amp; Charlotte Counties</p>
             </div>
-            <p style="margin-top: 1.5rem; opacity: 0.8;">&copy; 2024 SCREEN ARMORS. All rights reserved.</p>
+
+            <div class="footer-grid" aria-label="Contact information">
+                <div class="footer-item">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.07 21 3 13.93 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Phone</p>
+                    <p class="footer-item-value"><a href="tel:941-404-9699">(941) 404-9699</a></p>
+                </div>
+                <div class="footer-item">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v.01L12 13 22 6.01V6a2 2 0 0 0-2-2zm2 6.25-9.42 6.6a1 1 0 0 1-1.16 0L2 10.25V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7.75z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Email</p>
+                    <p class="footer-item-value"><a href="mailto:info@screenarmors.com">info@screenarmors.com</a></p>
+                </div>
+                <div class="footer-item">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Service Area</p>
+                    <p class="footer-item-value"><a href="areas-we-serve.html">View areas we serve</a></p>
+                </div>
+                <div class="footer-item">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10 10 10 0 0 1-10 10zm1-10.41V6a1 1 0 1 0-2 0v6a1 1 0 0 0 .29.71l3.5 3.5a1 1 0 0 0 1.42-1.42z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Get Quote</p>
+                    <p class="footer-item-value"><a href="quote.html">Request a free quote</a></p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">&copy; 2024 SCREEN ARMORS. All rights reserved.</div>
         </div>
     </footer>
 
@@ -389,25 +462,120 @@
 			window.addEventListener('load', setSpacer);
 			window.addEventListener('resize', setSpacer);
 			setSpacer();
-			let lastY = window.scrollY;
 			window.addEventListener('scroll', function() {
 				const currentY = window.scrollY;
 				const navLinks = document.getElementById('navLinks');
 				const menuOpen = navLinks && navLinks.classList.contains('active');
-				if (menuOpen) {
-					lastY = currentY;
-					return;
-				}
+				if (menuOpen) return;
+
 				if (currentY <= TOP_REVEAL_PX) {
-					navEl.classList.remove('nav-hidden');
-				} else if (currentY > lastY) {
-					navEl.classList.add('nav-hidden');
+					navEl.classList.remove('nav-compact');
 				} else {
-					navEl.classList.remove('nav-hidden');
+					navEl.classList.add('nav-compact');
 				}
-				lastY = currentY;
 			}, { passive: true });
 		})();
+
+        // Home reviews carousel
+        (function() {
+            const root = document.querySelector('[data-carousel]');
+            if (!root) return;
+            const track = root.querySelector('[data-carousel-track]');
+            const slides = Array.from(root.querySelectorAll('[data-carousel-slide]'));
+            const prevBtn = root.querySelector('[data-carousel-prev]');
+            const nextBtn = root.querySelector('[data-carousel-next]');
+            if (!track || slides.length === 0) return;
+
+            let index = 0;
+            let timer = null;
+            const AUTOPLAY_MS = 6500;
+
+            function getVisibleCount() {
+                if (window.matchMedia('(max-width: 768px)').matches) return 1;
+                if (window.matchMedia('(max-width: 1100px)').matches) return 2;
+                return 3;
+            }
+
+            function render() {
+                const visible = getVisibleCount();
+                const step = 100 / visible;
+                track.style.transform = `translateX(${index * -step}%)`;
+            }
+
+            function goTo(nextIndex) {
+                const visible = getVisibleCount();
+                const maxIndex = Math.max(0, slides.length - visible);
+                if (nextIndex > maxIndex) {
+                    index = 0;
+                } else if (nextIndex < 0) {
+                    index = maxIndex;
+                } else {
+                    index = nextIndex;
+                }
+                render();
+            }
+
+            function start() {
+                stop();
+                timer = window.setInterval(() => goTo(index + 1), AUTOPLAY_MS);
+            }
+
+            function stop() {
+                if (timer) window.clearInterval(timer);
+                timer = null;
+            }
+
+            prevBtn && prevBtn.addEventListener('click', () => { goTo(index - 1); start(); });
+            nextBtn && nextBtn.addEventListener('click', () => { goTo(index + 1); start(); });
+            root.addEventListener('mouseenter', stop);
+            root.addEventListener('mouseleave', start);
+            root.addEventListener('focusin', stop);
+            root.addEventListener('focusout', start);
+
+            render();
+            start();
+
+            window.addEventListener('resize', function() {
+                const visible = getVisibleCount();
+                const maxIndex = Math.max(0, slides.length - visible);
+                if (index > maxIndex) index = maxIndex;
+                render();
+            });
+        })();
+
+        // More photos modal (Completed Projects)
+        (function() {
+            const modal = document.querySelector('[data-more-projects-modal]');
+            const openBtn = document.querySelector('[data-more-projects-open]');
+            const closeBtn = modal ? modal.querySelector('[data-more-projects-close]') : null;
+            if (!modal || !openBtn) return;
+
+            function open() {
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                closeBtn && closeBtn.focus();
+            }
+
+            function close() {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                openBtn.focus();
+            }
+
+            openBtn.addEventListener('click', open);
+            closeBtn && closeBtn.addEventListener('click', close);
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) close();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
+            });
+        })();
+
         // Load analytics after page is interactive so initial render is faster
         window.addEventListener('load', function() {
             window.dataLayer = window.dataLayer || [];
