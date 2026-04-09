@@ -1405,6 +1405,18 @@ nav {
     margin: 3.25rem 0 0;
 }
 
+.home-reviews-google-badge {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25rem;
+}
+
+.home-reviews-google-badge img {
+    width: min(200px, 70vw);
+    height: auto;
+    display: block;
+}
+
 .reviews-carousel {
     position: relative;
     max-width: 980px;
@@ -2005,6 +2017,17 @@ footer {
 
     .hero-fast-response strong {
         font-size: inherit;
+    }
+
+    .hero-stars {
+        width: min(118px, 40vw);
+        margin-top: 0.75rem;
+    }
+
+    .review-stars {
+        font-size: 1.1rem;
+        margin-bottom: 0.65rem;
+        letter-spacing: 0.02em;
     }
 
     /* Hide email button on mobile in hero */
