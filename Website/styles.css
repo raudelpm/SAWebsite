@@ -362,8 +362,11 @@ body.page-quote .nav-compact-home-btn:hover {
 	transform: translateY(-1px);
 }
 
-body.page-quote nav.nav-compact .nav-compact-home-btn {
-	display: inline-flex;
+/* Solo escritorio/tablet ancha: en móvil el Home está en el menú ☰ */
+@media (min-width: 769px) {
+	body.page-quote nav.nav-compact .nav-compact-home-btn {
+		display: inline-flex;
+	}
 }
 
 @media (max-width: 768px) {
