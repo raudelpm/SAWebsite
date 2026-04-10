@@ -19,8 +19,8 @@
 </head>
 <body>
     <!-- Floating Get Quote Button -->
-    <a href="quote.html" class="floating-quote-btn">
-        Get Quote
+    <a href="quote.html#quote-form" class="floating-quote-btn">
+        Get Quote Now
     </a>
     
 	<!-- Navigation -->
@@ -28,9 +28,9 @@
 		<div class="nav-container">
 			<a href="index.html" class="logo">
 				<img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
-				<span>SCREEN ARMORS</span>
+				<span class="logo-wordmark">SCREEN ARMORS</span>
 			</a>
-			<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+			<button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navLinks"><span class="menu-toggle-icon" aria-hidden="true">☰</span><span class="menu-toggle-label">Menu</span></button>
 			<ul class="nav-links" id="navLinks">
 				<li><a href="index.html">Home</a></li>
 				<li><a href="services.html">Services</a></li>
@@ -111,57 +111,106 @@
         <h2 class="section-title" style="margin-top: 4rem;">Customer Testimonials</h2>
         <div class="reviews-grid">
             <div class="review-card">
-                <div class="review-avatar review-avatar--c0" aria-hidden="true">SM</div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Joe Kobriger"><img src="public/Joe%20Kobriger.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars">★★★★★</div>
-                <p class="review-text">
-                    "SCREEN ARMORS did an amazing job replacing all the screens on our pool cage. The team was professional, punctual, and the work was flawless. Our pool area looks brand new! Highly recommend their services."
-                </p>
-                <p class="review-author">- Sarah M., Sarasota</p>
+                <p class="review-text">"Rau is very professional and knowledgeable. He gave us different options for replacing our screen and gave us a great…"</p>
+                <p class="review-author">— Joe Kobriger</p>
             </div>
-
             <div class="review-card">
-                <div class="review-avatar review-avatar--c1" aria-hidden="true">MR</div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Michael Antinucci"><img src="public/michael%20antinucci.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars">★★★★★</div>
-                <p class="review-text">
-                    "We needed a complete refurbishment of our lanai screen enclosure, and SCREEN ARMORS exceeded our expectations. They were thorough, cleaned up after themselves, and the finished product is beautiful. Great value for the quality of work."
-                </p>
-                <p class="review-author">- Michael R., Bradenton</p>
+                <p class="review-text">"Amazing work for a complex project! I had nearly half dozen companies come out and say they could not help me. I took…"</p>
+                <p class="review-author">— Michael Antinucci</p>
             </div>
-
             <div class="review-card">
-                <div class="review-avatar review-avatar--c2" aria-hidden="true">JL</div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Justin Bingham"><img src="public/Justin%20bingham.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars">★★★★★</div>
-                <p class="review-text">
-                    "From the initial consultation to the final installation, SCREEN ARMORS was professional and easy to work with. They built us a custom screen enclosure that perfectly matches our home. Couldn't be happier!"
-                </p>
-                <p class="review-author">- Jennifer L., Venice</p>
+                <p class="review-text">"I am very fortunate that I came across Raul Perez and Screen Armors for my new construction lanai project. Raul was…"</p>
+                <p class="review-author">— Justin Bingham</p>
             </div>
-
             <div class="review-card">
-                <div class="review-avatar review-avatar--c3" aria-hidden="true">DK</div>
+                <div class="review-avatar review-avatar--c0" aria-hidden="true">KH</div>
                 <div class="review-stars">★★★★★</div>
-                <p class="review-text">
-                    "After a storm damaged our pool cage, SCREEN ARMORS came out quickly, assessed the damage, and had us back up and running in no time. Their attention to detail and quality craftsmanship is outstanding."
-                </p>
-                <p class="review-author">- David K., Port Charlotte</p>
+                <p class="review-text">"Very fast and professional"</p>
+                <p class="review-author">— Kristin Harris</p>
             </div>
-
             <div class="review-card">
-                <div class="review-avatar review-avatar--c4" aria-hidden="true">PW</div>
+                <div class="review-avatar review-avatar--c1" aria-hidden="true">MG</div>
                 <div class="review-stars">★★★★★</div>
-                <p class="review-text">
-                    "I've used SCREEN ARMORS for multiple projects over the years, and they never disappoint. Their team is knowledgeable, reliable, and always delivers quality work. They're my go-to for all screen enclosure needs."
-                </p>
-                <p class="review-author">- Patricia W., North Port</p>
+                <p class="review-text">"Professional job done in one day. Reasonable pricing"</p>
+                <p class="review-author">— Manouch Ghafouri</p>
             </div>
-
             <div class="review-card">
-                <div class="review-avatar review-avatar--c5" aria-hidden="true">RT</div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, alex mollanazar"><img src="public/alex%20mollanazar.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars">★★★★★</div>
-                <p class="review-text">
-                    "The team at SCREEN ARMORS transformed our old, worn-out screen enclosure into something beautiful. They were respectful of our property, worked efficiently, and the results speak for themselves. Excellent service!"
-                </p>
-                <p class="review-author">- Robert T., Englewood</p>
+                <p class="review-text">"Professional, quick, and affordable. Very happy with Screen Armor's service of repairing our screen."</p>
+                <p class="review-author">— alex mollanazar</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Cristi Butnaru"><img src="public/Cristi%20Butnaru.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"Quick &amp; professional, they have screened our lanai and it's looking awesome."</p>
+                <p class="review-author">— Cristi Butnaru</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--c4" aria-hidden="true">BB</div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"Raul was quick to respond and had an innovative solution that others had not considered. He repaired my lanai the day after I signed the contract. His pricing was very competitive ."</p>
+                <p class="review-author">— Bernie Bierbaum</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--c7" aria-hidden="true">JF</div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"We had a project to replace screens for a 61-unit condominium building.The old fiberglass screens were degraded and…"</p>
+                <p class="review-author">— John Funk</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--c9" aria-hidden="true">AG</div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"I found the owner (Raoul) to be very courteous, professional, and very accommodating. The refurbish job of my lanai…"</p>
+                <p class="review-author">— Andrea Gil</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--c10" aria-hidden="true">MW</div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"Great service. Reasonable price. Communicated quickly and was able to come out the next day to replace 6 panels after the pets had gotten to them. The new panels look super durable. Very happy with our choice."</p>
+                <p class="review-author">— Mark Walker</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--c11" aria-hidden="true">AS</div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"This company made a very good impression on me when I hired it to do partial rescreening and some aluminum work in the past. Recently, I needed some additional work and will be using them again to replace doors, screws, and paint the pool cage. Very satisfied with the quality of work, competitive pricing and great customer service. Thanks for doing a great job!"</p>
+                <p class="review-author">— Allen SRQ</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--c12" aria-hidden="true">MS</div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"Screen Armors did a very professional job They did everything I asked for and gave me a good price. I would highly recommend them and plan on using them again in the future ."</p>
+                <p class="review-author">— Michael Scicluna</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--c13" aria-hidden="true">TG</div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"My experience was wonderful. Very professional. Great work!!! These guys really know what they are doing. I would recommend them to any and all!!!"</p>
+                <p class="review-author">— B. Thomas Gerber</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--c14" aria-hidden="true">ES</div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"Have you ever had a job done on your home that you&apos;re so thrilled with you want to tell everybody? Screen Armors did exactly that! Owner Raul, followed through on every commitment he made. The curb appeal has improved so very much because of his rescreening job. Do your house a favor and improve it, get a hold of Screen Armors your customer service is extraordinary!"</p>
+                <p class="review-author">— elizabeth schalk</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Ryan Jiloca"><img src="public/Ryan%20Jiloca.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"Couldn&apos;t be more pleased working with Screen Armors to repair a broken screen panel on our lanai. Response was very fast, super friendly service and had my repair done next day after first calling. Would definitely recommend and work with Screen Armors again in the future. Great job!! Thank you!!"</p>
+                <p class="review-author">— Ryan Jiloca</p>
+            </div>
+            <div class="review-card">
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, John Klein"><img src="public/John%20Klein.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"Raul is very easy to work with…. Price was better than some other estimates. Their work was spot on and they installed early!! All good things to say about … Screen Armors"</p>
+                <p class="review-author">— John Klein</p>
             </div>
         </div>
 
@@ -216,34 +265,34 @@
             </div>
 
             <div class="footer-grid" aria-label="Contact information">
-                <div class="footer-item">
+                <a class="footer-item" href="tel:941-404-9699">
                     <div class="footer-item-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.07 21 3 13.93 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
                     </div>
                     <p class="footer-item-label">Phone</p>
-                    <p class="footer-item-value"><a href="tel:941-404-9699">(941) 404-9699</a></p>
-                </div>
-                <div class="footer-item">
+                    <p class="footer-item-value">(941) 404-9699</p>
+                </a>
+                <a class="footer-item" href="mailto:info@screenarmors.com">
                     <div class="footer-item-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v.01L12 13 22 6.01V6a2 2 0 0 0-2-2zm2 6.25-9.42 6.6a1 1 0 0 1-1.16 0L2 10.25V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7.75z"/></svg>
                     </div>
                     <p class="footer-item-label">Email</p>
-                    <p class="footer-item-value"><a href="mailto:info@screenarmors.com">info@screenarmors.com</a></p>
-                </div>
-                <div class="footer-item">
+                    <p class="footer-item-value">info@screenarmors.com</p>
+                </a>
+                <a class="footer-item" href="areas-we-serve.html">
                     <div class="footer-item-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
                     </div>
                     <p class="footer-item-label">Service Area</p>
-                    <p class="footer-item-value"><a href="areas-we-serve.html">View areas we serve</a></p>
-                </div>
-                <div class="footer-item">
+                    <p class="footer-item-value">View areas we serve</p>
+                </a>
+                <a class="footer-item" href="quote.html">
                     <div class="footer-item-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10 10 10 0 0 1-10 10zm1-10.41V6a1 1 0 1 0-2 0v6a1 1 0 0 0 .29.71l3.5 3.5a1 1 0 0 0 1.42-1.42z"/></svg>
                     </div>
                     <p class="footer-item-label">Get Quote</p>
-                    <p class="footer-item-value"><a href="quote.html">Request a free quote</a></p>
-                </div>
+                    <p class="footer-item-value">Request a free quote</p>
+                </a>
             </div>
 
             <div class="footer-bottom">&copy; 2024 SCREEN ARMORS. All rights reserved.</div>
@@ -308,6 +357,7 @@
         return false;
       }
     </script>
+    <script src="nav-menu.js"></script>
     <script src="call-tracking.js"></script>
 </body>
 </html>

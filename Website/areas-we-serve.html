@@ -19,8 +19,8 @@
 </head>
 <body>
     <!-- Floating Get Quote Button -->
-    <a href="quote.html" class="floating-quote-btn">
-        Get Quote
+    <a href="quote.html#quote-form" class="floating-quote-btn">
+        Get Quote Now
     </a>
     
 	<!-- Navigation -->
@@ -28,9 +28,9 @@
 		<div class="nav-container">
 			<a href="index.html" class="logo">
 				<img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
-				<span>SCREEN ARMORS</span>
+				<span class="logo-wordmark">SCREEN ARMORS</span>
 			</a>
-			<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+			<button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navLinks"><span class="menu-toggle-icon" aria-hidden="true">☰</span><span class="menu-toggle-label">Menu</span></button>
 			<ul class="nav-links" id="navLinks">
 				<li><a href="index.html">Home</a></li>
 				<li><a href="services.html">Services</a></li>
@@ -125,34 +125,34 @@
             </div>
 
             <div class="footer-grid" aria-label="Contact information">
-                <div class="footer-item">
+                <a class="footer-item" href="tel:941-404-9699">
                     <div class="footer-item-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.07 21 3 13.93 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
                     </div>
                     <p class="footer-item-label">Phone</p>
-                    <p class="footer-item-value"><a href="tel:941-404-9699">(941) 404-9699</a></p>
-                </div>
-                <div class="footer-item">
+                    <p class="footer-item-value">(941) 404-9699</p>
+                </a>
+                <a class="footer-item" href="mailto:info@screenarmors.com">
                     <div class="footer-item-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v.01L12 13 22 6.01V6a2 2 0 0 0-2-2zm2 6.25-9.42 6.6a1 1 0 0 1-1.16 0L2 10.25V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7.75z"/></svg>
                     </div>
                     <p class="footer-item-label">Email</p>
-                    <p class="footer-item-value"><a href="mailto:info@screenarmors.com">info@screenarmors.com</a></p>
-                </div>
-                <div class="footer-item">
+                    <p class="footer-item-value">info@screenarmors.com</p>
+                </a>
+                <a class="footer-item" href="areas-we-serve.html">
                     <div class="footer-item-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
                     </div>
                     <p class="footer-item-label">Service Area</p>
-                    <p class="footer-item-value"><a href="areas-we-serve.html">View areas we serve</a></p>
-                </div>
-                <div class="footer-item">
+                    <p class="footer-item-value">View areas we serve</p>
+                </a>
+                <a class="footer-item" href="quote.html">
                     <div class="footer-item-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10 10 10 0 0 1-10 10zm1-10.41V6a1 1 0 1 0-2 0v6a1 1 0 0 0 .29.71l3.5 3.5a1 1 0 0 0 1.42-1.42z"/></svg>
                     </div>
                     <p class="footer-item-label">Get Quote</p>
-                    <p class="footer-item-value"><a href="quote.html">Request a free quote</a></p>
-                </div>
+                    <p class="footer-item-value">Request a free quote</p>
+                </a>
             </div>
 
             <div class="footer-bottom">&copy; 2024 SCREEN ARMORS. All rights reserved.</div>
@@ -214,6 +214,7 @@
         return false;
       }
     </script>
+    <script src="nav-menu.js"></script>
     <script src="call-tracking.js"></script>
 </body>
 </html>
