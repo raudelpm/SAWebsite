@@ -1,6 +1,9 @@
 /**
- * Close mobile nav when tapping outside the header (main content / empty page area).
- * Works with existing toggleMenu() on .menu-toggle (click still toggles as before).
+ * Close the mobile / compact nav dropdown when clicking outside it.
+ * The fixed header uses z-index 1000, so clicks on the page often hit layers *under*
+ * the nav in the stacking order and never reach a clean “outside nav” target.
+ * We add body.nav-menu-open + a full-viewport ::before (z-index 999) so outside taps
+ * always register; nav + dropdown stay above at 1000.
  */
 (function () {
   function navLinksEl() {
@@ -11,27 +14,56 @@
     return document.querySelector('nav');
   }
 
+  function syncBodyOpenClass() {
+    var links = navLinksEl();
+    if (!document.body || !links) return;
+    document.body.classList.toggle('nav-menu-open', links.classList.contains('active'));
+  }
+
   function closeMenuIfOpen() {
     var links = navLinksEl();
     if (links && links.classList.contains('active')) {
       links.classList.remove('active');
+      syncBodyOpenClass();
     }
   }
 
-  function isMobileNavLayout() {
-    return typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 768px)').matches;
+  function eventTargetElement(e) {
+    var t = e.target;
+    if (!t) return null;
+    if (t.nodeType === 3 && t.parentElement) return t.parentElement;
+    return t;
   }
 
-  document.addEventListener(
-    'pointerdown',
-    function (e) {
-      if (!isMobileNavLayout()) return;
-      var links = navLinksEl();
-      var nav = navEl();
-      if (!links || !nav || !links.classList.contains('active')) return;
-      if (nav.contains(e.target)) return;
-      closeMenuIfOpen();
-    },
-    true
-  );
+  function isInsideNav(e) {
+    var nav = navEl();
+    if (!nav) return false;
+    var el = eventTargetElement(e);
+    if (!el) return false;
+    if (typeof el.closest === 'function' && el.closest('nav')) return true;
+    return nav.contains(el);
+  }
+
+  function onOutsideClose(e) {
+    var links = navLinksEl();
+    if (!links || !links.classList.contains('active')) return;
+    if (isInsideNav(e)) return;
+    closeMenuIfOpen();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncBodyOpenClass);
+  } else {
+    syncBodyOpenClass();
+  }
+
+  var linksForObserver = navLinksEl();
+  if (linksForObserver && typeof MutationObserver !== 'undefined') {
+    var observer = new MutationObserver(syncBodyOpenClass);
+    observer.observe(linksForObserver, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  document.addEventListener('pointerdown', onOutsideClose, true);
+  document.addEventListener('mousedown', onOutsideClose, true);
+  document.addEventListener('click', onOutsideClose, true);
 })();

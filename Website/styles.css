@@ -1,11 +1,53 @@
 /* Global Styles */
 :root {
 	--nav-height: 72px;
-	/* Window-tint style: rounded top-left + bottom-right, sharp top-right + bottom-left */
-	--btn-chamfer-radius: clamp(18px, 2.2vw, 26px);
-	/* Brand red (matches Get Quote / primary CTAs) */
+	/* Brand red (matches Get Quote / primary CTAs) — before gradient tokens */
 	--color-brand-red: #b71c1c;
 	--color-brand-red-hover: #991b1b;
+	/* CTAs: fully rounded corners + shared “relief” (inset highlight + drop shadow) */
+	--btn-radius: clamp(14px, 1.8vw, 22px);
+	--btn-bg-red: linear-gradient(180deg, #e53935 0%, var(--color-brand-red) 48%, #8e161c 100%);
+	--btn-bg-red-hover: linear-gradient(180deg, #ef5350 0%, #d32f2f 50%, #b71c1c 100%);
+	--btn-relief-red:
+		0 2px 0 rgba(0, 0, 0, 0.14) inset,
+		0 1px 0 rgba(255, 255, 255, 0.22) inset,
+		0 4px 16px rgba(183, 28, 28, 0.36),
+		0 2px 6px rgba(0, 0, 0, 0.16);
+	--btn-relief-red-hover:
+		0 2px 0 rgba(255, 255, 255, 0.14) inset,
+		0 6px 22px rgba(183, 28, 28, 0.42),
+		0 3px 8px rgba(0, 0, 0, 0.14);
+	--btn-bg-green: linear-gradient(180deg, #22c55e 0%, #16a34a 45%, #15803d 100%);
+	--btn-bg-green-hover: linear-gradient(180deg, #4ade80 0%, #22c55e 50%, #166534 100%);
+	--btn-relief-green:
+		0 2px 0 rgba(0, 0, 0, 0.12) inset,
+		0 1px 0 rgba(255, 255, 255, 0.28) inset,
+		0 4px 16px rgba(22, 163, 74, 0.34),
+		0 2px 6px rgba(0, 0, 0, 0.14);
+	--btn-relief-green-hover:
+		0 2px 0 rgba(255, 255, 255, 0.14) inset,
+		0 6px 22px rgba(22, 163, 74, 0.4),
+		0 3px 8px rgba(0, 0, 0, 0.12);
+	--btn-bg-purple: linear-gradient(180deg, #a855f7 0%, #7c3aed 48%, #5b21b6 100%);
+	--btn-bg-purple-hover: linear-gradient(180deg, #c084fc 0%, #9333ea 50%, #6d28d9 100%);
+	--btn-relief-purple:
+		0 2px 0 rgba(0, 0, 0, 0.13) inset,
+		0 1px 0 rgba(255, 255, 255, 0.28) inset,
+		0 4px 16px rgba(124, 58, 237, 0.38),
+		0 2px 6px rgba(0, 0, 0, 0.14);
+	--btn-relief-purple-hover:
+		0 2px 0 rgba(255, 255, 255, 0.14) inset,
+		0 6px 22px rgba(124, 58, 237, 0.46),
+		0 3px 8px rgba(0, 0, 0, 0.12);
+	--btn-relief-light:
+		0 2px 0 rgba(255, 255, 255, 0.95) inset,
+		0 1px 0 rgba(30, 60, 114, 0.1) inset,
+		0 4px 14px rgba(30, 60, 114, 0.14),
+		0 2px 5px rgba(0, 0, 0, 0.08);
+	--btn-relief-light-hover:
+		0 2px 0 rgba(255, 255, 255, 1) inset,
+		0 6px 20px rgba(30, 60, 114, 0.18),
+		0 3px 8px rgba(0, 0, 0, 0.1);
 	/* Display titles — Helvetica */
 	--font-display: Helvetica, Arial, sans-serif;
 	--title-tracking: -0.035em;
@@ -70,7 +112,8 @@ nav {
 }
 
 .nav-compact .menu-toggle {
-    display: block;
+    display: inline-flex;
+    align-items: center;
 }
 
 .nav-compact .nav-links {
@@ -102,6 +145,16 @@ nav {
     width: 100%;
     padding: 1rem;
     text-align: left;
+}
+
+/* Full-screen hit layer when dropdown is open: below nav (1000), above page content */
+body.nav-menu-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: transparent;
+    pointer-events: auto;
 }
 
 /* Hide-on-scroll: slides up when scrolling down */
@@ -172,27 +225,31 @@ nav {
 }
 
 .nav-cta-btn {
-    background: rgba(183, 28, 28, 0.55);
+    background: var(--btn-bg-red);
     color: #fff !important;
     padding: 0.5rem 1rem !important;
-    border-radius: var(--btn-chamfer-radius) 0 var(--btn-chamfer-radius) 0;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: var(--btn-radius);
+    border: 1px solid rgba(255, 220, 220, 0.5);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+    box-shadow: var(--btn-relief-red);
+    transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .nav-cta-btn:hover {
-    background: rgba(183, 28, 28, 0.78) !important;
+    background: var(--btn-bg-red-hover) !important;
     color: #fff !important;
-    border-color: rgba(255, 255, 255, 0.55);
+    border-color: rgba(255, 240, 240, 0.78) !important;
+    box-shadow: var(--btn-relief-red-hover);
+    transform: translateY(-1px);
 }
 
 /* Mobile Menu Toggle */
 .menu-toggle {
     display: none;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.7rem;
     padding: 0.35rem 0;
     background: none;
     border: none;
@@ -256,10 +313,6 @@ body.page-quote .nav-compact .nav-links li a {
     color: #1a1a1a;
 }
 
-body.page-quote .nav-cta-btn {
-    border-color: rgba(183, 28, 28, 0.35);
-}
-
 body.page-quote .logo {
 	color: #1a1a1a;
 	text-shadow: none;
@@ -269,8 +322,48 @@ body.page-quote .logo:hover {
 	color: #1a1a1a;
 }
 
-body.page-quote .logo-img {
-	filter: brightness(0);
+/* Quote: con scroll, logo a la izquierda + HOME junto a las 3 rayas a la derecha */
+body.page-quote .quote-nav-triggers {
+	display: contents;
+}
+
+body.page-quote nav.nav-compact .quote-nav-triggers {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.65rem;
+	flex-shrink: 0;
+}
+
+body.page-quote .nav-compact-home-btn {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	padding: 0.45rem 0.95rem;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: #fff !important;
+	background: var(--btn-bg-red);
+	border-radius: var(--btn-radius);
+	border: 1px solid rgba(255, 220, 220, 0.45);
+	box-shadow: var(--btn-relief-red);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+	transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+body.page-quote .nav-compact-home-btn:hover {
+	background: var(--btn-bg-red-hover);
+	color: #fff !important;
+	border-color: rgba(255, 240, 240, 0.75);
+	box-shadow: var(--btn-relief-red-hover);
+	transform: translateY(-1px);
+}
+
+body.page-quote nav.nav-compact .nav-compact-home-btn {
+	display: inline-flex;
 }
 
 @media (max-width: 768px) {
@@ -544,8 +637,12 @@ body.page-quote .logo-img {
     font-size: 1.05rem;
     font-weight: 600;
     text-decoration: none;
-    border-radius: var(--btn-chamfer-radius) 0 var(--btn-chamfer-radius) 0;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-radius: var(--btn-radius);
+    transition:
+        background 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        border-color 0.25s ease,
+        transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
@@ -555,29 +652,38 @@ body.page-quote .logo-img {
     border: 1px solid rgba(0, 0, 0, 0.1);
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .btn-quote {
-    background: var(--color-brand-red);
+    background: var(--btn-bg-red);
     color: #fff;
     order: 2; /* Center in 3-button layout */
     z-index: 2;
+    border: 1px solid rgba(255, 220, 220, 0.45);
+    box-shadow: var(--btn-relief-red);
 }
 
 .btn-quote:hover {
-    background: var(--color-brand-red-hover);
+    background: var(--btn-bg-red-hover);
+    border-color: rgba(255, 240, 240, 0.75);
+    box-shadow: var(--btn-relief-red-hover);
     transform: translateY(-3px) scale(1.05);
     z-index: 2;
 }
 
 .btn-primary {
-    background: #16a34a;
+    background: var(--btn-bg-green);
     color: #fff;
     order: 1;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: var(--btn-relief-green);
 }
 
 .btn-primary:hover {
-    background: #15803d;
+    background: var(--btn-bg-green-hover);
+    border-color: rgba(255, 255, 255, 0.42);
+    box-shadow: var(--btn-relief-green-hover);
     transform: translateY(-3px) scale(1.05);
     z-index: 2;
 }
@@ -586,12 +692,32 @@ body.page-quote .logo-img {
     background: #fff;
     color: #1e3c72;
     order: 3;
-    border: 1px solid rgba(30, 60, 114, 0.2);
+    border: 1px solid rgba(30, 60, 114, 0.22);
+    text-shadow: none;
+    box-shadow: var(--btn-relief-light);
 }
 
 .btn-secondary:hover {
     background: #fff;
-    border-color: rgba(30, 60, 114, 0.35);
+    border-color: rgba(30, 60, 114, 0.38);
+    box-shadow: var(--btn-relief-light-hover);
+    transform: translateY(-3px) scale(1.05);
+    z-index: 2;
+}
+
+/* Reviews page: “View all on Google” CTA (purple, same relief pattern as other .btn variants) */
+.btn-google-reviews {
+    background: var(--btn-bg-purple);
+    color: #fff;
+    border: 1px solid rgba(233, 213, 255, 0.45);
+    box-shadow: var(--btn-relief-purple);
+}
+
+.btn-google-reviews:hover {
+    background: var(--btn-bg-purple-hover);
+    color: #fff;
+    border-color: rgba(243, 232, 255, 0.62);
+    box-shadow: var(--btn-relief-purple-hover);
     transform: translateY(-3px) scale(1.05);
     z-index: 2;
 }
@@ -1037,18 +1163,24 @@ body.page-quote .logo-img {
 .form-card-cta {
     margin-top: 1.5rem;
     padding: 0.7rem 1rem;
-    background: #CC0000;
+    background: var(--btn-bg-red);
     color: #fff;
     font-size: 1rem;
     font-weight: 600;
     text-align: center;
-    border-radius: var(--btn-chamfer-radius) 0 var(--btn-chamfer-radius) 0;
+    border-radius: var(--btn-radius);
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    border: 1px solid rgba(255, 220, 220, 0.45);
+    box-shadow: var(--btn-relief-red);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+    transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .form-card:hover .form-card-cta {
-    background: #990000;
+    background: var(--btn-bg-red-hover);
+    border-color: rgba(255, 240, 240, 0.75);
+    box-shadow: var(--btn-relief-red-hover);
 }
 
 /* Google Reviews Card – card layout like others, but Google’s own visual style */
@@ -2637,24 +2769,26 @@ footer {
     align-items: center;
     justify-content: center;
     padding: 0.6rem 1rem;
-    background: var(--color-brand-red);
+    background: var(--btn-bg-red);
     color: #fff !important;
     text-decoration: none;
     font-weight: 700;
     font-size: 0.8125rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    border-radius: var(--btn-chamfer-radius) 0 var(--btn-chamfer-radius) 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: var(--btn-radius);
+    box-shadow: var(--btn-relief-red);
+    border: 1px solid rgba(255, 220, 220, 0.5);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .floating-quote-btn:hover {
-    background: var(--color-brand-red-hover);
+    background: var(--btn-bg-red-hover);
     color: #fff !important;
     transform: translateY(-2px);
-    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.28);
+    border-color: rgba(255, 240, 240, 0.78);
+    box-shadow: var(--btn-relief-red-hover);
 }
 
 .floating-quote-btn:focus-visible {
