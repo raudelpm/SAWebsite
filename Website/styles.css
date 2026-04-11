@@ -942,13 +942,24 @@ body.page-quote .nav-compact-home-btn:hover {
 
 .home-services-bands {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: clamp(1rem, 2.2vw, 1.75rem);
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
     padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2.25rem) 2.75rem;
     box-sizing: border-box;
+}
+
+/* 12 columns: two rows of four tiles (each span 3) */
+@media (min-width: 561px) {
+    .home-services-bands {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .home-services-bands .home-service-tile {
+        grid-column: span 3;
+    }
 }
 
 .home-service-tile {
@@ -1079,6 +1090,10 @@ body.page-quote .nav-compact-home-btn:hover {
     .home-services-bands {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .home-services-bands .home-service-tile:nth-child(n) {
+        grid-column: auto;
+    }
 }
 
 @media (max-width: 560px) {
@@ -1087,6 +1102,10 @@ body.page-quote .nav-compact-home-btn:hover {
         gap: 1rem;
         padding-left: 1rem;
         padding-right: 1rem;
+    }
+
+    .home-services-bands .home-service-tile:nth-child(n) {
+        grid-column: auto;
     }
 }
 
