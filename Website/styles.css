@@ -445,8 +445,8 @@ body.page-quote .nav-compact-home-btn:hover {
     max-height: none;
     object-fit: cover;
     object-position: center;
-    filter: brightness(0.5);
-    -webkit-filter: brightness(0.5);
+    filter: brightness(0.85);
+    -webkit-filter: brightness(0.85);
     z-index: 0;
     pointer-events: none;
 }
@@ -484,6 +484,15 @@ body.page-quote .nav-compact-home-btn:hover {
         rgba(0, 0, 0, 0.15) 100%
     );
     z-index: 2;
+}
+
+/* Video hero: less tint on top so the pool reads brighter (text still readable) */
+.hero:has(.hero-bg-video) .hero-overlay {
+    background: linear-gradient(
+        135deg,
+        rgba(30, 60, 114, 0.12) 0%,
+        rgba(0, 0, 0, 0.06) 100%
+    );
 }
 
 .hero-content {

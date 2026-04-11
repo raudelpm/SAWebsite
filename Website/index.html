@@ -104,7 +104,7 @@
       gtag('js', new Date());
       gtag('config', 'AW-17482456160');
     </script>
-    <link rel="preload" href="public/Firefly%20%E2%80%9CAnimate%20this%20image%20into%20a%20realistic%20cinematic%20scene.%20The%20pool%20water%20should%20have%20gentle%2C%20nat.mp4" as="video" type="video/mp4">
+    <link rel="preload" href="public/loopgood.mp4" as="video" type="video/mp4" fetchpriority="high" media="(prefers-reduced-motion: no-preference)">
     <link rel="preload" href="styles.css" as="style">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -138,8 +138,8 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-bg-container hero-bg-video">
-            <video class="hero-bg-video-el" autoplay muted loop playsinline preload="auto" poster="public/Photo%201.jpeg" aria-label="Cinematic pool and screen enclosure scene">
-                <source src="public/Firefly%20%E2%80%9CAnimate%20this%20image%20into%20a%20realistic%20cinematic%20scene.%20The%20pool%20water%20should%20have%20gentle%2C%20nat.mp4" type="video/mp4">
+            <video class="hero-bg-video-el" autoplay muted loop playsinline preload="metadata" poster="public/Photo%201.jpeg" disablepictureinpicture disableremoteplayback aria-label="Cinematic pool and screen enclosure scene">
+                <source src="public/loopgood.mp4" type="video/mp4">
             </video>
             <div class="screen-mesh-overlay"></div>
         </div>
