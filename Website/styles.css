@@ -392,6 +392,7 @@ body.page-quote .nav-compact-home-btn:hover {
     padding-top: var(--nav-height);
     min-height: 100vh;
     min-height: 100dvh;
+    width: 100%;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -405,8 +406,11 @@ body.page-quote .nav-compact-home-btn:hover {
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
+    min-height: 100%;
     z-index: 0;
 }
 
@@ -420,61 +424,31 @@ body.page-quote .nav-compact-home-btn:hover {
     animation: kenBurns 30s infinite alternate ease-in-out;
 }
 
-/* Home hero: three photos, ~3s each + short crossfade (10.5s loop: A → B → C → A) */
-.hero-bg-slideshow .hero-bg-layer {
+/* Home hero: full-bleed background video (cover viewport; avoids intrinsic video box staying small) */
+.hero-bg-container.hero-bg-video {
+    overflow: hidden;
+}
+
+.hero-bg-video .hero-bg-video-el {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    width: 100svw;
+    height: 100svh;
+    min-width: 100%;
+    min-height: 100%;
+    max-width: none;
+    max-height: none;
     object-fit: cover;
     object-position: center;
     filter: brightness(0.5);
     -webkit-filter: brightness(0.5);
-}
-
-.hero-bg-slideshow .hero-bg-layer--a {
-    animation: heroBgCrossfadeA 10.5s ease-in-out infinite;
-}
-
-.hero-bg-slideshow .hero-bg-layer--b {
-    animation: heroBgCrossfadeB 10.5s ease-in-out infinite;
-}
-
-.hero-bg-slideshow .hero-bg-layer--c {
-    animation: heroBgCrossfadeC 10.5s ease-in-out infinite;
-}
-
-@keyframes heroBgCrossfadeA {
-    0%, 28.57% { opacity: 1; }
-    33.33%, 95.24% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@keyframes heroBgCrossfadeB {
-    0%, 28.57% { opacity: 0; }
-    33.33%, 61.9% { opacity: 1; }
-    66.67%, 100% { opacity: 0; }
-}
-
-@keyframes heroBgCrossfadeC {
-    0%, 61.9% { opacity: 0; }
-    66.67%, 95.24% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .hero-bg-slideshow .hero-bg-layer--a {
-        animation: none;
-        opacity: 1;
-    }
-
-    .hero-bg-slideshow .hero-bg-layer--b,
-    .hero-bg-slideshow .hero-bg-layer--c {
-        animation: none;
-        opacity: 0;
-        visibility: hidden;
-    }
+    z-index: 0;
+    pointer-events: none;
 }
 
 @keyframes kenBurns {

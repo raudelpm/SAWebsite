@@ -104,6 +104,7 @@
       gtag('js', new Date());
       gtag('config', 'AW-17482456160');
     </script>
+    <link rel="preload" href="public/Firefly%20%E2%80%9CAnimate%20this%20image%20into%20a%20realistic%20cinematic%20scene.%20The%20pool%20water%20should%20have%20gentle%2C%20nat.mp4" as="video" type="video/mp4">
     <link rel="preload" href="styles.css" as="style">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -136,10 +137,10 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-bg-container hero-bg-slideshow">
-            <img src="public/Photo 1.jpeg" alt="Professional aluminum screen enclosure and pool cage installation" class="hero-bg-layer hero-bg-layer--a" fetchpriority="high" decoding="async">
-            <img src="public/photopool.jpeg" alt="" class="hero-bg-layer hero-bg-layer--b" loading="lazy" decoding="async">
-            <img src="public/Photo%2023.jpeg" alt="" class="hero-bg-layer hero-bg-layer--c" loading="lazy" decoding="async">
+        <div class="hero-bg-container hero-bg-video">
+            <video class="hero-bg-video-el" autoplay muted loop playsinline preload="auto" poster="public/Photo%201.jpeg" aria-label="Cinematic pool and screen enclosure scene">
+                <source src="public/Firefly%20%E2%80%9CAnimate%20this%20image%20into%20a%20realistic%20cinematic%20scene.%20The%20pool%20water%20should%20have%20gentle%2C%20nat.mp4" type="video/mp4">
+            </video>
             <div class="screen-mesh-overlay"></div>
         </div>
         <div class="hero-overlay"></div>
@@ -591,6 +592,14 @@
             const navLinks = document.getElementById('navLinks');
             navLinks.classList.toggle('active');
         }
+        (function() {
+            var v = document.querySelector('.hero-bg-video-el');
+            if (!v || !window.matchMedia) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                v.removeAttribute('autoplay');
+                v.pause();
+            }
+        })();
 		// Transparent header: offset body + hide when scrolling down, show when scrolling up
 		(function() {
 			const navEl = document.querySelector('nav');
