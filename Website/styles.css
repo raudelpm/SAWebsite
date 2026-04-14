@@ -1850,26 +1850,6 @@ body.page-quote .nav-compact-home-btn:hover {
     line-height: 1.7;
 }
 
-.wisetack-actions {
-    margin: 0 0 0.6rem;
-}
-
-.btn-wisetack {
-    background: var(--btn-bg-red);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.32);
-    box-shadow: var(--btn-relief-red);
-    text-transform: none;
-    letter-spacing: 0;
-}
-
-.btn-wisetack:hover {
-    background: var(--btn-bg-red-hover);
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: var(--btn-relief-red-hover);
-    color: #fff;
-}
-
 .wisetack-fineprint {
     margin: 0;
     color: rgba(17, 17, 17, 0.55);
