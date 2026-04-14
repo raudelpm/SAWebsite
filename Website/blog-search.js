@@ -4,26 +4,6 @@
     loaded: false,
   };
 
-  function norm(str) {
-    return (str || "")
-      .toString()
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
-
-  function buildHaystack(post) {
-    const parts = [
-      post.title,
-      post.excerpt,
-      (post.tags || []).join(" "),
-      post.date,
-    ];
-    return norm(parts.filter(Boolean).join(" | "));
-  }
-
   function escapeHtml(s) {
     return (s || "")
       .replace(/&/g, "&amp;")
@@ -33,19 +13,14 @@
       .replace(/'/g, "&#039;");
   }
 
-  function renderResults(posts) {
+  function renderPosts(posts) {
     const root = document.querySelector("[data-blog-results]");
-    const countEl = document.querySelector("[data-blog-count]");
     if (!root) return;
-
-    if (countEl) {
-      countEl.textContent = `${posts.length} post${posts.length === 1 ? "" : "s"}`;
-    }
 
     if (posts.length === 0) {
       root.innerHTML =
         `<div class="blog-empty">
-          <p><strong>No posts found.</strong> Try a different keyword (e.g. “no-see-um”, “20x20”, “Sarasota”).</p>
+          <p><strong>No posts yet.</strong> Check back soon.</p>
         </div>`;
       return;
     }
@@ -77,32 +52,13 @@
       .join("");
   }
 
-  function applyFilter() {
-    const input = document.querySelector("[data-blog-search]");
-    const q = norm(input ? input.value : "");
-
-    if (!q) {
-      renderResults(state.posts);
-      return;
-    }
-
-    const terms = q.split(" ").filter(Boolean);
-    const results = state.posts
-      .map((p) => ({ p, hay: p.__haystack || (p.__haystack = buildHaystack(p)) }))
-      .filter(({ hay }) => terms.every((t) => hay.includes(t)))
-      .map(({ p }) => p);
-
-    renderResults(results);
-  }
-
   async function loadIndex() {
     if (state.loaded) return;
     state.loaded = true;
 
     const resultsRoot = document.querySelector("[data-blog-results]");
     if (resultsRoot) {
-      resultsRoot.innerHTML =
-        `<div class="blog-loading"><p>Loading posts…</p></div>`;
+      resultsRoot.innerHTML = `<div class="blog-loading"><p>Loading posts…</p></div>`;
     }
 
     try {
@@ -110,8 +66,7 @@
       if (!res.ok) throw new Error(`Index load failed: ${res.status}`);
       const data = await res.json();
       state.posts = Array.isArray(data.posts) ? data.posts : [];
-      renderResults(state.posts);
-      applyFilter();
+      renderPosts(state.posts);
     } catch (e) {
       if (resultsRoot) {
         resultsRoot.innerHTML =
@@ -122,37 +77,9 @@
     }
   }
 
-  function bind() {
-    const input = document.querySelector("[data-blog-search]");
-    const clearBtn = document.querySelector("[data-blog-clear]");
-
-    if (input) {
-      input.addEventListener("input", applyFilter, { passive: true });
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          input.value = "";
-          applyFilter();
-        }
-      });
-    }
-
-    if (clearBtn && input) {
-      clearBtn.addEventListener("click", () => {
-        input.value = "";
-        input.focus();
-        applyFilter();
-      });
-    }
-  }
-
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      bind();
-      loadIndex();
-    });
+    document.addEventListener("DOMContentLoaded", loadIndex);
   } else {
-    bind();
     loadIndex();
   }
 })();
-
