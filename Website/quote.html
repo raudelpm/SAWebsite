@@ -17,23 +17,20 @@
     <title>Request a Free Quote - SCREEN ARMORS</title>
     <meta name="description" content="Free quote for screen enclosures, pool cages, lanais & patios in Sarasota & Bradenton. Construction, screening, refurbishing and painting. Get your estimate today.">
     <link rel="canonical" href="https://www.screenarmors.com/quote.html">
-    <link rel="preload" href="styles.css" as="style">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preload" href="styles.css?v=quote-why-2" as="style">
+    <link rel="stylesheet" href="styles.css?v=quote-why-2">
     <!-- Analytics loads after page so form gets full bandwidth -->
 </head>
-<body class="page-quote">
+<body>
     <a href="index.html" class="floating-quote-btn" aria-label="Back to home">HOME</a>
 	<!-- Navigation -->
 	<nav>
 		<div class="nav-container">
 			<a href="index.html" class="logo">
-				<img src="public/Logo Black No Background.PNG" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+				<img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
 				<span class="logo-wordmark">SCREEN ARMORS</span>
 			</a>
-			<div class="quote-nav-triggers">
-				<a href="index.html" class="nav-compact-home-btn" aria-label="Back to home">Home</a>
-				<button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navLinks"><span class="menu-toggle-icon" aria-hidden="true">☰</span><span class="menu-toggle-label">Menu</span></button>
-			</div>
+			<button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navLinks"><span class="menu-toggle-icon" aria-hidden="true">☰</span><span class="menu-toggle-label">Menu</span></button>
 			<ul class="nav-links" id="navLinks">
 				<li><a href="index.html">Home</a></li>
 				<li><a href="services.html">Services</a></li>
@@ -42,20 +39,29 @@
 				<li><a href="about.html">About Us</a></li>
 				<li><a href="reviews.html">Reviews</a></li>
 				<li><a href="faq.html">FAQ</a></li>
-				<li><a href="index.html" class="nav-cta-btn">HOME</a></li>
+				<li><a href="index.html" class="nav-cta-btn" aria-label="Back to home">HOME</a></li>
 			</ul>
 		</div>
 	</nav>
+
+    <!-- Hero (same visual pattern as Services and interior pages) -->
+    <section class="hero" style="height: 40vh; min-height: 400px;">
+        <div class="hero-bg-container">
+            <img src="public/Photo 1.jpeg" alt="Screen enclosure and pool" class="hero-bg-image" fetchpriority="high" decoding="async">
+            <div class="screen-mesh-overlay"></div>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Request Your Free Quote</h1>
+            <p>Get your free quote today — fill out the form below and we'll respond within 1 hour.</p>
+        </div>
+    </section>
 
     <!-- Main Content -->
     <div class="container">
         <!-- Quote Request Form -->
         <div class="quote-form-section" id="quote-form">
-            <h1 class="section-title">Request Your Free Quote</h1>
             <div class="content-section">
-                <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">
-                    Fill out the form below to request a free quote for your screen enclosure project. We'll get back to you as soon as possible!
-                </p>
                 <div class="quote-form-wrapper">
                     <p class="quote-form-loading" id="quoteFormLoading" aria-live="polite">Loading your form…</p>
                     <div id="0911e75b-dd0b-4df6-b055-f1da13f9969d-1930302"></div>
@@ -76,26 +82,28 @@
                 </script>
             </div>
         </div>
+    </div>
 
-        <!-- Additional Information -->
-        <div class="content-section" style="margin-top: 3rem;">
-            <h2 style="margin-bottom: 1.5rem; text-align: center;">Why Choose SCREEN ARMORS?</h2>
-            <p>
+    <!-- Why choose — full-width band, inverted gradient (red → black) meets footer (black → red) -->
+    <section class="quote-why-band" aria-labelledby="quote-why-heading">
+        <div class="quote-why-band-inner">
+            <h2 id="quote-why-heading" class="quote-why-band__title">Why Choose SCREEN ARMORS?</h2>
+            <p class="quote-why-band__text">
                 At SCREEN ARMORS, we specialize in creating beautiful, durable screen enclosures, pool cages, and lanais. Our expert team provides professional construction, screening, refurbishing, and painting services using only the highest quality aluminum materials.
             </p>
-            <p>
+            <p class="quote-why-band__text">
                 When you request a quote, you'll receive:
             </p>
-            <ul style="color: #666; line-height: 2; margin-left: 2rem;">
+            <ul class="quote-why-band__list">
                 <li>Free consultation and estimate</li>
                 <li>Expert recommendations tailored to your needs</li>
                 <li>Transparent pricing with no hidden fees</li>
                 <li>Professional installation by licensed and insured specialists</li>
             </ul>
-            <p style="text-align: center; margin-top: 2rem;">
+            <p class="quote-why-band__cta-line">
                 <strong>Prefer to speak with us directly?</strong>
             </p>
-            <div class="cta-buttons" style="justify-content: center; margin-top: 1.5rem;">
+            <div class="cta-buttons quote-why-band__ctas">
                 <a href="tel:941-404-9699" class="btn btn-primary">
                     📞 Call (941) 404-9699
                 </a>
@@ -104,7 +112,7 @@
                 </a>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Footer -->
     <footer>

@@ -272,119 +272,6 @@ body.nav-menu-open::before {
     line-height: 1;
 }
 
-/* Quote page: nav over white — dark links + solid bar (Jobber embed / white page) */
-body.page-quote nav {
-    background: #fff !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
-}
-
-body.page-quote .nav-links a {
-    color: #1a1a1a;
-    text-shadow: none;
-}
-
-body.page-quote .nav-links a:hover {
-    color: var(--color-brand-red);
-}
-
-body.page-quote .menu-toggle {
-    color: #1a1a1a;
-    text-shadow: none;
-}
-
-body.page-quote .nav-compact {
-    background: #fff !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
-}
-
-body.page-quote .nav-compact .nav-links {
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-}
-
-body.page-quote .nav-compact .nav-links li {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-body.page-quote .nav-compact .nav-links li a {
-    color: #1a1a1a;
-}
-
-body.page-quote .logo {
-	color: #1a1a1a;
-	text-shadow: none;
-}
-
-body.page-quote .logo:hover {
-	color: #1a1a1a;
-}
-
-/* Quote: con scroll, logo a la izquierda + HOME junto a las 3 rayas a la derecha */
-body.page-quote .quote-nav-triggers {
-	display: contents;
-}
-
-body.page-quote nav.nav-compact .quote-nav-triggers {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.65rem;
-	flex-shrink: 0;
-}
-
-body.page-quote .nav-compact-home-btn {
-	display: none;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	padding: 0.45rem 0.95rem;
-	font-size: 0.78rem;
-	font-weight: 700;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	text-decoration: none;
-	color: #fff !important;
-	background: var(--btn-bg-red);
-	border-radius: var(--btn-radius);
-	border: 1px solid rgba(255, 220, 220, 0.45);
-	box-shadow: var(--btn-relief-red);
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
-	transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-}
-
-body.page-quote .nav-compact-home-btn:hover {
-	background: var(--btn-bg-red-hover);
-	color: #fff !important;
-	border-color: rgba(255, 240, 240, 0.75);
-	box-shadow: var(--btn-relief-red-hover);
-	transform: translateY(-1px);
-}
-
-/* Solo escritorio/tablet ancha: en móvil el Home está en el menú ☰ */
-@media (min-width: 769px) {
-	body.page-quote nav.nav-compact .nav-compact-home-btn {
-		display: inline-flex;
-	}
-}
-
-@media (max-width: 768px) {
-    body.page-quote .nav-links {
-        background: #fff;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    body.page-quote .nav-links li {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    }
-
-    body.page-quote .nav-links li a {
-        color: #1a1a1a;
-    }
-}
-
 /* Hero — extends under fixed transparent nav (body padding would otherwise show white behind nav) */
 .hero {
     position: relative;
@@ -2363,8 +2250,87 @@ footer {
 }
 
 .quote-form-section {
-    margin-top: 4rem;
+    margin-top: 0;
     scroll-margin-top: 100px;
+}
+
+/* Quote page — full-width band: inverted footer gradient (brand red → black) so black meets footer top */
+.quote-why-band {
+    width: 100%;
+    margin: 3rem 0 0;
+    padding: 3rem 1.5rem 3.25rem;
+    background: linear-gradient(
+        180deg,
+        var(--color-brand-red) 0%,
+        #651418 14%,
+        #3f1016 28%,
+        #1c0c10 42%,
+        #0b0c0f 52%,
+        #0b0c0f 100%
+    );
+    color: rgba(255, 255, 255, 0.92);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.quote-why-band + footer {
+    margin-top: 0;
+    border-top: none;
+}
+
+.quote-why-band-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.quote-why-band__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: var(--title-tracking);
+    line-height: var(--title-line-tight);
+    font-size: clamp(1.45rem, 1.1rem + 1.5vw, 1.95rem);
+    color: #fff;
+    margin: 0 0 1.5rem;
+    text-align: center;
+}
+
+.quote-why-band__text {
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.7;
+    margin: 0 0 1rem;
+    text-align: center;
+}
+
+.quote-why-band__list {
+    color: rgba(255, 255, 255, 0.86);
+    line-height: 1.85;
+    margin: 0.75rem auto 0;
+    padding: 0;
+    max-width: 34rem;
+    list-style-position: inside;
+    text-align: center;
+}
+
+.quote-why-band__list li {
+    margin-bottom: 0.35rem;
+}
+
+.quote-why-band__cta-line {
+    text-align: center;
+    margin: 2rem 0 0;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.quote-why-band__cta-line strong {
+    color: #fff;
+    font-weight: 700;
+}
+
+.quote-why-band__ctas {
+    justify-content: center;
+    margin-top: 1.5rem;
 }
 
 /* Jobber embed: marco redondeado y sombra alrededor del formulario real */
