@@ -1,0 +1,5 @@
+.DS_Store
+
+# Local artifacts accidentally dropped in public/
+Website/public/20x20.html
+Website/public/20x20_files/
