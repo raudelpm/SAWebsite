@@ -1883,6 +1883,7 @@ body.nav-menu-open::before {
 	height: 100%;
 	min-height: 72px;
 	z-index: 1;
+	/* Wave colors come from inline SVG (aligned with #b10f2e); no filter */
 	filter: none;
 }
 
@@ -1890,12 +1891,12 @@ body.nav-menu-open::before {
 	width: 100%;
 	box-sizing: border-box;
 	padding: clamp(1.5rem, 3.5vw, 2.35rem) clamp(1.15rem, 4vw, 2.75rem) clamp(1.6rem, 3.8vw, 2.5rem);
-	/* Same brand red family as footer / Get Quote (no magenta) */
+	/* Gradient centered on requested swatch #b10f2e */
 	background: linear-gradient(
 		180deg,
-		#c62828 0%,
-		var(--color-brand-red) 42%,
-		#8e161c 100%
+		#c43d52 0%,
+		#b10f2e 44%,
+		#8f0c25 100%
 	);
 	color: #fff;
 }
@@ -1922,7 +1923,10 @@ body.nav-menu-open::before {
 	line-height: 1.15;
 	letter-spacing: -0.02em;
 	color: #fff;
-	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	/* Slightly stronger shadow on lighter band so white type stays crisp */
+	text-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.28),
+		0 2px 10px rgba(0, 0, 0, 0.12);
 }
 
 .hero-cta-after__lead {

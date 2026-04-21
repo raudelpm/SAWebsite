@@ -10,16 +10,31 @@
     return document.getElementById('navLinks');
   }
 
+  function blogIndexHref() {
+    // Root-relative so it always resolves to /blog.html (never /blog/blog.html) from
+    // article URLs like /blog/post.html. Assumes the site is served with Web root at host /.
+    return '/blog.html';
+  }
+
   function ensureBlogNavItem() {
     var links = navLinksEl();
     if (!links) return;
 
-    var already = links.querySelector('a[href="blog.html"], a[href="./blog.html"], a[href="/blog.html"]');
-    if (already) return;
+    var already = links.querySelector(
+      'a[href="blog.html"], a[href="./blog.html"], a[href="/blog.html"], a[href="../blog.html"]'
+    );
+    if (already) {
+      // Upgrade legacy relative blog link when we're on a /blog/*.html article (wrong target was /blog/blog.html).
+      var path = (window.location.pathname || '').replace(/\\/g, '/');
+      if (path.indexOf('/blog/') !== -1 && already.getAttribute('href') === 'blog.html') {
+        already.setAttribute('href', '/blog.html');
+      }
+      return;
+    }
 
     var li = document.createElement('li');
     var a = document.createElement('a');
-    a.href = 'blog.html';
+    a.href = blogIndexHref();
     a.textContent = 'Blog';
     li.appendChild(a);
 
