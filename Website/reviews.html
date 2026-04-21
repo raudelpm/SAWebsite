@@ -44,7 +44,7 @@
 		</div>
 	</nav>
 
-    <!-- Hero Section -->
+    <!-- Hero: full photo + title centered (height unchanged) -->
     <section class="hero" style="height: 40vh; min-height: 400px;">
         <div class="hero-bg-container">
             <img src="public/Photo 1.jpeg" alt="Customer Satisfaction" class="hero-bg-image" fetchpriority="high" decoding="async">
@@ -57,58 +57,68 @@
         </div>
     </section>
 
-    <!-- Main Content -->
-    <div class="container">
-        <div class="content-section">
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">
-                At SCREEN ARMORS, customer satisfaction is our top priority. We're proud of the relationships we've built with our customers and the quality work we've delivered. Read what our satisfied customers have to say about their experience with us.
-            </p>
-        </div>
-
-        <!-- Google Reviews Section -->
-        <div class="google-reviews-section" style="margin: 3rem 0;">
-            <h2 style="margin-bottom: 2rem; text-align: center;">Google Reviews</h2>
-            
-            <!-- Google Reviews Widget Container -->
-            <div id="google-reviews-widget" style="background: #fff; border-radius: 0; padding: 3rem; max-width: 700px; margin: 0 auto; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
-                <div style="text-align: center;">
-                    <!-- Google Logo -->
-                    <div style="margin-bottom: 1.5rem;">
-                        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" 
-                             alt="Google" 
-                             style="height: 35px; width: auto;" loading="lazy" decoding="async">
+    <!-- Brand CTA strip below hero (waves + red band; shared across interior pages) -->
+    <div class="hero-cta-after">
+        <div class="hero-cta-after__stack">
+            <div class="hero-cta-after__waves" aria-hidden="true">
+                <svg class="hero-cta-after__svg" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                    <defs>
+                        <linearGradient id="heroCtaBrandWaveGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#b71c1c" stop-opacity="0"/>
+                            <stop offset="42%" stop-color="#b71c1c" stop-opacity="0.34"/>
+                            <stop offset="100%" stop-color="#991b1b" stop-opacity="1"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M0,120 L0,52 C160,118 320,18 480,88 C640,122 800,28 960,98 C1120,118 1280,38 1440,78 L1440,120 L0,120 Z" fill="#b71c1c" opacity="0.22"/>
+                    <path d="M0,120 L0,68 C200,115 400,22 600,92 C780,125 960,32 1140,102 C1260,118 1360,48 1440,72 L1440,120 L0,120 Z" fill="#c62828" opacity="0.32"/>
+                    <path d="M0,120 L0,42 C240,108 480,12 720,85 C900,118 1080,26 1260,95 C1340,112 1400,55 1440,68 L1440,120 L0,120 Z" fill="url(#heroCtaBrandWaveGrad)" opacity="0.9"/>
+                </svg>
+            </div>
+            <div class="hero-cta-after__band">
+                <div class="hero-cta-after__inner">
+                    <div class="hero-cta-after__copy">
+                        <h2 class="hero-cta-after__heading">Professional screen repair, rescreening &amp; pool cages</h2>
+                        <p class="hero-cta-after__lead">Free estimate · call now: <a href="tel:941-404-9699">(941) 404-9699</a></p>
+                        <p class="hero-cta-after__text"><strong>SCREEN ARMORS</strong> is a locally owned team serving homeowners throughout Sarasota, Manatee, and Charlotte counties. We install and refurbish pool cages and lanais, replace pet-resistant and hurricane-rated screen, and stand behind our work with responsive, honest service.</p>
+                        <div class="hero-cta-after__meta">
+                            <a class="hero-cta-after__meta-link" href="mailto:info@screenarmors.com">info@screenarmors.com</a>
+                            <span class="hero-cta-after__meta-sep" aria-hidden="true">·</span>
+                            <a class="hero-cta-after__meta-link" href="areas-we-serve.html">Service area &amp; cities</a>
+                        </div>
                     </div>
-                    
-                    <!-- Star Rating Display -->
-                    <div style="margin-bottom: 1.5rem;">
-                        <div style="font-size: 3.5rem; color: #ffd700; margin-bottom: 0.5rem; letter-spacing: 0.2rem;">★★★★★</div>
-                        <div style="font-size: 2rem; color: #111; font-weight: 700; margin-bottom: 0.25rem;">5.0</div>
-                        <p style="color: #666; font-size: 1rem; margin: 0;">Based on Google Reviews</p>
+                    <div class="hero-cta-after__cta">
+                        <a href="quote.html#quote-form" class="hero-cta-after__ghost-btn">Get free estimate now</a>
                     </div>
-                    
-                    <!-- Call to Action -->
-                    <p style="color: #666; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.6;">
-                        See what our customers are saying about SCREEN ARMORS on Google
-                    </p>
-                    <a href="https://www.google.com/maps/place/Screen+Armors/@27.208122,-82.2433506,15z/data=!4m6!3m5!1s0x86f95113f2e5f591:0x6b4ef2ce13b62417!8m2!3d27.208122!4d-82.2433506!16s%2Fg%2F11yj57ndg_?entry=ttu" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="btn btn-google-reviews" 
-                       style="text-decoration: none; display: inline-flex; font-size: 1rem; padding: 1rem 1.5rem; align-items: center; gap: 0.75rem; white-space: nowrap; max-width: 100%;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
-                        <span>View All Reviews on Google</span>
-                    </a>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="reviews-local-highlight-frame">
+            <section class="reviews-local-highlight" aria-labelledby="reviews-map-trust-title">
+                <div class="reviews-local-highlight__media">
+                    <img class="reviews-local-highlight__img" src="public/florida_west_coast_midnight_blue_20260420_212301.png" alt="Stylized midnight blue map of Florida’s west coast with SCREEN ARMORS and FLORIDA WEST COAST on the graphic" width="520" height="650" loading="lazy" decoding="async">
+                </div>
+                <div class="reviews-local-highlight__body">
+                    <h2 class="reviews-local-highlight__title" id="reviews-map-trust-title">Reliable Service You Can Trust</h2>
+                    <div class="reviews-local-highlight__stars" role="img" aria-label="5 out of 5 stars">
+                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
+                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
+                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
+                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
+                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
+                    </div>
+                    <p class="reviews-local-highlight__text">
+                        Best-rated screen repair and rescreening services across Sarasota County, Manatee County, and Charlotte County &mdash; proudly maintaining an average rating of 5.0!
+                    </p>
+                </div>
+            </section>
+        </div>
 
         <!-- Customer Testimonials -->
-        <h2 class="section-title" style="margin-top: 4rem;">Customer Testimonials</h2>
+        <h2 class="section-title" style="margin-top: 2.5rem;">Customer Testimonials</h2>
         <div class="reviews-grid">
             <div class="review-card">
                 <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Joe Kobriger"><img src="public/Joe%20Kobriger.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
@@ -211,6 +221,48 @@
                 <div class="review-stars">★★★★★</div>
                 <p class="review-text">"Raul is very easy to work with…. Price was better than some other estimates. Their work was spot on and they installed early!! All good things to say about … Screen Armors"</p>
                 <p class="review-author">— John Klein</p>
+            </div>
+        </div>
+
+        <!-- Google Reviews Section -->
+        <div class="google-reviews-section" style="margin: 3rem 0;">
+            <h2 style="margin-bottom: 2rem; text-align: center;">Google Reviews</h2>
+            
+            <!-- Google Reviews Widget Container -->
+            <div id="google-reviews-widget" style="background: #fff; border-radius: 0; padding: 3rem; max-width: 700px; margin: 0 auto; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                <div style="text-align: center;">
+                    <!-- Google Logo -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" 
+                             alt="Google" 
+                             style="height: 35px; width: auto;" loading="lazy" decoding="async">
+                    </div>
+                    
+                    <!-- Star Rating Display -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="font-size: 3.5rem; color: #ffd700; margin-bottom: 0.5rem; letter-spacing: 0.2rem;">★★★★★</div>
+                        <div style="font-size: 2rem; color: #111; font-weight: 700; margin-bottom: 0.25rem;">5.0</div>
+                        <p style="color: #666; font-size: 1rem; margin: 0;">Based on Google Reviews</p>
+                    </div>
+                    
+                    <!-- Call to Action -->
+                    <p style="color: #666; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.6;">
+                        See what our customers are saying about SCREEN ARMORS on Google
+                    </p>
+                    <a href="https://www.google.com/maps/place/Screen+Armors/@27.208122,-82.2433506,15z/data=!4m6!3m5!1s0x86f95113f2e5f591:0x6b4ef2ce13b62417!8m2!3d27.208122!4d-82.2433506!16s%2Fg%2F11yj57ndg_?entry=ttu" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="btn btn-google-reviews" 
+                       style="text-decoration: none; display: inline-flex; font-size: 1rem; padding: 1rem 1.5rem; align-items: center; gap: 0.75rem; white-space: nowrap; max-width: 100%;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                        <span>View All Reviews on Google</span>
+                    </a>
+                </div>
             </div>
         </div>
 
