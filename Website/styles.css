@@ -1921,6 +1921,45 @@ body.nav-menu-open::before {
     margin: 3rem 0;
 }
 
+/* Areas we serve: Popular cities list (red tick bullets like homepage) */
+.service-area-cities__title {
+    margin-bottom: 1.5rem;
+}
+
+.service-area-cities__lead {
+    margin-bottom: 1.25rem;
+}
+
+.service-area-cities__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: #666;
+    line-height: 1.9;
+    display: grid;
+    gap: 0.65rem;
+}
+
+.service-area-cities__list li {
+    position: relative;
+    padding-left: 1.75rem;
+}
+
+.service-area-cities__list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.28em;
+    width: 16px;
+    height: 16px;
+    background: url("public/[CITYPNG.COM]HD%20Red%20Round%20Tick%20Check%20Mark%20Symbol%20Logo%20Icon%20Transparent%20PNG%20-%201296x1296.png") center / contain no-repeat;
+}
+
+.service-area-cities__note {
+    margin-top: 1.25rem;
+    margin-bottom: 0;
+}
+
 .review-card {
     flex: 1 1 300px;
     max-width: 380px;
