@@ -1812,6 +1812,18 @@ body.nav-menu-open::before {
     color: #ffd700;
     font-size: 1.5rem;
     margin-bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    line-height: 1;
+}
+
+.review-verified {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .review-text {
@@ -3089,6 +3101,12 @@ footer {
         font-size: 1.1rem;
         margin-bottom: 0.65rem;
         letter-spacing: 0.02em;
+        gap: 0.35rem;
+    }
+
+    .review-verified {
+        width: 16px;
+        height: 16px;
     }
 
     /* Hide email button on mobile in hero */
