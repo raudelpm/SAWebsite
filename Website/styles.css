@@ -839,6 +839,12 @@ body.nav-menu-open::before {
     background: #fff;
 }
 
+.home-service-area__map iframe {
+    height: clamp(260px, 34vw, 360px);
+    min-height: 0;
+    max-height: 420px;
+}
+
 .home-service-area__content {
     padding-top: 0.5rem;
 }
@@ -877,12 +883,13 @@ body.nav-menu-open::before {
 }
 
 .home-service-area__list li::before {
-    content: "✓";
+    content: "";
     position: absolute;
     left: 0;
-    top: 0.05em;
-    color: #16a34a;
-    font-weight: 900;
+    top: 0.22em;
+    width: 16px;
+    height: 16px;
+    background: url("public/[CITYPNG.COM]HD%20Red%20Round%20Tick%20Check%20Mark%20Symbol%20Logo%20Icon%20Transparent%20PNG%20-%201296x1296.png") center / contain no-repeat;
 }
 
 .home-service-area__based {
@@ -951,6 +958,10 @@ body.nav-menu-open::before {
 
     .home-service-area__content {
         padding-top: 0;
+    }
+
+    .home-service-area__map iframe {
+        height: min(56vh, 420px);
     }
 
     .home-service-area__cta-btn {
