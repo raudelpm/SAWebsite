@@ -934,16 +934,20 @@ body.nav-menu-open::before {
     min-height: 52px;
     border-radius: 12px;
     text-decoration: none;
-    background: #8b6b3e;
+    background: var(--btn-bg-red);
     color: #fff;
     font-weight: 800;
     letter-spacing: 0.03em;
     text-transform: none;
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 220, 220, 0.45);
+    box-shadow: var(--btn-relief-red);
 }
 
 .home-service-area__cta-btn:hover {
-    filter: brightness(1.03);
+    background: var(--btn-bg-red-hover);
+    border-color: rgba(255, 240, 240, 0.75);
+    box-shadow: var(--btn-relief-red-hover);
+    transform: translateY(-1px);
 }
 
 .home-service-area__cta-btn:focus-visible {
