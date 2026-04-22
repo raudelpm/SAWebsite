@@ -74,7 +74,7 @@ export default async function handler(req, res) {
   if (website) return json(res, 200, { ok: true }); // silently accept bots
 
   // Required fields (match the ones marked with "*" in the form)
-  if (!firstName || !lastName || !address || !phone || !leadSource) {
+  if (!firstName || !lastName || !phone || !leadSource) {
     return json(res, 400, { ok: false, error: "Missing required fields" });
   }
 
@@ -88,7 +88,7 @@ export default async function handler(req, res) {
       <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
         <tr><td style="padding: 6px 0; width: 140px;"><strong>First name</strong></td><td style="padding: 6px 0;">${escapeHtml(firstName)}</td></tr>
         <tr><td style="padding: 6px 0;"><strong>Last name</strong></td><td style="padding: 6px 0;">${escapeHtml(lastName)}</td></tr>
-        <tr><td style="padding: 6px 0;"><strong>Address</strong></td><td style="padding: 6px 0;">${escapeHtml(address)}</td></tr>
+        ${address ? `<tr><td style="padding: 6px 0;"><strong>Address</strong></td><td style="padding: 6px 0;">${escapeHtml(address)}</td></tr>` : ""}
         <tr><td style="padding: 6px 0;"><strong>Phone</strong></td><td style="padding: 6px 0;">${escapeHtml(phone)}</td></tr>
         ${email ? `<tr><td style="padding: 6px 0;"><strong>Email</strong></td><td style="padding: 6px 0;">${escapeHtml(email)}</td></tr>` : ""}
         <tr><td style="padding: 6px 0;"><strong>Lead source</strong></td><td style="padding: 6px 0;">${escapeHtml(leadSource)}</td></tr>
