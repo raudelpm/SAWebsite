@@ -3081,17 +3081,192 @@ footer {
     margin-right: auto;
     border-radius: 14px;
     overflow: hidden;
-    background: #fff;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfbfd 60%, #f6f7fb 100%);
     border: 1px solid rgba(0, 0, 0, 0.08);
     box-shadow:
-        0 12px 40px rgba(0, 0, 0, 0.1),
-        0 4px 16px rgba(0, 0, 0, 0.06);
+        0 18px 55px rgba(0, 0, 0, 0.18),
+        0 6px 22px rgba(0, 0, 0, 0.12);
+    padding: clamp(1.25rem, 3vw, 2rem);
 }
 
 .quote-form-loading {
     text-align: center;
     padding: 2rem;
     color: #666;
+}
+
+/* Quote page — Request form (custom) */
+.quote-request-header {
+    text-align: center;
+    padding: 0.25rem 0 1.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.25rem;
+}
+
+.quote-request-title {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-display);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+    font-size: clamp(1.35rem, 1.05rem + 1.8vw, 2rem);
+    color: #111;
+    text-shadow: none;
+}
+
+.quote-request-subtitle {
+    margin: 0;
+    color: rgba(17, 17, 17, 0.68);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.quote-request-form {
+    width: 100%;
+}
+
+.quote-request-form .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem 1rem;
+}
+
+@media (min-width: 720px) {
+    .quote-request-form .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem 1.15rem;
+    }
+}
+
+.quote-request-form .form-field {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.quote-request-form .form-field--full {
+    grid-column: 1 / -1;
+}
+
+.quote-request-form label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: rgba(17, 17, 17, 0.82);
+}
+
+.quote-request-form input,
+.quote-request-form select,
+.quote-request-form textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #fff;
+    color: #111;
+    padding: 0.85rem 0.95rem;
+    font-size: 1rem;
+    outline: none;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 10px 22px rgba(0, 0, 0, 0.04);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.quote-request-form textarea {
+    resize: vertical;
+    min-height: 140px;
+}
+
+.quote-request-form select {
+    appearance: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, rgba(0,0,0,0.55) 50%),
+        linear-gradient(135deg, rgba(0,0,0,0.55) 50%, transparent 50%),
+        linear-gradient(to right, rgba(255,255,255,0.0), rgba(255,255,255,0.0));
+    background-position:
+        calc(100% - 18px) calc(1.2em),
+        calc(100% - 13px) calc(1.2em),
+        100% 0;
+    background-size: 5px 5px, 5px 5px, 2.5em 2.5em;
+    background-repeat: no-repeat;
+    padding-right: 2.6rem;
+}
+
+.quote-request-form input::placeholder {
+    color: rgba(17, 17, 17, 0.38);
+}
+
+.quote-request-form input:focus,
+.quote-request-form select:focus,
+.quote-request-form textarea:focus {
+    border-color: rgba(255, 215, 0, 0.85);
+    box-shadow:
+        0 0 0 3px rgba(255, 215, 0, 0.18),
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 14px 28px rgba(0, 0, 0, 0.06);
+    background: #fff;
+}
+
+.quote-request-form :invalid {
+    border-color: rgba(255, 120, 120, 0.65);
+}
+
+.quote-request-form .form-actions {
+    margin-top: 1.25rem;
+    display: grid;
+    gap: 0.75rem;
+    justify-items: stretch;
+}
+
+.quote-request-form .form-help {
+    margin: 0.1rem 0 0;
+    font-size: 0.9rem;
+    color: rgba(17, 17, 17, 0.62);
+}
+
+.quote-request-form input[type="file"] {
+    padding: 0.7rem 0.85rem;
+    background: #fff;
+}
+
+.quote-request-form input[type="file"]::file-selector-button {
+    background: #111;
+    color: #fff;
+    border: 0;
+    border-radius: 10px;
+    padding: 0.55rem 0.8rem;
+    margin-right: 0.85rem;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.quote-request-form input[type="file"]::file-selector-button:hover {
+    background: #2a2a2a;
+}
+
+.quote-request-form #rq_submit {
+    width: 100%;
+    justify-content: center;
+    min-height: 54px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.quote-request-form .form-status {
+    margin: 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Hide honeypot visually (but keep for bots) */
+.quote-request-form .form-field--hp {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
 }
 
 .form-continue-link {

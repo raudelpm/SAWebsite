@@ -5,15 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="public/Logo White No Background .png">
     <link rel="apple-touch-icon" href="public/Logo White No Background .png">
-    <!-- Jobber form: max priority so form appears faster -->
-    <link rel="preconnect" href="https://d3ey4dbjkt2f6s.cloudfront.net" crossorigin>
-    <link rel="preconnect" href="https://clienthub.getjobber.com" crossorigin>
-    <link rel="dns-prefetch" href="https://d3ey4dbjkt2f6s.cloudfront.net">
-    <link rel="dns-prefetch" href="https://clienthub.getjobber.com">
-    <link rel="preload" href="https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js" as="script">
-    <link rel="preload" href="https://clienthub.getjobber.com/client_hubs/0911e75b-dd0b-4df6-b055-f1da13f9969d/public/work_request/embedded_work_request_form?form_id=1930302" as="document">
-    <link rel="stylesheet" href="https://d3ey4dbjkt2f6s.cloudfront.net/assets/external/work_request_embed.css" media="screen" />
-    <script defer src="https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js" clienthub_id="0911e75b-dd0b-4df6-b055-f1da13f9969d-1930302" form_url="https://clienthub.getjobber.com/client_hubs/0911e75b-dd0b-4df6-b055-f1da13f9969d/public/work_request/embedded_work_request_form?form_id=1930302"></script>
     <title>Request a Free Quote - SCREEN ARMORS</title>
     <meta name="description" content="Free quote for screen enclosures, pool cages, lanais & patios in Sarasota & Bradenton. Construction, screening, refurbishing and painting. Get your estimate today.">
     <link rel="canonical" href="https://www.screenarmors.com/quote.html">
@@ -63,23 +54,77 @@
         <div class="quote-form-section" id="quote-form">
             <div class="content-section">
                 <div class="quote-form-wrapper">
-                    <p class="quote-form-loading" id="quoteFormLoading" aria-live="polite">Loading your form…</p>
-                    <div id="0911e75b-dd0b-4df6-b055-f1da13f9969d-1930302"></div>
+                    <div class="quote-request-header">
+                        <h2 class="quote-request-title">Request Your Free Estimate</h2>
+                        <p class="quote-request-subtitle">Fill out the form and we’ll contact you with pricing and availability.</p>
+                    </div>
+                    <form id="requestForm" class="quote-request-form" novalidate>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="rq_firstName">First name *</label>
+                                <input id="rq_firstName" name="firstName" type="text" autocomplete="given-name">
+                            </div>
+                            <div class="form-field">
+                                <label for="rq_lastName">Last name *</label>
+                                <input id="rq_lastName" name="lastName" type="text" autocomplete="family-name">
+                            </div>
+                            <div class="form-field">
+                                <label for="rq_address">Address *</label>
+                                <input id="rq_address" name="address" type="text" autocomplete="street-address" placeholder="Street address, City, State, ZIP">
+                            </div>
+                            <div class="form-field">
+                                <label for="rq_phone">Phone *</label>
+                                <input id="rq_phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(000) 000-0000">
+                            </div>
+                            <div class="form-field">
+                                <label for="rq_email">Email</label>
+                                <input id="rq_email" name="email" type="email" autocomplete="email" placeholder="you@email.com">
+                            </div>
+                            <div class="form-field">
+                                <label for="rq_leadSource">Lead source *</label>
+                                <select id="rq_leadSource" name="leadSource">
+                                    <option value="" selected disabled>Select one</option>
+                                    <option value="Google">Google</option>
+                                    <option value="Referral">Referral</option>
+                                    <option value="Yard Signs">Yard Signs</option>
+                                    <option value="Vehicle Wrap">Vehicle Wrap</option>
+                                    <option value="Facebook">Facebook</option>
+                                    <option value="Instagram">Instagram</option>
+                                    <option value="I'm already a client">I'm already a client</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-field form-field--full">
+                                <label for="rq_projectType">Project details</label>
+                                <select id="rq_projectType" name="projectType">
+                                    <option value="" selected disabled>Select one</option>
+                                    <option value="Screen Panel(s) Repair.">Screen Panel(s) Repair.</option>
+                                    <option value="Full enclosure rescreen">Full enclosure rescreen</option>
+                                    <option value="Enclosure Refurbishment">Enclosure Refurbishment</option>
+                                    <option value="New enclosure construction">New enclosure construction</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-field form-field--full">
+                                <label for="rq_message">Additional Details</label>
+                                <textarea id="rq_message" name="message" rows="6"></textarea>
+                            </div>
+                            <div class="form-field form-field--full">
+                                <label for="rq_photos">Photos (optional)</label>
+                                <input id="rq_photos" name="photos" type="file" accept="image/*" multiple>
+                                <p class="form-help">You can add up to 3 photos. Max 1.5MB each.</p>
+                            </div>
+                            <div class="form-field form-field--hp" aria-hidden="true">
+                                <label for="rq_website">Website</label>
+                                <input id="rq_website" name="website" type="text" tabindex="-1" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-quote" id="rq_submit">Send request</button>
+                            <p class="form-status" id="rq_status" role="status" aria-live="polite"></p>
+                        </div>
+                    </form>
                 </div>
-                <script>
-                    (function() {
-                        var container = document.getElementById('0911e75b-dd0b-4df6-b055-f1da13f9969d-1930302');
-                        var loading = document.getElementById('quoteFormLoading');
-                        if (!container || !loading) return;
-                        var check = setInterval(function() {
-                            if (container.children.length > 0 || container.innerText.trim() !== '') {
-                                loading.style.display = 'none';
-                                clearInterval(check);
-                            }
-                        }, 200);
-                        setTimeout(function() { clearInterval(check); loading.style.display = 'none'; }, 15000);
-                    })();
-                </script>
             </div>
         </div>
     </div>
@@ -191,85 +236,127 @@
 			}, { passive: true });
 		})();
 
-        var thankYouUrl = 'thank-you.html';
-        var redirectDone = false;
-        var pageLoadTime = Date.now();
-        var redirectAllowedAfter = 18e3; // 18 seconds: don't redirect until form has clearly loaded and user would have had to submit
-
-        function goToThankYouPage() {
-            if (redirectDone) return;
-            if (Date.now() - pageLoadTime < redirectAllowedAfter) return; // never redirect in first 18s (avoids load-time false triggers)
-            redirectDone = true;
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'conversion', { 'send_to': 'AW-17482456160', 'event_label': 'Quote Form Submitted' });
-            }
-            window.location.href = thankYouUrl;
-        }
-
-        var allowedOrigins = ['https://clienthub.getjobber.com', 'https://getjobber.com', 'https://d3ey4dbjkt2f6s.cloudfront.net'];
-        function isJobberOrigin(origin) {
-            return allowedOrigins.some(function(o) { return origin === o || (origin && origin.indexOf(o) === 0); });
-        }
-
-        // 1) postMessage: redirect only if Jobber sends success-like message AND we're past the safe delay
-        window.addEventListener('message', function(event) {
-            if (!isJobberOrigin(event.origin)) return;
-            var d = event.data;
-            if (d == null) return;
-            var str = (typeof d === 'string' ? d : JSON.stringify(d || {})).toLowerCase();
-            var ok = str.indexOf('confirm') !== -1 || str.indexOf('success') !== -1 || str.indexOf('submitted') !== -1 ||
-                str.indexOf('thank') !== -1 || str.indexOf('complete') !== -1 || (d && (d.type === 'form_submitted' || d.success === true));
-            if (ok) goToThankYouPage();
-        });
-
-        // 2) Height: when iframe/container shrinks to success view, redirect (only after delay and with a solid form baseline)
         (function() {
-            var containerId = '0911e75b-dd0b-4df6-b055-f1da13f9969d-1930302';
-            var maxHeight = 0;
-            var baselineLocked = false;
+            var form = document.getElementById('requestForm');
+            var statusEl = document.getElementById('rq_status');
+            var submitBtn = document.getElementById('rq_submit');
+            if (!form || !statusEl || !submitBtn) return;
 
-            function getContainer() { return document.getElementById(containerId); }
-            function getIframe() { var c = getContainer(); return c ? c.querySelector('iframe') : null; }
-
-            function updateBaseline() {
-                if (baselineLocked) return;
-                var c = getContainer();
-                var iframe = getIframe();
-                if (c && c.offsetHeight > maxHeight) maxHeight = c.offsetHeight;
-                if (iframe && iframe.offsetHeight > maxHeight) maxHeight = iframe.offsetHeight;
-            }
-
-            function checkSuccess() {
-                if (redirectDone || Date.now() - pageLoadTime < redirectAllowedAfter) return;
-                if (maxHeight < 400) return; // need a clear "full form" height before we trust a shrink
-                var c = getContainer();
-                var iframe = getIframe();
-                var h = (c && c.offsetHeight) || (iframe && iframe.offsetHeight) || 0;
-                if (h > 0 && h < maxHeight - 100 && h < 550) goToThankYouPage();
-            }
-
-            setTimeout(updateBaseline, 2000);
-            setTimeout(updateBaseline, 5000);
-            setTimeout(updateBaseline, 9000);
-            setTimeout(function() { baselineLocked = true; }, 11000); // stop raising baseline after 11s so a later shrink is meaningful
-
-            function observe() {
-                var c = getContainer();
-                var iframe = getIframe();
-                if (c) {
-                    if (window.ResizeObserver) {
-                        var ro = new ResizeObserver(function() { updateBaseline(); checkSuccess(); });
-                        ro.observe(c);
-                        if (iframe) ro.observe(iframe);
+            // If a label contains "*", treat that field as required.
+            (function syncRequiredFromAsterisk() {
+                var labels = form.querySelectorAll('label[for]');
+                labels.forEach(function(label) {
+                    var text = (label.textContent || '').trim();
+                    if (!text.includes('*')) return;
+                    var id = label.getAttribute('for');
+                    if (!id) return;
+                    var el = form.querySelector('#' + CSS.escape(id));
+                    if (!el) return;
+                    if (el.closest('.form-field--hp')) return; // never require honeypot
+                    el.setAttribute('required', '');
+                    // Improve native validation UX
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.setAttribute('aria-required', 'true');
                     }
-                    setInterval(function() { updateBaseline(); checkSuccess(); }, 1200);
-                } else {
-                    setTimeout(observe, 300);
-                }
-            }
-            setTimeout(observe, 1500);
-        })();
+                });
+            })();
 
+            function setStatus(msg, isError) {
+                statusEl.textContent = msg || '';
+                statusEl.style.color = isError ? '#ffb4b4' : '#b7ffd8';
+            }
+
+            function digitsOnly(s) {
+                return String(s || '').replace(/[^\d]/g, '');
+            }
+
+            function readFileAsDataUrl(file) {
+                return new Promise(function(resolve, reject) {
+                    var reader = new FileReader();
+                    reader.onload = function() { resolve(String(reader.result || '')); };
+                    reader.onerror = function() { reject(reader.error || new Error('File read failed')); };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function validatePhone() {
+                var phoneEl = form.querySelector('#' + CSS.escape('rq_phone'));
+                if (!phoneEl) return true;
+                var digits = digitsOnly(phoneEl.value);
+                var ok = digits.length >= 10;
+                phoneEl.setCustomValidity(ok ? '' : 'Phone number must have at least 10 digits.');
+                return ok;
+            }
+
+            form.addEventListener('input', function(e) {
+                if (e && e.target && e.target.id === 'rq_phone') validatePhone();
+            });
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                setStatus('', false);
+
+                validatePhone();
+                if (!form.checkValidity()) {
+                    var firstInvalid = form.querySelector(':invalid');
+                    if (firstInvalid && typeof firstInvalid.focus === 'function') firstInvalid.focus();
+                    setStatus('Please fill out all required fields (*).', true);
+                    return;
+                }
+
+                var fd = new FormData(form);
+                var payload = Object.fromEntries(fd.entries());
+
+                // Optional photos -> send as base64 attachments (limited to keep request small)
+                var files = Array.from((document.getElementById('rq_photos') || {}).files || []);
+                if (files.length > 3) {
+                    setStatus('Please select up to 3 photos.', true);
+                    return;
+                }
+                var tooBig = files.find(function(f) { return f && f.size > 1.5 * 1024 * 1024; });
+                if (tooBig) {
+                    setStatus('Each photo must be 1.5MB or smaller.', true);
+                    return;
+                }
+                if (files.length) {
+                    try {
+                        var dataUrls = await Promise.all(files.map(readFileAsDataUrl));
+                        payload.attachments = files.map(function(f, i) {
+                            return { filename: f.name || ('photo-' + (i + 1)), dataUrl: dataUrls[i], contentType: f.type || 'image/*' };
+                        });
+                    } catch (err) {
+                        setStatus('Could not read selected photos. Please try again.', true);
+                        return;
+                    }
+                }
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending…';
+                try {
+                    var res = await fetch('/api/request', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    var data = await res.json().catch(function() { return {}; });
+                    if (!res.ok || !data.ok) {
+                        var msg = (data && data.error) ? String(data.error) : 'Could not send. Please try again or call us.';
+                        setStatus(msg, true);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Send request';
+                        return;
+                    }
+
+                    if (typeof gtag === 'function') {
+                        gtag('event', 'conversion', { 'send_to': 'AW-17482456160', 'event_label': 'Quote Form Submitted' });
+                    }
+                    window.location.href = 'thank-you.html';
+                } catch (err) {
+                    setStatus('Network error. Please try again.', true);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send request';
+                }
+            });
+        })();
     </script>
     <script>
         // Track page view as conversion (Visits to quote request)

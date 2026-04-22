@@ -3,6 +3,10 @@
   "outputDirectory": "Website",
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/Website/$1"
     }

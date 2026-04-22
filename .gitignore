@@ -1,5 +1,12 @@
 .DS_Store
 
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
 # Local artifacts accidentally dropped in public/
 Website/public/20x20.html
 Website/public/20x20_files/
