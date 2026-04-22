@@ -337,9 +337,14 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                    var data = await res.json().catch(function() { return {}; });
+                    var rawText = await res.text().catch(function() { return ''; });
+                    var data = {};
+                    try { data = rawText ? JSON.parse(rawText) : {}; } catch (e) { data = {}; }
                     if (!res.ok || !data.ok) {
-                        var msg = (data && data.error) ? String(data.error) : 'Could not send. Please try again or call us.';
+                        var msg =
+                            (data && data.error) ? String(data.error) :
+                            (rawText && rawText.trim()) ? rawText.trim().slice(0, 240) :
+                            ('Could not send. Please try again or call us. (HTTP ' + res.status + ')');
                         setStatus(msg, true);
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'Send request';
