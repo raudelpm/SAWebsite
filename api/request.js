@@ -22,6 +22,15 @@ function escapeHtml(s) {
     .replaceAll("'", "&#39;");
 }
 
+function parseEmailList(value) {
+  const raw = getString(value);
+  if (!raw) return [];
+  return raw
+    .split(/[;,]/g)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -31,9 +40,10 @@ export default async function handler(req, res) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return json(res, 500, { ok: false, error: "Missing RESEND_API_KEY" });
 
-  const toEmail = process.env.REQUEST_TO_EMAIL || process.env.TO_EMAIL;
+  const toEmailRaw = process.env.REQUEST_TO_EMAIL || process.env.TO_EMAIL;
   const fromEmail = process.env.REQUEST_FROM_EMAIL || process.env.FROM_EMAIL;
-  if (!toEmail || !fromEmail) {
+  const toEmails = parseEmailList(toEmailRaw);
+  if (toEmails.length === 0 || !fromEmail) {
     return json(res, 500, {
       ok: false,
       error: "Missing REQUEST_TO_EMAIL/TO_EMAIL or REQUEST_FROM_EMAIL/FROM_EMAIL",
@@ -113,7 +123,7 @@ export default async function handler(req, res) {
   try {
     const { data, error } = await resend.emails.send({
       from: fromEmail,
-      to: toEmail,
+      to: toEmails.length === 1 ? toEmails[0] : toEmails,
       ...(email ? { replyTo: email } : {}),
       subject,
       html,
