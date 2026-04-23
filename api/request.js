@@ -64,7 +64,11 @@ export default async function handler(req, res) {
   const lastName = getString(body?.lastName);
   const email = getString(body?.email);
   const phone = getString(body?.phone);
-  const address = getString(body?.address);
+  const address1 = getString(body?.address1);
+  const address2 = getString(body?.address2);
+  const city = getString(body?.city);
+  const stateRaw = getString(body?.state);
+  const zip = getString(body?.zip);
   const leadSource = getString(body?.leadSource);
   const projectType = getString(body?.projectType);
   const message = getString(body?.message);
@@ -72,6 +76,11 @@ export default async function handler(req, res) {
   const website = getString(body?.website); // honeypot
 
   if (website) return json(res, 200, { ok: true }); // silently accept bots
+
+  const state = stateRaw ? stateRaw.toUpperCase() : "";
+  const addressLines = [address1, address2].filter(Boolean);
+  const cityStateZip = [city, [state, zip].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+  const address = [addressLines.join("\n"), cityStateZip].filter(Boolean).join("\n");
 
   // Required fields (match the ones marked with "*" in the form)
   if (!firstName || !lastName || !phone || !leadSource) {
@@ -88,7 +97,11 @@ export default async function handler(req, res) {
       <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
         <tr><td style="padding: 6px 0; width: 140px;"><strong>First name</strong></td><td style="padding: 6px 0;">${escapeHtml(firstName)}</td></tr>
         <tr><td style="padding: 6px 0;"><strong>Last name</strong></td><td style="padding: 6px 0;">${escapeHtml(lastName)}</td></tr>
-        ${address ? `<tr><td style="padding: 6px 0;"><strong>Address</strong></td><td style="padding: 6px 0;">${escapeHtml(address)}</td></tr>` : ""}
+        ${
+          address
+            ? `<tr><td style="padding: 6px 0;"><strong>Address</strong></td><td style="padding: 6px 0;"><pre style="margin: 0; white-space: pre-wrap; font-family: inherit;">${escapeHtml(address)}</pre></td></tr>`
+            : ""
+        }
         <tr><td style="padding: 6px 0;"><strong>Phone</strong></td><td style="padding: 6px 0;">${escapeHtml(phone)}</td></tr>
         ${email ? `<tr><td style="padding: 6px 0;"><strong>Email</strong></td><td style="padding: 6px 0;">${escapeHtml(email)}</td></tr>` : ""}
         <tr><td style="padding: 6px 0;"><strong>Lead source</strong></td><td style="padding: 6px 0;">${escapeHtml(leadSource)}</td></tr>

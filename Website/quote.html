@@ -68,19 +68,35 @@
                                 <label for="rq_lastName">Last name *</label>
                                 <input id="rq_lastName" name="lastName" type="text" autocomplete="family-name">
                             </div>
-                            <div class="form-field">
-                                <label for="rq_address">Address</label>
-                                <input id="rq_address" name="address" type="text" autocomplete="street-address" placeholder="Street address, City, State, ZIP">
+                            <div class="form-field form-field--full">
+                                <label for="rq_address1">Address 1</label>
+                                <input id="rq_address1" name="address1" type="text" autocomplete="address-line1" placeholder="Street address">
+                            </div>
+                            <div class="form-field form-field--full">
+                                <label for="rq_address2">Address 2</label>
+                                <input id="rq_address2" name="address2" type="text" autocomplete="address-line2" placeholder="Apt, suite, unit (optional)">
                             </div>
                             <div class="form-field">
+                                <label for="rq_city">City</label>
+                                <input id="rq_city" name="city" type="text" autocomplete="address-level2" placeholder="City">
+                            </div>
+                            <div class="form-field">
+                                <label for="rq_state">State</label>
+                                <input id="rq_state" name="state" type="text" autocomplete="address-level1" placeholder="FL" maxlength="2" autocapitalize="characters">
+                            </div>
+                            <div class="form-field">
+                                <label for="rq_zip">Zip Code</label>
+                                <input id="rq_zip" name="zip" type="text" autocomplete="postal-code" inputmode="numeric" placeholder="ZIP">
+                            </div>
+                            <div class="form-field form-field--full">
                                 <label for="rq_phone">Phone *</label>
                                 <input id="rq_phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(000) 000-0000">
                             </div>
-                            <div class="form-field">
+                            <div class="form-field form-field--full">
                                 <label for="rq_email">Email</label>
                                 <input id="rq_email" name="email" type="email" autocomplete="email" placeholder="you@email.com">
                             </div>
-                            <div class="form-field">
+                            <div class="form-field form-field--full">
                                 <label for="rq_leadSource">Lead source *</label>
                                 <select id="rq_leadSource" name="leadSource">
                                     <option value="" selected disabled>Select one</option>
@@ -104,15 +120,6 @@
                                     <option value="New enclosure construction">New enclosure construction</option>
                                     <option value="Other">Other</option>
                                 </select>
-                            </div>
-                            <div class="form-field form-field--full">
-                                <label for="rq_message">Additional Details</label>
-                                <textarea id="rq_message" name="message" rows="6"></textarea>
-                            </div>
-                            <div class="form-field form-field--full">
-                                <label for="rq_photos">Photos (optional)</label>
-                                <input id="rq_photos" name="photos" type="file" accept="image/*" multiple>
-                                <p class="form-help">You can add up to 3 photos. Max 1.5MB each.</p>
                             </div>
                             <div class="form-field form-field--hp" aria-hidden="true">
                                 <label for="rq_website">Website</label>
@@ -270,15 +277,6 @@
                 return String(s || '').replace(/[^\d]/g, '');
             }
 
-            function readFileAsDataUrl(file) {
-                return new Promise(function(resolve, reject) {
-                    var reader = new FileReader();
-                    reader.onload = function() { resolve(String(reader.result || '')); };
-                    reader.onerror = function() { reject(reader.error || new Error('File read failed')); };
-                    reader.readAsDataURL(file);
-                });
-            }
-
             function validatePhone() {
                 var phoneEl = form.querySelector('#' + CSS.escape('rq_phone'));
                 if (!phoneEl) return true;
@@ -306,29 +304,6 @@
 
                 var fd = new FormData(form);
                 var payload = Object.fromEntries(fd.entries());
-
-                // Optional photos -> send as base64 attachments (limited to keep request small)
-                var files = Array.from((document.getElementById('rq_photos') || {}).files || []);
-                if (files.length > 3) {
-                    setStatus('Please select up to 3 photos.', true);
-                    return;
-                }
-                var tooBig = files.find(function(f) { return f && f.size > 1.5 * 1024 * 1024; });
-                if (tooBig) {
-                    setStatus('Each photo must be 1.5MB or smaller.', true);
-                    return;
-                }
-                if (files.length) {
-                    try {
-                        var dataUrls = await Promise.all(files.map(readFileAsDataUrl));
-                        payload.attachments = files.map(function(f, i) {
-                            return { filename: f.name || ('photo-' + (i + 1)), dataUrl: dataUrls[i], contentType: f.type || 'image/*' };
-                        });
-                    } catch (err) {
-                        setStatus('Could not read selected photos. Please try again.', true);
-                        return;
-                    }
-                }
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Sending…';
                 try {
