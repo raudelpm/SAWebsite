@@ -474,6 +474,59 @@ body.nav-menu-open::before {
     display: inline-block;
 }
 
+.hero-social-links {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+}
+
+.hero-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
+    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.hero-social-link--facebook {
+    background: rgba(24, 119, 242, 0.92);
+    border-color: rgba(24, 119, 242, 0.75);
+}
+
+.hero-social-link--whatsapp {
+    background: rgba(37, 211, 102, 0.92);
+    border-color: rgba(37, 211, 102, 0.75);
+}
+
+.hero-social-link--yelp {
+    background: rgba(214, 19, 25, 0.92);
+    border-color: rgba(214, 19, 25, 0.75);
+}
+
+.hero-social-link:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.hero-social-link:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.75);
+    outline-offset: 3px;
+}
+
+.hero-social-link img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
 .cta-buttons {
     display: flex;
     gap: 1rem;

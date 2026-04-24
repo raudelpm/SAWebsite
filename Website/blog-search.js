@@ -31,7 +31,6 @@
         const human = date
           ? date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
           : "";
-        const tags = (p.tags || []).slice(0, 6);
         return `
           <article class="blog-card">
             <a class="blog-card-link" href="${escapeHtml(p.url)}" aria-label="${escapeHtml(p.title)}">
@@ -42,7 +41,6 @@
                 <p class="blog-card-meta">${escapeHtml(human)}</p>
                 <h2 class="blog-card-title">${escapeHtml(p.title)}</h2>
                 <p class="blog-card-excerpt">${escapeHtml(p.excerpt)}</p>
-                ${tags.length ? `<p class="blog-card-tags">${tags.map((t) => `<span class="blog-tag">${escapeHtml(t)}</span>`).join("")}</p>` : ""}
                 <span class="blog-card-cta">Read post →</span>
               </div>
             </a>
