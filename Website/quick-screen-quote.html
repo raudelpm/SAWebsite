@@ -19,21 +19,6 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="sqWelcomeVideoLayer" class="sq-welcome-video" role="dialog" aria-modal="true" aria-labelledby="sqWelcomeVideoTitle" aria-describedby="sqWelcomeVideoDesc" hidden>
-        <div class="sq-welcome-video__backdrop" data-sq-welcome-close tabindex="-1" aria-hidden="true"></div>
-        <div class="sq-welcome-video__panel">
-            <button type="button" class="sq-welcome-video__close" data-sq-welcome-close aria-label="Close video and continue">×</button>
-            <h2 id="sqWelcomeVideoTitle" class="sq-welcome-video__title">How to use the Quick Screen Quote</h2>
-            <p id="sqWelcomeVideoDesc" class="sq-welcome-video__lead">Short walkthrough—then you can tap the diagram below.</p>
-            <div class="sq-welcome-video__frame">
-                <video class="sq-welcome-video__el" controls playsinline preload="metadata" poster="public/IMG_0018.jpg" width="1280" height="720">
-                    <source src="public/Desktop%202026.04.24%20-%2018.59.03.02%20(online-video-cutter.com).mp4" type="video/mp4">
-                </video>
-            </div>
-            <button type="button" class="btn btn-primary sq-welcome-video__cta" data-sq-welcome-close>Continue to calculator</button>
-        </div>
-    </div>
-
     <a href="quote.html#quote-form" class="floating-quote-btn">Get Quote Now</a>
 
 	<nav>
@@ -216,56 +201,6 @@
             s.src = 'https://www.googletagmanager.com/gtag/js?id=AW-17482456160';
             document.head.appendChild(s);
         });
-    </script>
-    <script>
-        (function () {
-            var layer = document.getElementById('sqWelcomeVideoLayer');
-            if (!layer) return;
-            var video = layer.querySelector('.sq-welcome-video__el');
-
-            function closeWelcome() {
-                layer.hidden = true;
-                document.body.classList.remove('sq-welcome-video-open');
-                if (video) {
-                    video.pause();
-                    try {
-                        video.currentTime = 0;
-                    } catch (e2) {}
-                }
-            }
-
-            function openWelcome() {
-                layer.hidden = false;
-                document.body.classList.add('sq-welcome-video-open');
-                var closeBtn = layer.querySelector('.sq-welcome-video__close');
-                if (closeBtn && typeof closeBtn.focus === 'function') closeBtn.focus();
-                if (video) {
-                    video.muted = true;
-                    var p = video.play();
-                    if (p && typeof p.catch === 'function') p.catch(function () {});
-                }
-            }
-
-            layer.querySelectorAll('[data-sq-welcome-close]').forEach(function (el) {
-                el.addEventListener('click', function () {
-                    closeWelcome();
-                });
-            });
-
-            document.addEventListener('keydown', function (ev) {
-                if (layer.hidden) return;
-                if (ev.key === 'Escape') {
-                    ev.preventDefault();
-                    closeWelcome();
-                }
-            });
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', openWelcome);
-            } else {
-                openWelcome();
-            }
-        })();
     </script>
     <script src="random-photos.js"></script>
     <script src="nav-menu.js"></script>
