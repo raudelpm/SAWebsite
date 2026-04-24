@@ -46,6 +46,55 @@
     }
   }
 
+  function ensureFooterSocialLinks() {
+    var brand = document.querySelector('footer .footer-brand');
+    if (!brand) return;
+    if (brand.querySelector('.footer-social-links')) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'footer-social-links';
+    wrap.setAttribute('aria-label', 'Social links');
+
+    function addLink(kind, href, label, imgSrc) {
+      var a = document.createElement('a');
+      a.className = 'footer-social-link footer-social-link--' + kind;
+      a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.setAttribute('aria-label', label);
+
+      var img = document.createElement('img');
+      img.src = imgSrc;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+
+      a.appendChild(img);
+      wrap.appendChild(a);
+    }
+
+    addLink(
+      'facebook',
+      'https://www.facebook.com/profile.php?id=61579752359204&locale=es_LA',
+      'Visit us on Facebook',
+      '/public/facebooklogo.png'
+    );
+    addLink(
+      'yelp',
+      'https://www.yelp.com/biz/screen-armors-nokomis?osq=screen+armors',
+      'Read our Yelp reviews',
+      '/public/logoyelp2.png'
+    );
+    addLink(
+      'whatsapp',
+      'https://wa.me/19414049699',
+      'Chat with us on WhatsApp',
+      '/public/%E2%80%94Pngtree%E2%80%94white%20whatsapp%20icon%20png%20vector_3562063.png'
+    );
+
+    brand.appendChild(wrap);
+  }
+
   function navEl() {
     return document.querySelector('nav');
   }
@@ -90,10 +139,12 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       ensureBlogNavItem();
+      ensureFooterSocialLinks();
       syncBodyOpenClass();
     });
   } else {
     ensureBlogNavItem();
+    ensureFooterSocialLinks();
     syncBodyOpenClass();
   }
 

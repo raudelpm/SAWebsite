@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.screenarmors.com/</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -44,13 +44,19 @@
   </url>
   <url>
     <loc>https://www.screenarmors.com/service-screening.html</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.screenarmors.com/service-refurbishing.html</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.screenarmors.com/service-custom-enclosures.html</loc>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -86,15 +92,33 @@
   </url>
   <url>
     <loc>https://www.screenarmors.com/areas-we-serve.html</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.screenarmors.com/blog.html</loc>
-    <lastmod>2026-04-14</lastmod>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.screenarmors.com/blog/pool-cage-rescreening-cost-sarasota-2026.html</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.screenarmors.com/blog/different-types-of-pool-cage-screens.html</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.screenarmors.com/blog/signs-your-pool-cage-screen-needs-replacement.html</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.screenarmors.com/blog/20x20-no-see-um-screen-vs-18-14-screen.html</loc>
@@ -137,5 +161,35 @@
     <lastmod>2026-04-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.screenarmors.com/sarasota.html</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.screenarmors.com/bradenton.html</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.screenarmors.com/venice.html</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.screenarmors.com/north-port.html</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.screenarmors.com/port-charlotte.html</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

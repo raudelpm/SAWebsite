@@ -2935,6 +2935,58 @@ footer {
     margin: 0.25rem 0 0 0;
 }
 
+.footer-social-links {
+    display: flex;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 0.95rem;
+}
+
+.footer-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+    transition: transform 160ms ease, filter 160ms ease, border-color 160ms ease;
+}
+
+.footer-social-link--facebook {
+    background: rgba(24, 119, 242, 0.92);
+    border-color: rgba(24, 119, 242, 0.7);
+}
+
+.footer-social-link--whatsapp {
+    background: rgba(37, 211, 102, 0.92);
+    border-color: rgba(37, 211, 102, 0.7);
+}
+
+.footer-social-link--yelp {
+    background: rgba(214, 19, 25, 0.92);
+    border-color: rgba(214, 19, 25, 0.7);
+}
+
+.footer-social-link:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.footer-social-link:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.75);
+    outline-offset: 3px;
+}
+
+.footer-social-link img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
 .footer-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(160px, 1fr));
