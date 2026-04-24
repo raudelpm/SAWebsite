@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="public/Logo White No Background .png">
+    <link rel="apple-touch-icon" href="public/Logo White No Background .png">
+    <title>Quick Screen Quote | SCREEN ARMORS</title>
+    <meta name="description" content="Estimate screen enclosure panels with SCREEN ARMORS—interactive diagram for pool cages, lanais, and patios.">
+    <link rel="canonical" href="https://www.screenarmors.com/quick-screen-quote.html">
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-17482456160');
+      gtag('config', 'G-88C4GX5DWN');
+    </script>
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="quote.html#quote-form" class="floating-quote-btn">Get Quote Now</a>
+
+	<nav>
+		<div class="nav-container">
+			<a href="index.html" class="logo">
+				<img src="public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+				<span class="logo-wordmark">SCREEN ARMORS</span>
+			</a>
+			<button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navLinks"><span class="menu-toggle-icon" aria-hidden="true">☰</span><span class="menu-toggle-label">Menu</span></button>
+			<ul class="nav-links" id="navLinks">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="services.html">Services</a></li>
+				<li><a href="areas-we-serve.html">Areas We Serve</a></li>
+				<li><a href="insurance.html">Insurance & Registration</a></li>
+				<li><a href="about.html">About Us</a></li>
+				<li><a href="reviews.html">Reviews</a></li>
+				<li><a href="faq.html">FAQ</a></li>
+				<li>
+				    <a href="quick-screen-quote.html" class="nav-quick-screen-quote-btn" id="quickScreenQuoteNav" aria-current="page">Quick Screen Quote</a>
+				</li>
+				<li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
+			</ul>
+		</div>
+	</nav>
+
+    <section class="hero" style="height: 36vh; min-height: 300px;">
+        <div class="hero-bg-container">
+            <img src="public/IMG_0018.jpg" alt="" class="hero-bg-image" fetchpriority="high" decoding="async">
+            <div class="screen-mesh-overlay"></div>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Quick Screen Quote</h1>
+            <p class="hero-subtitle">Click each highlighted area, enter how many panels you need, then view your estimate total.</p>
+        </div>
+    </section>
+
+    <main class="screen-quote-page" id="main">
+        <div class="container">
+            <div class="screen-quote-tool" id="screenQuoteTool" aria-labelledby="screenQuoteToolHeading">
+                <h2 id="screenQuoteToolHeading" class="sr-only">Enclosure diagram for panel selection</h2>
+                <div class="screen-quote-stage">
+                    <!-- Hotspots: coords in natural image pixels (1008×1024); hits computed in JS so phones match -->
+                    <img src="public/calculatorimage.png" alt="Technical wireframe of a screen enclosure. Red areas mark typical replaceable screen panels—tap a highlighted section to select it." width="1008" height="1024" decoding="async" id="screenQuoteDiagram">
+                    <div class="screen-quote-overlay" id="screenQuoteOverlay" aria-hidden="true"></div>
+                </div>
+                <p class="screen-quote-hint">Click a red panel on the diagram to enter quantities. The diagram scales to fit your screen; clickable areas stay aligned with the red panels.</p>
+                <p class="screen-quote-disclaimer">Prices may vary depending on the size, condition, and complexity of each panel. This calculator provides an estimate only. For a more accurate quote, we recommend <a href="quote.html">requesting a personalized inspection or estimate</a>.</p>
+                <p class="screen-quote-selection" id="screenQuoteSelection" aria-live="polite"></p>
+
+                <div class="screen-quote-cart" id="screenQuoteCart" aria-labelledby="screenQuoteCartHeading">
+                    <h3 id="screenQuoteCartHeading" class="screen-quote-cart__heading">Your panel counts</h3>
+                    <p class="screen-quote-cart__empty" id="screenQuoteEmpty">No panels yet—click a zone on the diagram above.</p>
+                    <ul class="screen-quote-cart__lines" id="screenQuoteLines" hidden></ul>
+                    <button type="button" class="btn btn-primary screen-quote-cart__total-btn" id="screenQuoteShowTotal" disabled>See estimate total</button>
+                </div>
+
+                <div class="screen-quote-summary" id="screenQuoteSummary" hidden>
+                    <h3 class="screen-quote-summary__title">Your estimate</h3>
+                    <table class="screen-quote-summary__table">
+                        <thead>
+                            <tr><th scope="col">Panel type</th><th scope="col">Qty</th><th scope="col">Unit</th><th scope="col">Line</th></tr>
+                        </thead>
+                        <tbody id="screenQuoteSummaryBody"></tbody>
+                    </table>
+                    <dl class="screen-quote-summary__totals">
+                        <div class="screen-quote-summary__row"><dt>Total panels</dt><dd id="sqTotalPanels">0</dd></div>
+                        <div class="screen-quote-summary__row"><dt>Subtotal</dt><dd id="sqSubtotal">$0</dd></div>
+                        <div class="screen-quote-summary__row screen-quote-summary__row--discount" id="sqDiscountRow" hidden>
+                            <dt>Volume discount (10% when 5 or more panels)</dt>
+                            <dd id="sqDiscount">−$0</dd>
+                        </div>
+                        <div class="screen-quote-summary__row screen-quote-summary__row--grand"><dt>Estimated total</dt><dd id="sqGrand">$0</dd></div>
+                    </dl>
+                    <p class="screen-quote-summary__note">Prices may vary depending on the size, condition, and complexity of each panel. This calculator provides an estimate only. For a more accurate quote, we recommend <a href="quote.html">requesting a personalized inspection or estimate</a>.</p>
+                    <button type="button" class="btn btn-secondary screen-quote-summary__back" id="screenQuoteEditMore">Add or change panels</button>
+                </div>
+            </div>
+
+            <div class="screen-quote-modal" id="screenQuoteModal" role="dialog" aria-modal="true" aria-labelledby="screenQuoteModalTitle" hidden>
+                <div class="screen-quote-modal__backdrop" tabindex="-1" data-close-modal></div>
+                <div class="screen-quote-modal__panel">
+                    <h3 id="screenQuoteModalTitle" class="screen-quote-modal__title"></h3>
+                    <p class="screen-quote-modal__price" id="screenQuoteModalPriceLine"></p>
+                    <label class="screen-quote-modal__label" for="screenQuoteQtyInput">How many panels of this type do you need?</label>
+                    <input class="screen-quote-modal__input" type="number" id="screenQuoteQtyInput" min="0" max="500" step="1" value="1" inputmode="numeric">
+                    <div class="screen-quote-modal__actions">
+                        <button type="button" class="btn btn-secondary" data-close-modal>Cancel</button>
+                        <button type="button" class="btn btn-primary" id="screenQuoteModalConfirm">Save to estimate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <img src="public/Logo White No Background .png" alt="SCREEN ARMORS" class="footer-logo" loading="lazy" decoding="async">
+                <p class="footer-title">SCREEN ARMORS</p>
+                <p class="footer-subtitle">Professional Screen Enclosure Specialists</p>
+                <p class="footer-service-area">Serving Sarasota, Manatee &amp; Charlotte Counties</p>
+            </div>
+
+            <div class="footer-grid" aria-label="Contact information">
+                <a class="footer-item" href="tel:941-404-9699">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.07 21 3 13.93 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Phone</p>
+                    <p class="footer-item-value">(941) 404-9699</p>
+                </a>
+                <a class="footer-item" href="mailto:info@screenarmors.com">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v.01L12 13 22 6.01V6a2 2 0 0 0-2-2zm2 6.25-9.42 6.6a1 1 0 0 1-1.16 0L2 10.25V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7.75z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Email</p>
+                    <p class="footer-item-value">info@screenarmors.com</p>
+                </a>
+                <a class="footer-item" href="areas-we-serve.html">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Service Area</p>
+                    <p class="footer-item-value">View areas we serve</p>
+                </a>
+                <a class="footer-item" href="quote.html">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10 10 10 0 0 1-10 10zm1-10.41V6a1 1 0 1 0-2 0v6a1 1 0 0 0 .29.71l3.5 3.5a1 1 0 0 0 1.42-1.42z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Get Quote</p>
+                    <p class="footer-item-value">Request a free quote</p>
+                </a>
+            </div>
+
+            <div class="footer-bottom">&copy; 2024 SCREEN ARMORS. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+		(function() {
+			const navEl = document.querySelector('nav');
+			if (!navEl) return;
+			const TOP_REVEAL_PX = 8;
+			function setSpacer() {
+				const h = navEl.offsetHeight;
+				document.body.style.paddingTop = h + 'px';
+				document.documentElement.style.setProperty('--nav-height', h + 'px');
+			}
+			window.addEventListener('load', setSpacer);
+			window.addEventListener('resize', setSpacer);
+			setSpacer();
+			window.addEventListener('scroll', function() {
+				const currentY = window.scrollY;
+				const navLinks = document.getElementById('navLinks');
+				const menuOpen = navLinks && navLinks.classList.contains('active');
+				if (menuOpen) return;
+
+				if (currentY <= TOP_REVEAL_PX) {
+					navEl.classList.remove('nav-compact');
+				} else {
+					navEl.classList.add('nav-compact');
+				}
+			}, { passive: true });
+		})();
+        window.addEventListener('load', function() {
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=AW-17482456160';
+            document.head.appendChild(s);
+        });
+    </script>
+    <script src="random-photos.js"></script>
+    <script src="nav-menu.js"></script>
+    <script src="call-tracking.js"></script>
+    <script src="screen-quote-calculator.js"></script>
+</body>
+</html>

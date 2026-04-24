@@ -245,6 +245,382 @@ body.nav-menu-open::before {
     transform: translateY(-1px);
 }
 
+/* Quick Screen Quote — blue nav CTA; calculator graphic lives in the tool UI, not here */
+.nav-quick-screen-quote-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 48%, #1e3a8a 100%);
+	color: #fff !important;
+	padding: 0.5rem 1rem !important;
+	border-radius: var(--btn-radius);
+	border: 1px solid rgba(186, 214, 255, 0.55);
+	text-decoration: none !important;
+	font-weight: 600;
+	font-size: clamp(0.7rem, 1.05vw, 0.85rem);
+	letter-spacing: 0.02em;
+	line-height: 1.2;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+	box-shadow:
+		0 2px 0 rgba(0, 0, 0, 0.14) inset,
+		0 1px 0 rgba(255, 255, 255, 0.22) inset,
+		0 4px 16px rgba(29, 78, 216, 0.38),
+		0 2px 6px rgba(0, 0, 0, 0.16);
+	transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-quick-screen-quote-btn:hover {
+	color: #fff !important;
+	background: linear-gradient(180deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%) !important;
+	border-color: rgba(219, 234, 254, 0.9) !important;
+	box-shadow:
+		0 2px 0 rgba(255, 255, 255, 0.12) inset,
+		0 6px 22px rgba(29, 78, 216, 0.45),
+		0 3px 8px rgba(0, 0, 0, 0.14);
+	transform: translateY(-1px);
+}
+
+.nav-quick-screen-quote-btn:focus-visible {
+	outline: 3px solid rgba(147, 197, 253, 0.95);
+	outline-offset: 3px;
+}
+
+/* Quick Screen Quote tool page */
+.screen-quote-page {
+	padding: 2rem 0 3.5rem;
+}
+
+/* Diagram: natural image 1008×1024; fluid width so it fits phones—browsers scale <map> areas with the rendered image */
+.screen-quote-tool {
+	max-width: none;
+	margin: 0 auto;
+}
+
+.screen-quote-stage {
+	position: relative;
+	width: 100%;
+	max-width: 1008px;
+	margin-left: auto;
+	margin-right: auto;
+	border-radius: 14px;
+	overflow: hidden;
+	-webkit-overflow-scrolling: touch;
+	box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32);
+	background: #000;
+}
+
+.screen-quote-stage img {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-width: 100%;
+	vertical-align: middle;
+	touch-action: manipulation;
+	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+/* Absolutely positioned hit-zones (buttons/SVG) go inside; toggle .is-interactive when ready */
+.screen-quote-overlay {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.screen-quote-overlay.is-interactive {
+	pointer-events: auto;
+}
+
+.screen-quote-hint {
+	text-align: center;
+	margin-top: 1.1rem;
+	font-size: 0.95rem;
+	color: #555;
+	max-width: 36rem;
+	margin-left: auto;
+	margin-right: auto;
+	line-height: 1.45;
+}
+
+.screen-quote-disclaimer {
+	text-align: center;
+	margin: 1rem auto 0;
+	max-width: 40rem;
+	font-size: 0.88rem;
+	line-height: 1.5;
+	color: #64748b;
+}
+
+.screen-quote-disclaimer a {
+	color: #1d4ed8;
+	font-weight: 600;
+}
+
+.screen-quote-selection {
+	min-height: 1.5rem;
+	margin-top: 0.75rem;
+	text-align: center;
+	font-size: 1rem;
+	font-weight: 600;
+	color: #1d4ed8;
+}
+
+.screen-quote-cart {
+	margin-top: 2.25rem;
+	padding: 1.5rem 1.25rem;
+	border-radius: 14px;
+	background: #f8fafc;
+	border: 1px solid rgba(30, 58, 138, 0.12);
+	max-width: 40rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.screen-quote-cart__heading {
+	font-size: 1.15rem;
+	font-weight: 800;
+	color: var(--title-text);
+	margin-bottom: 0.75rem;
+	text-align: center;
+}
+
+.screen-quote-cart__empty {
+	text-align: center;
+	color: #64748b;
+	font-size: 0.95rem;
+	margin: 0 0 1rem;
+}
+
+.screen-quote-cart__lines {
+	list-style: none;
+	margin: 0 0 1.25rem;
+	padding: 0;
+}
+
+.screen-quote-cart__lines[hidden] {
+	display: none !important;
+}
+
+.screen-quote-cart__lines li {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 1rem;
+	padding: 0.55rem 0;
+	border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+	font-size: 0.98rem;
+}
+
+.screen-quote-cart__lines li span:first-child {
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.screen-quote-cart__lines li span:last-child {
+	color: #475569;
+	white-space: nowrap;
+}
+
+.screen-quote-cart__total-btn {
+	display: block;
+	width: 100%;
+	max-width: 20rem;
+	margin: 0 auto;
+}
+
+.screen-quote-summary {
+	margin-top: 2rem;
+	padding: 1.75rem 1.25rem 2rem;
+	border-radius: 14px;
+	background: #fff;
+	border: 2px solid rgba(29, 78, 216, 0.2);
+	box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+	max-width: 42rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.screen-quote-summary[hidden] {
+	display: none !important;
+}
+
+.screen-quote-summary__title {
+	font-size: 1.25rem;
+	font-weight: 800;
+	color: var(--title-text);
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.screen-quote-summary__table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.95rem;
+	margin-bottom: 1.25rem;
+}
+
+.screen-quote-summary__table th,
+.screen-quote-summary__table td {
+	text-align: left;
+	padding: 0.5rem 0.35rem;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.screen-quote-summary__table th {
+	font-weight: 700;
+	color: #334155;
+}
+
+.screen-quote-summary__table td:last-child,
+.screen-quote-summary__table th:last-child {
+	text-align: right;
+}
+
+.screen-quote-summary__totals {
+	margin: 0;
+	padding: 0;
+}
+
+.screen-quote-summary__row {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 1rem;
+	padding: 0.4rem 0;
+	font-size: 0.98rem;
+}
+
+.screen-quote-summary__row dt {
+	margin: 0;
+	font-weight: 600;
+	color: #334155;
+}
+
+.screen-quote-summary__row dd {
+	margin: 0;
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.screen-quote-summary__row--discount dt {
+	color: #15803d;
+}
+
+.screen-quote-summary__row--discount dd {
+	color: #15803d;
+}
+
+.screen-quote-summary__row--grand {
+	margin-top: 0.5rem;
+	padding-top: 0.75rem;
+	border-top: 2px solid #1d4ed8;
+	font-size: 1.15rem;
+}
+
+.screen-quote-summary__row--grand dt,
+.screen-quote-summary__row--grand dd {
+	font-weight: 800;
+	color: #1e3a8a;
+}
+
+.screen-quote-summary__note {
+	margin: 1.25rem 0 0;
+	font-size: 0.9rem;
+	color: #64748b;
+	line-height: 1.5;
+	text-align: center;
+}
+
+.screen-quote-summary__note a {
+	color: #1d4ed8;
+	font-weight: 600;
+}
+
+.screen-quote-summary__back {
+	display: block;
+	margin: 1.25rem auto 0;
+}
+
+.screen-quote-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 2000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+}
+
+.screen-quote-modal[hidden] {
+	display: none !important;
+}
+
+.screen-quote-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.55);
+}
+
+.screen-quote-modal__panel {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: 420px;
+	padding: 1.5rem 1.35rem;
+	border-radius: 16px;
+	background: #fff;
+	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+.screen-quote-modal__title {
+	font-size: 1.2rem;
+	font-weight: 800;
+	color: var(--title-text);
+	margin: 0 0 0.35rem;
+}
+
+.screen-quote-modal__price {
+	margin: 0 0 1rem;
+	font-size: 1rem;
+	color: #1d4ed8;
+	font-weight: 700;
+}
+
+.screen-quote-modal__label {
+	display: block;
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #334155;
+	margin-bottom: 0.4rem;
+}
+
+.screen-quote-modal__input {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.65rem 0.75rem;
+	font-size: 1.1rem;
+	border-radius: 10px;
+	border: 1px solid #cbd5e1;
+	margin-bottom: 1.25rem;
+}
+
+.screen-quote-modal__input:focus {
+	outline: 3px solid rgba(59, 130, 246, 0.45);
+	outline-offset: 2px;
+	border-color: #3b82f6;
+}
+
+.screen-quote-modal__actions {
+	display: flex;
+	gap: 0.65rem;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+}
+
 /* Mobile Menu Toggle */
 .menu-toggle {
     display: none;
@@ -505,8 +881,26 @@ body.nav-menu-open::before {
 }
 
 .hero-social-link--yelp {
-    background: rgba(214, 19, 25, 0.92);
-    border-color: rgba(214, 19, 25, 0.75);
+	background: rgba(214, 19, 25, 0.92);
+	border-color: rgba(214, 19, 25, 0.75);
+}
+
+.hero-social-link--instagram {
+	background: linear-gradient(
+		45deg,
+		#f9ce34 0%,
+		#ee2a7b 38%,
+		#d92e7f 55%,
+		#6228d7 78%,
+		#405de6 100%
+	);
+	border-color: rgba(255, 255, 255, 0.35);
+}
+
+.hero-social-link--instagram img {
+	width: 22px;
+	height: 22px;
+	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 
 .hero-social-link:hover {
@@ -3021,8 +3415,26 @@ footer {
 }
 
 .footer-social-link--yelp {
-    background: rgba(214, 19, 25, 0.92);
-    border-color: rgba(214, 19, 25, 0.7);
+	background: rgba(214, 19, 25, 0.92);
+	border-color: rgba(214, 19, 25, 0.7);
+}
+
+.footer-social-link--instagram {
+	background: linear-gradient(
+		45deg,
+		#f9ce34 0%,
+		#ee2a7b 38%,
+		#d92e7f 55%,
+		#6228d7 78%,
+		#405de6 100%
+	);
+	border-color: rgba(255, 255, 255, 0.35);
+}
+
+.footer-social-link--instagram img {
+	width: 20px;
+	height: 20px;
+	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 
 .footer-social-link:hover {
@@ -3511,6 +3923,13 @@ footer {
         width: 100%;
         padding: 1rem;
         text-align: left;
+    }
+
+    .nav-links li .nav-quick-screen-quote-btn {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: flex-start;
     }
 
     .logo {

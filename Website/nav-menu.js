@@ -38,9 +38,18 @@
     a.textContent = 'Blog';
     li.appendChild(a);
 
-    var ctaLi = links.querySelector('a.nav-cta-btn');
-    if (ctaLi && ctaLi.parentElement && ctaLi.parentElement.parentElement === links) {
-      links.insertBefore(li, ctaLi.parentElement);
+    var quickA = document.getElementById('quickScreenQuoteNav');
+    var quickLi = quickA && quickA.closest('li');
+    var ctaA = links.querySelector('a.nav-cta-btn');
+    var ctaLi = ctaA && ctaA.parentElement;
+    var insertBefore =
+      quickLi && quickLi.parentElement === links
+        ? quickLi
+        : ctaLi && ctaLi.parentElement === links
+          ? ctaLi
+          : null;
+    if (insertBefore) {
+      links.insertBefore(li, insertBefore);
     } else {
       links.appendChild(li);
     }
