@@ -114,7 +114,6 @@
                                     <option value="Instagram">Instagram</option>
                                     <option value="I'm already a client">I'm already a client</option>
                                     <option value="Other">Other</option>
-                                    <option value="Quick Screen Quote tool">Quick Screen Quote tool</option>
                                 </select>
                             </div>
                             <div class="form-field form-field--full">
@@ -260,7 +259,6 @@
             var quickBanner = document.getElementById('rqQuickQuoteBanner');
             var quickBannerTotal = document.getElementById('rqQuickQuoteBannerTotal');
             var quickBannerList = document.getElementById('rqQuickQuoteBannerList');
-            var leadSourceEl = document.getElementById('rq_leadSource');
             var projectTypeEl = document.getElementById('rq_projectType');
             if (!form || !statusEl || !submitBtn) return;
 
@@ -330,10 +328,6 @@
                     quickBannerList.appendChild(li);
                 });
                 quickBanner.hidden = false;
-                if (leadSourceEl) {
-                    var opt = leadSourceEl.querySelector('option[value="Quick Screen Quote tool"]');
-                    if (opt) leadSourceEl.value = 'Quick Screen Quote tool';
-                }
                 if (projectTypeEl) {
                     var repair = projectTypeEl.querySelector('option[value="Screen Panel(s) Repair."]');
                     if (repair) projectTypeEl.value = 'Screen Panel(s) Repair.';
