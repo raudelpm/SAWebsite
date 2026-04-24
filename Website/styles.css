@@ -488,21 +488,53 @@ body.nav-menu-open::before {
 .screen-quote-cart__lines li {
 	display: flex;
 	justify-content: space-between;
-	align-items: baseline;
-	gap: 1rem;
+	align-items: center;
+	gap: 0.65rem;
 	padding: 0.55rem 0;
 	border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 	font-size: 0.98rem;
 }
 
-.screen-quote-cart__lines li span:first-child {
+.screen-quote-cart__line-label {
+	flex: 1;
+	min-width: 0;
 	font-weight: 600;
 	color: #0f172a;
 }
 
-.screen-quote-cart__lines li span:last-child {
+.screen-quote-cart__line-price {
 	color: #475569;
 	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.screen-quote-cart__remove {
+	flex-shrink: 0;
+	width: 2.15rem;
+	height: 2.15rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 8px;
+	background: transparent;
+	color: #64748b;
+	font-size: 1.35rem;
+	line-height: 1;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.screen-quote-cart__remove:hover {
+	background: rgba(239, 68, 68, 0.12);
+	color: #b91c1c;
+}
+
+.screen-quote-cart__remove:focus-visible {
+	outline: 2px solid rgba(59, 130, 246, 0.7);
+	outline-offset: 2px;
 }
 
 .screen-quote-cart__total-btn {

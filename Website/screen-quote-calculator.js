@@ -159,15 +159,47 @@
       var p = PANELS[k];
       var line = q * p.price;
       var li = document.createElement('li');
-      var left = document.createElement('span');
-      left.textContent = p.label + ' × ' + q;
-      var right = document.createElement('span');
-      right.textContent = fmtMoney(p.price) + ' ea · ' + fmtMoney(line);
-      li.appendChild(left);
-      li.appendChild(right);
+      li.setAttribute('data-panel-key', k);
+
+      var label = document.createElement('span');
+      label.className = 'screen-quote-cart__line-label';
+      label.textContent = p.label + ' × ' + q;
+
+      var price = document.createElement('span');
+      price.className = 'screen-quote-cart__line-price';
+      price.textContent = fmtMoney(p.price) + ' ea · ' + fmtMoney(line);
+
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'screen-quote-cart__remove';
+      rm.setAttribute('aria-label', 'Remove ' + p.label + ' from estimate');
+      rm.innerHTML = '\u00d7';
+
+      li.appendChild(label);
+      li.appendChild(price);
+      li.appendChild(rm);
       linesEl.appendChild(li);
     });
   }
+
+  function removeLine(key) {
+    if (!PANELS[key]) return;
+    quantities[key] = 0;
+    renderCart();
+    if (panelCount() === 0 && summary && !summary.hidden) summary.hidden = true;
+    if (out) out.textContent = PANELS[key].label + ' removed from estimate.';
+    if (summary && !summary.hidden) fillSummary();
+  }
+
+  linesEl.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest && e.target.closest('.screen-quote-cart__remove');
+    if (!btn || !linesEl.contains(btn)) return;
+    e.preventDefault();
+    var li = btn.closest('li');
+    if (!li) return;
+    var key = li.getAttribute('data-panel-key');
+    if (key) removeLine(key);
+  });
 
   function openModal(key) {
     if (!PANELS[key]) return;
