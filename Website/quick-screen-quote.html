@@ -65,8 +65,9 @@
                             <div class="screen-quote-overlay" id="screenQuoteOverlay" aria-hidden="true"></div>
                         </div>
                     </div>
-                    <div class="screen-quote-main-layout__panel">
-                        <p class="screen-quote-hint">Click any red panel on the interactive diagram to select the screen area you need repaired or replaced. Enter the quantity for each panel type, then add them to your estimate. Once all panels are selected, click "See Estimate Total" to view your estimated price.</p>
+                    <div class="screen-quote-main-layout__panel" role="region" aria-labelledby="screenQuoteHowToHeading">
+                        <h3 id="screenQuoteHowToHeading" class="screen-quote-panel__title">How to use the interactive diagram</h3>
+                        <p class="screen-quote-hint"><strong class="screen-quote-hint__accent">Click</strong> any <strong class="screen-quote-hint__accent">red panel</strong> on the interactive diagram to select the screen area you need to replace. Enter the quantity for each panel type, then add them to your estimate. Once all panels are selected, <strong class="screen-quote-hint__accent">click</strong> &quot;See Estimate Total&quot; to view your estimated price.</p>
                         <p class="screen-quote-disclaimer">Prices may vary depending on the size, condition, and complexity of each panel. This calculator provides an estimate only. For a more accurate quote, we recommend <a href="quote.html">requesting a personalized inspection or estimate</a>.</p>
                         <p class="screen-quote-selection" id="screenQuoteSelection" aria-live="polite"></p>
 
@@ -75,6 +76,9 @@
                             <p class="screen-quote-cart__empty" id="screenQuoteEmpty">No panels yet—click a highlighted zone on the diagram.</p>
                             <ul class="screen-quote-cart__lines" id="screenQuoteLines" hidden></ul>
                             <button type="button" class="btn btn-primary screen-quote-cart__total-btn" id="screenQuoteShowTotal" disabled>See estimate total</button>
+                        </div>
+                        <div class="screen-quote-panel-brand">
+                            <img src="public/Logo%20Black%20No%20Background.PNG" alt="SCREEN ARMORS" width="240" height="80" loading="lazy" decoding="async" class="screen-quote-panel-brand__logo">
                         </div>
                     </div>
                 </div>

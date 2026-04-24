@@ -339,6 +339,15 @@ body.nav-menu-open::before {
 		width: 100%;
 	}
 
+	.screen-quote-main-layout__panel .screen-quote-panel__title {
+		text-align: left;
+	}
+
+	.screen-quote-main-layout__panel .screen-quote-panel__title::after {
+		left: 0;
+		transform: none;
+	}
+
 	.screen-quote-main-layout__panel .screen-quote-hint,
 	.screen-quote-main-layout__panel .screen-quote-disclaimer {
 		text-align: left;
@@ -367,6 +376,21 @@ body.nav-menu-open::before {
 		margin-left: 0;
 		margin-right: 0;
 		max-width: none;
+	}
+
+	.screen-quote-main-layout__panel .screen-quote-panel-brand {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-top: 1.75rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(15, 23, 42, 0.08);
+	}
+
+	.screen-quote-main-layout__panel .screen-quote-panel-brand__logo {
+		width: min(220px, 85%);
+		height: auto;
+		object-fit: contain;
 	}
 
 	.screen-quote-page .screen-quote-summary {
@@ -414,16 +438,59 @@ body.nav-menu-open::before {
 	pointer-events: auto;
 }
 
+.screen-quote-panel__title {
+	margin: 0 0 0.45rem;
+	padding-bottom: 0.75rem;
+	position: relative;
+	font-family: var(--font-display);
+	font-size: clamp(1.22rem, 1.05rem + 1.65vw, 1.62rem);
+	font-weight: 800;
+	letter-spacing: var(--title-tracking);
+	line-height: 1.18;
+	color: #0f172a;
+	text-align: center;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+}
+
+.screen-quote-panel__title::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	transform: translateX(-50%);
+	width: clamp(3rem, 16vw, 4.5rem);
+	height: 4px;
+	border-radius: 3px;
+	background: linear-gradient(90deg, var(--color-brand-red) 0%, #c2410c 42%, #d97706 100%);
+	box-shadow: 0 1px 2px rgba(183, 28, 28, 0.25);
+}
+
+.screen-quote-main-layout__panel > .screen-quote-panel__title + .screen-quote-hint {
+	margin-top: 0.55rem;
+}
+
+/* Desktop only: brand mark under cart in right column */
+.screen-quote-panel-brand {
+	display: none;
+}
+
 .screen-quote-hint {
 	text-align: center;
 	margin-top: 1.1rem;
-	font-size: 0.95rem;
+	font-size: clamp(1.05rem, 0.92rem + 1.4vw, 1.28rem);
 	font-weight: 700;
 	color: #555;
 	max-width: 36rem;
 	margin-left: auto;
 	margin-right: auto;
-	line-height: 1.45;
+	line-height: 1.5;
+}
+
+.screen-quote-hint__accent {
+	color: var(--color-brand-red);
+	font-weight: 800;
+	letter-spacing: 0.02em;
 }
 
 .screen-quote-disclaimer {
