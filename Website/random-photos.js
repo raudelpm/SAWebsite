@@ -53,6 +53,9 @@
   }
 
   function init() {
+    const path = (window.location.pathname || "").replace(/\\/g, "/").toLowerCase();
+    if (path.endsWith("/thank-you.html") || path.endsWith("thank-you.html")) return;
+
     const buttons = document.querySelector(".container .cta-buttons");
     if (!buttons) return;
 
