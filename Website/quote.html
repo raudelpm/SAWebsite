@@ -57,6 +57,12 @@
                     <div class="quote-request-header">
                         <h2 class="quote-request-title">Request Your Free Estimate</h2>
                         <p class="quote-request-subtitle">Fill out the form and we’ll contact you with pricing and availability.</p>
+                        <div id="rqQuickQuoteBanner" class="rq-quick-quote-banner" hidden role="region" aria-label="Quick Screen Quote summary">
+                            <p class="rq-quick-quote-banner__eyebrow">From Quick Screen Quote</p>
+                            <p class="rq-quick-quote-banner__total">Estimated total: <strong id="rqQuickQuoteBannerTotal"></strong></p>
+                            <ul id="rqQuickQuoteBannerList" class="rq-quick-quote-banner__list"></ul>
+                            <p class="rq-quick-quote-banner__hint">You arrived from the Quick Screen Quote tool. Complete the form and send request — your panel breakdown is included with this submission only.</p>
+                        </div>
                     </div>
                     <form id="requestForm" class="quote-request-form" novalidate>
                         <div class="form-grid">
@@ -108,6 +114,7 @@
                                     <option value="Instagram">Instagram</option>
                                     <option value="I'm already a client">I'm already a client</option>
                                     <option value="Other">Other</option>
+                                    <option value="Quick Screen Quote tool">Quick Screen Quote tool</option>
                                 </select>
                             </div>
                             <div class="form-field form-field--full">
@@ -244,10 +251,102 @@
 		})();
 
         (function() {
+            var QUOTE_STORAGE_KEY = 'screenArmorsQuickQuote';
+            /** Panel summary for email: only set when URL had ?from=quick-screen-quote and storage was consumed (Schedule Now). */
+            var quickQuoteEmailBlock = null;
             var form = document.getElementById('requestForm');
             var statusEl = document.getElementById('rq_status');
             var submitBtn = document.getElementById('rq_submit');
+            var quickBanner = document.getElementById('rqQuickQuoteBanner');
+            var quickBannerTotal = document.getElementById('rqQuickQuoteBannerTotal');
+            var quickBannerList = document.getElementById('rqQuickQuoteBannerList');
+            var leadSourceEl = document.getElementById('rq_leadSource');
+            var projectTypeEl = document.getElementById('rq_projectType');
             if (!form || !statusEl || !submitBtn) return;
+
+            (function purgeStaleQuickQuoteStorage() {
+                try {
+                    var sp = new URLSearchParams(window.location.search);
+                    if (sp.get('from') !== 'quick-screen-quote') {
+                        sessionStorage.removeItem(QUOTE_STORAGE_KEY);
+                    }
+                } catch (e) {}
+            })();
+
+            function moneyStr(n) {
+                var v = Math.round(Number(n) * 100) / 100;
+                return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            }
+
+            function stripFromQuickScreenParam() {
+                try {
+                    var u = new URL(window.location.href);
+                    if (u.searchParams.get('from') !== 'quick-screen-quote') return;
+                    u.searchParams.delete('from');
+                    var qs = u.searchParams.toString();
+                    window.history.replaceState({}, '', u.pathname + (qs ? '?' + qs : '') + u.hash);
+                } catch (e2) {}
+            }
+
+            function tryLoadQuickScreenQuoteFromStorage() {
+                if (!quickBanner || !quickBannerTotal || !quickBannerList) return;
+                var sp = new URLSearchParams(window.location.search);
+                if (sp.get('from') !== 'quick-screen-quote') return;
+
+                var raw = null;
+                try {
+                    raw = sessionStorage.getItem(QUOTE_STORAGE_KEY);
+                } catch (e) {}
+
+                if (!raw) {
+                    stripFromQuickScreenParam();
+                    return;
+                }
+
+                var data;
+                try {
+                    data = JSON.parse(raw);
+                } catch (e) {
+                    try {
+                        sessionStorage.removeItem(QUOTE_STORAGE_KEY);
+                    } catch (e3) {}
+                    stripFromQuickScreenParam();
+                    return;
+                }
+
+                if (!data || data.grand == null || !isFinite(Number(data.grand)) || !data.summaryText) {
+                    try {
+                        sessionStorage.removeItem(QUOTE_STORAGE_KEY);
+                    } catch (e4) {}
+                    stripFromQuickScreenParam();
+                    return;
+                }
+
+                quickBannerTotal.textContent = moneyStr(Number(data.grand));
+                quickBannerList.innerHTML = '';
+                (data.lines || []).forEach(function (L) {
+                    var li = document.createElement('li');
+                    li.textContent = L.label + ' × ' + L.qty + ' — ' + moneyStr(L.line);
+                    quickBannerList.appendChild(li);
+                });
+                quickBanner.hidden = false;
+                if (leadSourceEl) {
+                    var opt = leadSourceEl.querySelector('option[value="Quick Screen Quote tool"]');
+                    if (opt) leadSourceEl.value = 'Quick Screen Quote tool';
+                }
+                if (projectTypeEl) {
+                    var repair = projectTypeEl.querySelector('option[value="Screen Panel(s) Repair."]');
+                    if (repair) projectTypeEl.value = 'Screen Panel(s) Repair.';
+                }
+
+                quickQuoteEmailBlock = String(data.summaryText).trim();
+                try {
+                    sessionStorage.removeItem(QUOTE_STORAGE_KEY);
+                } catch (e5) {}
+                stripFromQuickScreenParam();
+            }
+
+            tryLoadQuickScreenQuoteFromStorage();
 
             // If a label contains "*", treat that field as required.
             (function syncRequiredFromAsterisk() {
@@ -304,6 +403,13 @@
 
                 var fd = new FormData(form);
                 var payload = Object.fromEntries(fd.entries());
+                if (quickQuoteEmailBlock) {
+                    var marker = '--- Quick Screen Quote (included with this request) ---';
+                    var block = marker + '\n' + quickQuoteEmailBlock;
+                    var baseMsg = String(payload.message || '').trim();
+                    baseMsg = baseMsg.replace(/\n*--- Quick Screen Quote \(included with this request\) ---[\s\S]*$/m, '').trim();
+                    payload.message = baseMsg ? baseMsg + '\n\n' + block : block;
+                }
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Sending…';
                 try {
@@ -329,6 +435,10 @@
                     if (typeof gtag === 'function') {
                         gtag('event', 'conversion', { 'send_to': 'AW-17482456160', 'event_label': 'Quote Form Submitted' });
                     }
+                    try {
+                        sessionStorage.removeItem(QUOTE_STORAGE_KEY);
+                    } catch (e3) {}
+                    quickQuoteEmailBlock = null;
                     window.location.href = 'thank-you.html';
                 } catch (err) {
                     setStatus('Network error. Please try again.', true);

@@ -36,15 +36,12 @@
 				<li><a href="about.html">About Us</a></li>
 				<li><a href="reviews.html">Reviews</a></li>
 				<li><a href="faq.html">FAQ</a></li>
-				<li>
-				    <a href="quick-screen-quote.html" class="nav-quick-screen-quote-btn" id="quickScreenQuoteNav" aria-current="page">Quick Screen Quote</a>
-				</li>
 				<li><a href="quote.html" class="nav-cta-btn">Get Quote</a></li>
 			</ul>
 		</div>
 	</nav>
 
-    <section class="hero" style="height: 36vh; min-height: 300px;">
+    <section class="hero hero--quick-screen-tool" style="height: 36vh; min-height: 300px;">
         <div class="hero-bg-container">
             <img src="public/IMG_0018.jpg" alt="" class="hero-bg-image" fetchpriority="high" decoding="async">
             <div class="screen-mesh-overlay"></div>
@@ -52,7 +49,7 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1>Quick Screen Quote</h1>
-            <p class="hero-subtitle">Click each highlighted area, enter how many panels you need, then view your estimate total.</p>
+            <p class="hero-subtitle hero-subtitle--multiline">Click each highlighted area, enter how many panels you need, then view your estimate total.</p>
         </div>
     </section>
 
@@ -60,20 +57,26 @@
         <div class="container">
             <div class="screen-quote-tool" id="screenQuoteTool" aria-labelledby="screenQuoteToolHeading">
                 <h2 id="screenQuoteToolHeading" class="sr-only">Enclosure diagram for panel selection</h2>
-                <div class="screen-quote-stage">
-                    <!-- Hotspots: coords in natural image pixels (1008×1024); hits computed in JS so phones match -->
-                    <img src="public/calculatorimage.png" alt="Technical wireframe of a screen enclosure. Red areas mark typical replaceable screen panels—tap a highlighted section to select it." width="1008" height="1024" decoding="async" id="screenQuoteDiagram">
-                    <div class="screen-quote-overlay" id="screenQuoteOverlay" aria-hidden="true"></div>
-                </div>
-                <p class="screen-quote-hint">Click a red panel on the diagram to enter quantities. The diagram scales to fit your screen; clickable areas stay aligned with the red panels.</p>
-                <p class="screen-quote-disclaimer">Prices may vary depending on the size, condition, and complexity of each panel. This calculator provides an estimate only. For a more accurate quote, we recommend <a href="quote.html">requesting a personalized inspection or estimate</a>.</p>
-                <p class="screen-quote-selection" id="screenQuoteSelection" aria-live="polite"></p>
+                <div class="screen-quote-main-layout">
+                    <div class="screen-quote-main-layout__diagram">
+                        <div class="screen-quote-stage">
+                            <!-- Hotspots: coords in natural image pixels (1008×1024); hits computed in JS so phones match -->
+                            <img src="public/calculatorimage.png" alt="Technical wireframe of a screen enclosure. Red areas mark typical replaceable screen panels—tap a highlighted section to select it." width="1008" height="1024" decoding="async" id="screenQuoteDiagram">
+                            <div class="screen-quote-overlay" id="screenQuoteOverlay" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                    <div class="screen-quote-main-layout__panel">
+                        <p class="screen-quote-hint">Click any red panel on the interactive diagram to select the screen area you need repaired or replaced. Enter the quantity for each panel type, then add them to your estimate. Once all panels are selected, click "See Estimate Total" to view your estimated price.</p>
+                        <p class="screen-quote-disclaimer">Prices may vary depending on the size, condition, and complexity of each panel. This calculator provides an estimate only. For a more accurate quote, we recommend <a href="quote.html">requesting a personalized inspection or estimate</a>.</p>
+                        <p class="screen-quote-selection" id="screenQuoteSelection" aria-live="polite"></p>
 
-                <div class="screen-quote-cart" id="screenQuoteCart" aria-labelledby="screenQuoteCartHeading">
-                    <h3 id="screenQuoteCartHeading" class="screen-quote-cart__heading">Your panel counts</h3>
-                    <p class="screen-quote-cart__empty" id="screenQuoteEmpty">No panels yet—click a zone on the diagram above.</p>
-                    <ul class="screen-quote-cart__lines" id="screenQuoteLines" hidden></ul>
-                    <button type="button" class="btn btn-primary screen-quote-cart__total-btn" id="screenQuoteShowTotal" disabled>See estimate total</button>
+                        <div class="screen-quote-cart" id="screenQuoteCart" aria-labelledby="screenQuoteCartHeading">
+                            <h3 id="screenQuoteCartHeading" class="screen-quote-cart__heading">Your panel counts</h3>
+                            <p class="screen-quote-cart__empty" id="screenQuoteEmpty">No panels yet—click a highlighted zone on the diagram.</p>
+                            <ul class="screen-quote-cart__lines" id="screenQuoteLines" hidden></ul>
+                            <button type="button" class="btn btn-primary screen-quote-cart__total-btn" id="screenQuoteShowTotal" disabled>See estimate total</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="screen-quote-summary" id="screenQuoteSummary" hidden>
@@ -93,7 +96,11 @@
                         </div>
                         <div class="screen-quote-summary__row screen-quote-summary__row--grand"><dt>Estimated total</dt><dd id="sqGrand">$0</dd></div>
                     </dl>
-                    <p class="screen-quote-summary__note">Prices may vary depending on the size, condition, and complexity of each panel. This calculator provides an estimate only. For a more accurate quote, we recommend <a href="quote.html">requesting a personalized inspection or estimate</a>.</p>
+                    <p class="screen-quote-summary__note">Prices may vary depending on the size, condition, and complexity of each panel. This calculator provides an estimate only.</p>
+                    <div class="screen-quote-summary__cta-row">
+                        <a class="screen-quote-summary__text-link" href="quote.html#quote-form">Request a personalized inspection or estimate</a>
+                        <button type="button" class="btn btn-schedule-now" id="screenQuoteScheduleBtn">Schedule Now!</button>
+                    </div>
                     <button type="button" class="btn btn-secondary screen-quote-summary__back" id="screenQuoteEditMore">Add or change panels</button>
                 </div>
             </div>

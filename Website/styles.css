@@ -245,8 +245,9 @@ body.nav-menu-open::before {
     transform: translateY(-1px);
 }
 
-/* Quick Screen Quote — blue nav CTA; calculator graphic lives in the tool UI, not here */
-.nav-quick-screen-quote-btn {
+/* Quick Screen Repair / calculator — nav (tool page) or home hero CTA */
+.nav-quick-screen-quote-btn,
+.hero-quick-repair-btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -258,7 +259,8 @@ body.nav-menu-open::before {
 	text-decoration: none !important;
 	font-weight: 600;
 	font-size: clamp(0.7rem, 1.05vw, 0.85rem);
-	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
 	line-height: 1.2;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
 	box-shadow:
@@ -269,7 +271,8 @@ body.nav-menu-open::before {
 	transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-.nav-quick-screen-quote-btn:hover {
+.nav-quick-screen-quote-btn:hover,
+.hero-quick-repair-btn:hover {
 	color: #fff !important;
 	background: linear-gradient(180deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%) !important;
 	border-color: rgba(219, 234, 254, 0.9) !important;
@@ -280,9 +283,24 @@ body.nav-menu-open::before {
 	transform: translateY(-1px);
 }
 
-.nav-quick-screen-quote-btn:focus-visible {
+.nav-quick-screen-quote-btn:focus-visible,
+.hero-quick-repair-btn:focus-visible {
 	outline: 3px solid rgba(147, 197, 253, 0.95);
 	outline-offset: 3px;
+}
+
+.hero-quick-repair-btn {
+	font-size: clamp(0.75rem, 2.2vw, 0.92rem);
+	padding: 0.55rem 1.15rem !important;
+}
+
+/* Home hero: third slot in .cta-buttons (replaces Email Us) */
+.cta-buttons .hero-quick-repair-btn--cta-row {
+	order: 3;
+	white-space: normal;
+	text-align: center;
+	line-height: 1.2;
+	max-width: min(17.5rem, 100%);
 }
 
 /* Quick Screen Quote tool page */
@@ -294,6 +312,67 @@ body.nav-menu-open::before {
 .screen-quote-tool {
 	max-width: none;
 	margin: 0 auto;
+}
+
+/* Desktop: diagram left, instructions + cart right */
+.screen-quote-main-layout {
+	display: block;
+}
+
+.screen-quote-main-layout__diagram,
+.screen-quote-main-layout__panel {
+	min-width: 0;
+}
+
+@media (min-width: 1024px) {
+	.screen-quote-main-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1.22fr) minmax(300px, 0.78fr);
+		gap: 1.75rem 2.25rem;
+		align-items: start;
+	}
+
+	.screen-quote-main-layout__diagram .screen-quote-stage {
+		margin-left: 0;
+		margin-right: 0;
+		max-width: none;
+		width: 100%;
+	}
+
+	.screen-quote-main-layout__panel .screen-quote-hint,
+	.screen-quote-main-layout__panel .screen-quote-disclaimer {
+		text-align: left;
+		margin-left: 0;
+		margin-right: 0;
+		max-width: none;
+	}
+
+	.screen-quote-main-layout__panel .screen-quote-selection {
+		text-align: left;
+	}
+
+	.screen-quote-main-layout__panel .screen-quote-cart {
+		margin-top: 1.35rem;
+		max-width: none;
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.screen-quote-main-layout__panel .screen-quote-cart__heading,
+	.screen-quote-main-layout__panel .screen-quote-cart__empty {
+		text-align: left;
+	}
+
+	.screen-quote-main-layout__panel .screen-quote-cart__total-btn {
+		margin-left: 0;
+		margin-right: 0;
+		max-width: none;
+	}
+
+	.screen-quote-page .screen-quote-summary {
+		max-width: none;
+		width: 100%;
+	}
 }
 
 .screen-quote-stage {
@@ -339,6 +418,7 @@ body.nav-menu-open::before {
 	text-align: center;
 	margin-top: 1.1rem;
 	font-size: 0.95rem;
+	font-weight: 700;
 	color: #555;
 	max-width: 36rem;
 	margin-left: auto;
@@ -540,9 +620,96 @@ body.nav-menu-open::before {
 	font-weight: 600;
 }
 
+.screen-quote-summary__cta-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.65rem 1rem;
+	margin-top: 1rem;
+}
+
+.screen-quote-summary__text-link {
+	font-weight: 600;
+	color: #1d4ed8;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.screen-quote-summary__text-link:hover {
+	color: #1e40af;
+}
+
+.btn-schedule-now {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.55rem 1.25rem;
+	border-radius: var(--btn-radius);
+	background: var(--btn-bg-red);
+	color: #fff !important;
+	font-weight: 800;
+	font-size: 0.82rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	border: 1px solid rgba(255, 220, 220, 0.5);
+	box-shadow: var(--btn-relief-red);
+	cursor: pointer;
+	transition: transform 0.18s ease, filter 0.18s ease, background 0.18s ease;
+}
+
+.btn-schedule-now:hover {
+	background: var(--btn-bg-red-hover) !important;
+	transform: translateY(-1px);
+}
+
 .screen-quote-summary__back {
 	display: block;
 	margin: 1.25rem auto 0;
+}
+
+.rq-quick-quote-banner {
+	margin-top: 1rem;
+	padding: 1rem 1.1rem;
+	border-radius: 14px;
+	background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+	border: 2px solid rgba(29, 78, 216, 0.28);
+	text-align: left;
+}
+
+.rq-quick-quote-banner__eyebrow {
+	margin: 0 0 0.35rem;
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: #1d4ed8;
+}
+
+.rq-quick-quote-banner__total {
+	margin: 0 0 0.5rem;
+	font-size: 1.05rem;
+	color: #0f172a;
+}
+
+.rq-quick-quote-banner__total strong {
+	font-size: 1.25rem;
+	color: #1e3a8a;
+}
+
+.rq-quick-quote-banner__list {
+	margin: 0.25rem 0 0.5rem 1.1rem;
+	padding: 0;
+	color: #334155;
+	font-size: 0.95rem;
+	line-height: 1.45;
+}
+
+.rq-quick-quote-banner__hint {
+	margin: 0.5rem 0 0;
+	font-size: 0.85rem;
+	color: #64748b;
+	line-height: 1.4;
 }
 
 .screen-quote-modal {
@@ -830,6 +997,24 @@ body.nav-menu-open::before {
     padding: 0.35rem 0.5rem;
 }
 
+/* Quick Screen tool hero: long subtitle must wrap and stay centered */
+.hero .hero-subtitle.hero-subtitle--multiline {
+    white-space: normal;
+    text-align: center;
+    max-width: min(38rem, 100%);
+    width: 100%;
+    line-height: 1.35;
+    box-sizing: border-box;
+}
+
+.hero--quick-screen-tool .hero-content {
+    text-align: center;
+}
+
+.hero--quick-screen-tool .hero h1 {
+    text-align: center;
+}
+
 .hero-description {
     font-size: 1.1rem;
     margin-top: 1rem;
@@ -848,77 +1033,6 @@ body.nav-menu-open::before {
     -webkit-backdrop-filter: none;
     border-radius: 0;
     display: inline-block;
-}
-
-.hero-social-links {
-    display: flex;
-    justify-content: center;
-    gap: 0.6rem;
-    margin-top: 0.75rem;
-}
-
-.hero-social-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 46px;
-    height: 46px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.14);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
-    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
-}
-
-.hero-social-link--facebook {
-    background: rgba(24, 119, 242, 0.92);
-    border-color: rgba(24, 119, 242, 0.75);
-}
-
-.hero-social-link--whatsapp {
-    background: rgba(37, 211, 102, 0.92);
-    border-color: rgba(37, 211, 102, 0.75);
-}
-
-.hero-social-link--yelp {
-	background: rgba(214, 19, 25, 0.92);
-	border-color: rgba(214, 19, 25, 0.75);
-}
-
-.hero-social-link--instagram {
-	background: linear-gradient(
-		45deg,
-		#f9ce34 0%,
-		#ee2a7b 38%,
-		#d92e7f 55%,
-		#6228d7 78%,
-		#405de6 100%
-	);
-	border-color: rgba(255, 255, 255, 0.35);
-}
-
-.hero-social-link--instagram img {
-	width: 22px;
-	height: 22px;
-	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
-}
-
-.hero-social-link:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.06);
-    border-color: rgba(255, 255, 255, 0.28);
-}
-
-.hero-social-link:focus-visible {
-    outline: 3px solid rgba(255, 255, 255, 0.75);
-    outline-offset: 3px;
-}
-
-.hero-social-link img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
 }
 
 .cta-buttons {
@@ -3979,6 +4093,18 @@ footer {
         margin-top: 0;
     }
 
+    .hero-subtitle.hero-subtitle--multiline {
+        white-space: normal !important;
+        text-align: center !important;
+        display: block !important;
+        max-width: 100%;
+        width: 100%;
+        line-height: 1.4;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        box-sizing: border-box;
+    }
+
     .hero-description {
         display: none !important;
     }
@@ -4100,9 +4226,12 @@ footer {
         height: 16px;
     }
 
-    /* Hide email button on mobile in hero */
-    .hero .btn-secondary.hero-email-btn {
-        display: none !important;
+    .cta-buttons .hero-quick-repair-btn--cta-row {
+        width: 75%;
+        max-width: 280px;
+        box-sizing: border-box;
+        font-size: clamp(0.62rem, 2.85vw, 0.82rem);
+        padding: 0.7rem 0.75rem !important;
     }
 
     .btn {

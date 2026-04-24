@@ -254,6 +254,56 @@
     return d.innerHTML;
   }
 
+  var QUOTE_STORAGE_KEY = 'screenArmorsQuickQuote';
+
+  function buildQuickQuotePayload() {
+    var t = computeTotals();
+    var lines = [];
+    PANEL_ORDER.forEach(function (k) {
+      var q = quantities[k];
+      if (!q) return;
+      var p = PANELS[k];
+      lines.push({ key: k, label: p.label, qty: q, unit: p.price, line: q * p.price });
+    });
+    var parts = ['Panel breakdown:'];
+    lines.forEach(function (L) {
+      parts.push(
+        '  - ' + L.label + ' × ' + L.qty + ' @ ' + fmtMoney(L.unit) + ' = ' + fmtMoney(L.line)
+      );
+    });
+    parts.push('Total panels: ' + t.count);
+    parts.push('Subtotal: ' + fmtMoney(t.sub));
+    if (t.discount > 0) {
+      parts.push('Volume discount (10% when 5+ panels): −' + fmtMoney(t.discount));
+    }
+    parts.push('Estimated total: ' + fmtMoney(t.grand));
+    return {
+      panelCount: t.count,
+      subtotal: t.sub,
+      discount: t.discount,
+      grand: t.grand,
+      lines: lines,
+      summaryText: parts.join('\n')
+    };
+  }
+
+  var btnSchedule = document.getElementById('screenQuoteScheduleBtn');
+  if (btnSchedule) {
+    btnSchedule.addEventListener('click', function () {
+      if (panelCount() === 0) {
+        if (out) out.textContent = 'Add panels and open “See estimate total” before scheduling.';
+        return;
+      }
+      fillSummary();
+      summary.hidden = false;
+      var payload = buildQuickQuotePayload();
+      try {
+        sessionStorage.setItem(QUOTE_STORAGE_KEY, JSON.stringify(payload));
+      } catch (err) {}
+      window.location.href = 'quote.html?from=quick-screen-quote#quote-form';
+    });
+  }
+
   diagram.addEventListener('pointerdown', function (e) {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     ptrDownX = e.clientX;

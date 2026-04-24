@@ -90,7 +90,12 @@ export default async function handler(req, res) {
   const resend = new Resend(apiKey);
 
   const fullName = `${firstName}${lastName ? ` ${lastName}` : ""}`.trim();
-  const subject = `New quote request from ${fullName || "Website"}`;
+  const hasQuickScreen =
+    getString(message).includes("Quick Screen Quote") ||
+    getString(message).includes("Panel breakdown:");
+  const subject = hasQuickScreen
+    ? `New quote request (Quick Screen Quote) from ${fullName || "Website"}`
+    : `New quote request from ${fullName || "Website"}`;
   const html = `
     <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; line-height: 1.45;">
       <h2 style="margin:0 0 12px;">New quote request</h2>
