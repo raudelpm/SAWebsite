@@ -47,7 +47,7 @@
     <!-- Hero: full photo + title centered (height unchanged) -->
     <section class="hero" style="height: 40vh; min-height: 400px;">
         <div class="hero-bg-container">
-            <img src="public/Photo 1.jpeg" alt="Customer Satisfaction" class="hero-bg-image" fetchpriority="high" decoding="async">
+            <img src="public/IMG_0059.jpg" alt="Screened pool and patio overlooking the water" class="hero-bg-image" fetchpriority="high" decoding="async">
             <div class="screen-mesh-overlay"></div>
         </div>
         <div class="hero-overlay"></div>
@@ -97,7 +97,32 @@
     <!-- Main Content -->
     <div class="container">
         <!-- Customer Testimonials -->
-        <h2 class="section-title" style="margin-top: 2.5rem;">Customer Testimonials</h2>
+        <h2 class="section-title section-title--reviews-intro" style="margin-top: 2.5rem;">Customer Testimonials</h2>
+
+        <!-- Review summary strip (directly under section heading + rule) -->
+        <section class="reviews-summary-banner" aria-label="SCREEN ARMORS review summary">
+            <div class="reviews-summary-banner__inner">
+                <div class="reviews-summary-banner__left">
+                    <div class="reviews-summary-banner__logo-ring">
+                        <img src="public/Logo%20Black%20No%20Background.PNG" alt="" width="88" height="88" decoding="async">
+                    </div>
+                    <div class="reviews-summary-banner__copy">
+                        <p class="reviews-summary-banner__name">SCREEN ARMORS</p>
+                        <div class="reviews-summary-banner__rating-row">
+                            <span class="reviews-summary-banner__score">5.0</span>
+                            <span class="reviews-summary-banner__stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
+                        </div>
+                        <p class="reviews-summary-banner__meta">Based on 44 Google reviews</p>
+                    </div>
+                </div>
+                <div class="reviews-summary-banner__right">
+                    <div class="reviews-summary-banner__actions">
+                        <a class="reviews-summary-banner__btn" href="https://www.google.com/maps/place/Screen+Armors/@27.208122,-82.2433506,15z/data=!4m6!3m5!1s0x86f95113f2e5f591:0x6b4ef2ce13b62417!8m2!3d27.208122!4d-82.2433506!16s%2Fg%2F11yj57ndg_?entry=ttu" target="_blank" rel="noopener noreferrer">See all reviews</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <div class="reviews-grid">
             <div class="review-card">
                 <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Joe Kobriger"><img src="public/Joe%20Kobriger.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
@@ -221,7 +246,7 @@
                     <div style="margin-bottom: 1.5rem;">
                         <div style="font-size: 3.5rem; color: #ffd700; margin-bottom: 0.5rem; letter-spacing: 0.2rem;">★★★★★</div>
                         <div style="font-size: 2rem; color: #111; font-weight: 700; margin-bottom: 0.25rem;">5.0</div>
-                        <p style="color: #666; font-size: 1rem; margin: 0;">Based on Google Reviews</p>
+                        <p style="color: #666; font-size: 1rem; margin: 0;">Based on 44 Google reviews</p>
                     </div>
                     
                     <!-- Call to Action -->
@@ -243,27 +268,6 @@
                     </a>
                 </div>
             </div>
-        </div>
-
-        <div class="reviews-local-highlight-frame" style="margin-top: 3rem;">
-            <section class="reviews-local-highlight" aria-labelledby="reviews-map-trust-title-bottom">
-                <div class="reviews-local-highlight__media">
-                    <img class="reviews-local-highlight__img" src="public/florida_west_coast_midnight_blue_20260420_212301.png" alt="Stylized midnight blue map of Florida’s west coast with SCREEN ARMORS and FLORIDA WEST COAST on the graphic" width="520" height="650" loading="lazy" decoding="async">
-                </div>
-                <div class="reviews-local-highlight__body">
-                    <h2 class="reviews-local-highlight__title" id="reviews-map-trust-title-bottom">Reliable Service You Can Trust</h2>
-                    <div class="reviews-local-highlight__stars" role="img" aria-label="5 out of 5 stars">
-                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
-                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
-                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
-                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
-                        <span class="reviews-local-highlight__star" aria-hidden="true">★</span>
-                    </div>
-                    <p class="reviews-local-highlight__text">
-                        Best-rated screen repair and rescreening services across Sarasota County, Manatee County, and Charlotte County &mdash; proudly maintaining an average rating of 5.0!
-                    </p>
-                </div>
-            </section>
         </div>
 
         <!-- Call to Action -->
@@ -389,6 +393,7 @@
         return false;
       }
     </script>
+    <script src="random-photos.js"></script>
     <script src="nav-menu.js"></script>
     <script src="call-tracking.js"></script>
 </body>
