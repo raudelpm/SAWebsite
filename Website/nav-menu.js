@@ -10,6 +10,49 @@
     return document.getElementById('navLinks');
   }
 
+  function ensureBackToTopButton() {
+    if (!document.body) return;
+    if (document.getElementById('backToTopBtn')) return;
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'backToTopBtn';
+    btn.className = 'back-to-top-btn';
+    btn.setAttribute('aria-label', 'Back to top');
+    btn.setAttribute('title', 'Back to top');
+    btn.innerHTML = '<span aria-hidden="true">↑</span><span class="back-to-top-btn__text">Top</span>';
+    btn.hidden = true;
+
+    btn.addEventListener('click', function () {
+      var prefersReduced =
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
+    });
+
+    function syncVisibility() {
+      var doc = document.documentElement;
+      var scrollTop = window.scrollY || doc.scrollTop || 0;
+      var viewportH = window.innerHeight || doc.clientHeight || 0;
+      var docH = Math.max(doc.scrollHeight || 0, doc.offsetHeight || 0, doc.clientHeight || 0);
+      var maxScroll = Math.max(0, docH - viewportH);
+      if (maxScroll <= 0) {
+        btn.hidden = true;
+        return;
+      }
+
+      // Only show when user is near the bottom (last ~15% of the page).
+      var progress = scrollTop / maxScroll; // 0..1
+      btn.hidden = progress < 0.85;
+    }
+
+    window.addEventListener('scroll', syncVisibility, { passive: true });
+    window.addEventListener('resize', syncVisibility, { passive: true });
+    syncVisibility();
+
+    document.body.appendChild(btn);
+  }
+
   function blogIndexHref() {
     // Root-relative so it always resolves to /blog.html (never /blog/blog.html) from
     // article URLs like /blog/post.html. Assumes the site is served with Web root at host /.
@@ -149,11 +192,13 @@
     document.addEventListener('DOMContentLoaded', function () {
       ensureBlogNavItem();
       ensureFooterSocialLinks();
+      ensureBackToTopButton();
       syncBodyOpenClass();
     });
   } else {
     ensureBlogNavItem();
     ensureFooterSocialLinks();
+    ensureBackToTopButton();
     syncBodyOpenClass();
   }
 
