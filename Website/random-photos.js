@@ -56,20 +56,36 @@
     const path = (window.location.pathname || "").replace(/\\/g, "/").toLowerCase();
     if (path.endsWith("/thank-you.html") || path.endsWith("thank-you.html")) return;
 
-    const buttons = document.querySelector(".container .cta-buttons");
-    if (!buttons) return;
+    // Default interior pages: insert above the bottom CTA section inside `.container`.
+    const buttonsInContainer = document.querySelector(".container .cta-buttons");
+    if (buttonsInContainer) {
+      const contentSection = buttonsInContainer.closest(".content-section");
+      if (!contentSection || !contentSection.parentNode) return;
 
-    const contentSection = buttons.closest(".content-section");
-    if (!contentSection || !contentSection.parentNode) return;
+      // Avoid double-insert if multiple scripts run.
+      if (contentSection.parentNode.querySelector(":scope > .random-photos-strip")) return;
 
-    // Avoid double-insert if multiple scripts run.
-    if (contentSection.parentNode.querySelector(":scope > .random-photos-strip")) return;
+      const urls = pickUnique(PHOTO_POOL, 4);
+      if (urls.length < 4) return;
+
+      const section = buildSection(urls);
+      contentSection.parentNode.insertBefore(section, contentSection);
+      return;
+    }
+
+    // Quote page: CTA buttons live inside `.quote-why-band`, not `.container`.
+    const quoteBand = document.querySelector(".quote-why-band");
+    const buttonsInQuoteBand = quoteBand ? quoteBand.querySelector(".cta-buttons") : null;
+    if (!quoteBand || !buttonsInQuoteBand || !quoteBand.parentNode) return;
+
+    // Avoid double-insert.
+    if (quoteBand.parentNode.querySelector(":scope > .random-photos-strip")) return;
 
     const urls = pickUnique(PHOTO_POOL, 4);
     if (urls.length < 4) return;
 
     const section = buildSection(urls);
-    contentSection.parentNode.insertBefore(section, contentSection);
+    quoteBand.parentNode.insertBefore(section, quoteBand);
   }
 
   if (document.readyState === "loading") {
