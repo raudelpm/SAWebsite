@@ -17,7 +17,7 @@
     t.src = 'https://www.clarity.ms/tag/' + i;
     y = l.getElementsByTagName(r)[0];
     if (y && y.parentNode) y.parentNode.insertBefore(t, y);
-  })(window, document, 'clarity', 'script', 'wid7qtjyeu');
+  })(window, document, 'clarity', 'script', 'wifrjpxrbv');
 
   function navLinksEl() {
     return document.getElementById('navLinks');
