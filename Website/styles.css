@@ -1098,6 +1098,24 @@ body.nav-menu-open::before {
     }
 }
 
+/* Home hero: long headline — centered, wraps (replaces single-line for long titles) */
+.hero-title--wrap {
+    display: block;
+    width: 100%;
+    max-width: min(36rem, 92vw);
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.18;
+    font-size: clamp(1.2rem, 2.2vw + 0.75rem, 2.35rem);
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    box-sizing: border-box;
+    transform: none;
+    letter-spacing: 0.01em;
+}
+
 .hero p {
     font-size: 1.3rem;
     margin-bottom: 2rem;
