@@ -106,27 +106,70 @@
     return true;
   }
 
-  function ensureOutboundLinksOpenNewTab() {
+  function isMobileLike() {
+    try {
+      // Coarse pointer is a strong signal for phones/tablets; add width as fallback.
+      if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true;
+      if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) return true;
+    } catch (e) {}
+    return false;
+  }
+
+  function stopClick(e) {
+    if (!e) return;
+    if (typeof e.preventDefault === 'function') e.preventDefault();
+    if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+  }
+
+  function confirmLeavingExternalOnMobile(e) {
+    var msg =
+      'You are about to leave Screen Armors and be redirected to Google Reviews.\n' +
+      'Do you want to continue?';
+    // Use native confirm so it works on iOS/Android browsers.
+    var ok = window.confirm(msg);
+    if (!ok) {
+      stopClick(e);
+      return false;
+    }
+    return true;
+  }
+
+  function ensureOutboundExternalLinkUx() {
+    var mobile = isMobileLike();
     var anchors = document.querySelectorAll('a[href]');
     for (var i = 0; i < anchors.length; i++) {
       var a = anchors[i];
-      if (a.getAttribute('data-outbound-blank') === '1') continue;
-
       var href = a.getAttribute('href') || '';
       if (!isExternalHttpUrl(href)) continue;
 
-      a.setAttribute('data-outbound-blank', '1');
-      a.setAttribute('target', '_blank');
+      // Desktop: open external links in a new tab/window.
+      if (!mobile) {
+        a.setAttribute('target', '_blank');
 
-      var rel = (a.getAttribute('rel') || '').trim();
-      if (!rel) {
-        a.setAttribute('rel', 'noopener noreferrer');
-      } else {
-        // Ensure rel includes noopener/noreferrer for security.
-        var lower = (' ' + rel.toLowerCase() + ' ');
-        if (lower.indexOf(' noopener ') === -1) rel += (rel ? ' ' : '') + 'noopener';
-        if (lower.indexOf(' noreferrer ') === -1) rel += (rel ? ' ' : '') + 'noreferrer';
-        a.setAttribute('rel', rel);
+        var rel = (a.getAttribute('rel') || '').trim();
+        if (!rel) {
+          a.setAttribute('rel', 'noopener noreferrer');
+        } else {
+          // Ensure rel includes noopener/noreferrer for security.
+          var lower = (' ' + rel.toLowerCase() + ' ');
+          if (lower.indexOf(' noopener ') === -1) rel += (rel ? ' ' : '') + 'noopener';
+          if (lower.indexOf(' noreferrer ') === -1) rel += (rel ? ' ' : '') + 'noreferrer';
+          a.setAttribute('rel', rel);
+        }
+
+        if (a.getAttribute('data-leave-confirm') === '1') {
+          a.removeEventListener('click', confirmLeavingExternalOnMobile);
+          a.removeAttribute('data-leave-confirm');
+        }
+        continue;
+      }
+
+      // Mobile: keep in the same tab but ask before leaving.
+      a.removeAttribute('target');
+      if (a.getAttribute('data-leave-confirm') !== '1') {
+        a.setAttribute('data-leave-confirm', '1');
+        a.addEventListener('click', confirmLeavingExternalOnMobile);
       }
     }
   }
@@ -313,7 +356,7 @@
     document.addEventListener('DOMContentLoaded', function () {
       normalizeHomepageLinks();
       normalizePhoneLinks();
-      ensureOutboundLinksOpenNewTab();
+      ensureOutboundExternalLinkUx();
       ensureBlogNavItem();
       ensureFooterSocialLinks();
       ensureBackToTopButton();
@@ -322,7 +365,7 @@
   } else {
     normalizeHomepageLinks();
     normalizePhoneLinks();
-    ensureOutboundLinksOpenNewTab();
+    ensureOutboundExternalLinkUx();
     ensureBlogNavItem();
     ensureFooterSocialLinks();
     ensureBackToTopButton();
