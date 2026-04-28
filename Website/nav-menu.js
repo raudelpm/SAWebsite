@@ -125,6 +125,76 @@
     document.body.appendChild(btn);
   }
 
+  function stopClick(e) {
+    if (!e) return;
+    if (typeof e.preventDefault === 'function') e.preventDefault();
+    if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+  }
+
+  function isSpecialScheme(href) {
+    return /^(mailto:|tel:|sms:|javascript:)/i.test(href || '');
+  }
+
+  function isExternalHttpUrl(href) {
+    if (!href) return false;
+    if (href[0] === '#') return false;
+    if (isSpecialScheme(href)) return false;
+
+    var url;
+    try {
+      url = new URL(href, window.location.href);
+    } catch (e) {
+      return false;
+    }
+    if (!(url.protocol === 'http:' || url.protocol === 'https:')) return false;
+
+    // Treat our own domains as internal even if linked absolutely.
+    var host = (url.hostname || '').toLowerCase();
+    if (host === (window.location.hostname || '').toLowerCase()) return false;
+    if (host === 'screenarmors.com' || host === 'www.screenarmors.com') return false;
+    return true;
+  }
+
+  function confirmLeavingSite(e) {
+    var a = e && e.currentTarget ? e.currentTarget : null;
+    var href = a && typeof a.getAttribute === 'function' ? a.getAttribute('href') : '';
+    var msg =
+      'You are about to leave Screen Armors and be redirected to an external website.\n' +
+      'Do you want to continue?';
+
+    // If we can parse destination, include it for clarity.
+    try {
+      var url = new URL(href, window.location.href);
+      if (url && url.hostname) {
+        msg =
+          'You are about to leave Screen Armors and be redirected to ' +
+          url.hostname +
+          '.\nDo you want to continue?';
+      }
+    } catch (e2) {}
+
+    var ok = window.confirm(msg);
+    if (!ok) {
+      stopClick(e);
+      return false;
+    }
+    return true;
+  }
+
+  function ensureOutboundLinkConfirm() {
+    var anchors = document.querySelectorAll('a[href]');
+    for (var i = 0; i < anchors.length; i++) {
+      var a = anchors[i];
+      if (a.getAttribute('data-leave-confirm') === '1') continue;
+      var href = a.getAttribute('href') || '';
+      if (!isExternalHttpUrl(href)) continue;
+
+      a.setAttribute('data-leave-confirm', '1');
+      a.addEventListener('click', confirmLeavingSite);
+    }
+  }
+
   function blogIndexHref() {
     // Root-relative so it always resolves to /blog.html (never /blog/blog.html) from
     // article URLs like /blog/post.html. Assumes the site is served with Web root at host /.
@@ -267,6 +337,7 @@
       ensureBlogNavItem();
       ensureFooterSocialLinks();
       ensureBackToTopButton();
+      ensureOutboundLinkConfirm();
       syncBodyOpenClass();
     });
   } else {
@@ -275,6 +346,7 @@
     ensureBlogNavItem();
     ensureFooterSocialLinks();
     ensureBackToTopButton();
+    ensureOutboundLinkConfirm();
     syncBodyOpenClass();
   }
 
