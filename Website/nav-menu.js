@@ -23,6 +23,45 @@
     return document.getElementById('navLinks');
   }
 
+  function normalizeHomepageLinks() {
+    var anchors = document.querySelectorAll('a[href]');
+    for (var i = 0; i < anchors.length; i++) {
+      var a = anchors[i];
+      var href = a.getAttribute('href');
+      if (!href) continue;
+
+      // Keep hash-only and special schemes intact.
+      if (href[0] === '#') continue;
+      if (/^(mailto:|tel:|sms:|javascript:)/i.test(href)) continue;
+
+      // Normalize absolute homepage variants.
+      if (/^https?:\/\/screenarmors\.com\/?$/i.test(href)) {
+        a.setAttribute('href', 'https://www.screenarmors.com/');
+        continue;
+      }
+      if (/^https?:\/\/www\.screenarmors\.com\/?$/i.test(href)) {
+        a.setAttribute('href', '/');
+        continue;
+      }
+      if (/^https?:\/\/www\.screenarmors\.com\/index(\.html)?\/?$/i.test(href)) {
+        a.setAttribute('href', '/');
+        continue;
+      }
+
+      // Normalize common relative homepage variants.
+      if (href === 'index.html' || href === './index.html' || href === '/index' || href === '/index.html') {
+        a.setAttribute('href', '/');
+        continue;
+      }
+    }
+
+    // Ensure brand/logo always points to root.
+    var logos = document.querySelectorAll('a.logo');
+    for (var j = 0; j < logos.length; j++) {
+      logos[j].setAttribute('href', '/');
+    }
+  }
+
   function ensureBackToTopButton() {
     if (!document.body) return;
     if (document.getElementById('backToTopBtn')) return;
@@ -203,12 +242,14 @@
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
+      normalizeHomepageLinks();
       ensureBlogNavItem();
       ensureFooterSocialLinks();
       ensureBackToTopButton();
       syncBodyOpenClass();
     });
   } else {
+    normalizeHomepageLinks();
     ensureBlogNavItem();
     ensureFooterSocialLinks();
     ensureBackToTopButton();

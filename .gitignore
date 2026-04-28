@@ -1,4 +1,6 @@
 .DS_Store
+Website/__pycache__/
+Website/__pycache__/**
 
 # Node
 node_modules/

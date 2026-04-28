@@ -1,6 +1,14 @@
 {
   "buildCommand": null,
   "outputDirectory": "Website",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "screenarmors.com" }],
+      "destination": "https://www.screenarmors.com/:path*",
+      "permanent": true
+    }
+  ],
   "routes": [
     { "handle": "filesystem" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
