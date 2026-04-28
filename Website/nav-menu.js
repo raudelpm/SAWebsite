@@ -123,9 +123,30 @@
   }
 
   function confirmLeavingExternalOnMobile(e) {
+    var a = e && e.currentTarget ? e.currentTarget : null;
+    var href = a && typeof a.getAttribute === 'function' ? a.getAttribute('href') : '';
+
+    function labelForHost(host) {
+      var h = String(host || '').toLowerCase();
+      if (!h) return 'an external website';
+      if (h.indexOf('google.') !== -1) return 'Google Reviews';
+      if (h.indexOf('facebook.') !== -1) return 'Facebook';
+      if (h.indexOf('instagram.') !== -1) return 'Instagram';
+      if (h.indexOf('yelp.') !== -1) return 'Yelp';
+      if (h === 'wa.me' || h.indexOf('whatsapp.') !== -1) return 'WhatsApp';
+      return host;
+    }
+
+    var dest = 'an external website';
+    try {
+      var url = new URL(href, window.location.href);
+      dest = labelForHost(url.hostname);
+    } catch (e2) {}
+
     var msg =
-      'You are about to leave Screen Armors and be redirected to Google Reviews.\n' +
-      'Do you want to continue?';
+      'You are about to leave Screen Armors and be redirected to ' +
+      dest +
+      '.\nDo you want to continue?';
     // Use native confirm so it works on iOS/Android browsers.
     var ok = window.confirm(msg);
     if (!ok) {
