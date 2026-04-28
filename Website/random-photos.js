@@ -39,17 +39,76 @@
     urls.forEach((src) => {
       const card = document.createElement("div");
       card.className = "random-photos-strip__card";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "random-photos-strip__btn";
+      btn.setAttribute("aria-label", "Open photo");
+
       const img = document.createElement("img");
       img.src = src;
       img.alt = "";
       img.loading = "lazy";
       img.decoding = "async";
-      card.appendChild(img);
+
+      btn.appendChild(img);
+      btn.addEventListener("click", () => openLightbox(src));
+      card.appendChild(btn);
       grid.appendChild(card);
     });
 
     section.appendChild(grid);
     return section;
+  }
+
+  function ensureLightbox() {
+    const existing = document.getElementById("saLightbox");
+    if (existing) return existing;
+
+    const overlay = document.createElement("div");
+    overlay.id = "saLightbox";
+    overlay.className = "lightbox";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Photo preview");
+
+    const img = document.createElement("img");
+    img.className = "lightbox-content";
+    img.alt = "";
+    img.loading = "eager";
+    img.decoding = "async";
+
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "lightbox-close";
+    close.setAttribute("aria-label", "Close");
+    close.textContent = "×";
+
+    overlay.appendChild(close);
+    overlay.appendChild(img);
+
+    function hide() {
+      overlay.style.display = "none";
+      img.removeAttribute("src");
+    }
+
+    close.addEventListener("click", hide);
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) hide();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay.style.display === "flex") hide();
+    });
+
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+
+  function openLightbox(src) {
+    const overlay = ensureLightbox();
+    const img = overlay.querySelector(".lightbox-content");
+    if (!img) return;
+    img.src = src;
+    overlay.style.display = "flex";
   }
 
   function init() {

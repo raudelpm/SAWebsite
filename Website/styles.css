@@ -1068,6 +1068,10 @@ body.nav-menu-open::before {
     margin-right: auto;
 }
 
+.hero-title-break {
+    display: block;
+}
+
 /* Home hero: keep title on one centered line when there is room */
 .hero-title--singleline {
     text-align: center;
@@ -1341,6 +1345,21 @@ body.nav-menu-open::before {
 	box-shadow:
 		0 2px 6px rgba(0, 0, 0, 0.06),
 		0 12px 36px rgba(15, 35, 70, 0.12);
+}
+
+.random-photos-strip__btn {
+	display: block;
+	width: 100%;
+	border: 0;
+	padding: 0;
+	background: transparent;
+	cursor: pointer;
+}
+
+.random-photos-strip__btn:focus-visible {
+	outline: 3px solid rgba(255, 215, 0, 0.95);
+	outline-offset: 3px;
+	border-radius: 12px;
 }
 
 .random-photos-strip__card img {
@@ -4560,7 +4579,7 @@ footer {
     position: absolute;
     top: 2rem;
     right: 3rem;
-    color: #fff;
+    color: #ff3b3b;
     font-size: 3rem;
     font-weight: bold;
     cursor: pointer;
@@ -4570,7 +4589,7 @@ footer {
 }
 
 .lightbox-close:hover {
-    color: #ffd700;
+    color: #ff6b6b;
 }
 
 .lightbox-caption {
