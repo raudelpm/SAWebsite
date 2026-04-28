@@ -82,6 +82,55 @@
     }
   }
 
+  function isSpecialScheme(href) {
+    return /^(mailto:|tel:|sms:|javascript:)/i.test(href || '');
+  }
+
+  function isExternalHttpUrl(href) {
+    if (!href) return false;
+    if (href[0] === '#') return false;
+    if (isSpecialScheme(href)) return false;
+
+    var url;
+    try {
+      url = new URL(href, window.location.href);
+    } catch (e) {
+      return false;
+    }
+    if (!(url.protocol === 'http:' || url.protocol === 'https:')) return false;
+
+    var host = (url.hostname || '').toLowerCase();
+    var currentHost = (window.location.hostname || '').toLowerCase();
+    if (host === currentHost) return false;
+    if (host === 'screenarmors.com' || host === 'www.screenarmors.com') return false;
+    return true;
+  }
+
+  function ensureOutboundLinksOpenNewTab() {
+    var anchors = document.querySelectorAll('a[href]');
+    for (var i = 0; i < anchors.length; i++) {
+      var a = anchors[i];
+      if (a.getAttribute('data-outbound-blank') === '1') continue;
+
+      var href = a.getAttribute('href') || '';
+      if (!isExternalHttpUrl(href)) continue;
+
+      a.setAttribute('data-outbound-blank', '1');
+      a.setAttribute('target', '_blank');
+
+      var rel = (a.getAttribute('rel') || '').trim();
+      if (!rel) {
+        a.setAttribute('rel', 'noopener noreferrer');
+      } else {
+        // Ensure rel includes noopener/noreferrer for security.
+        var lower = (' ' + rel.toLowerCase() + ' ');
+        if (lower.indexOf(' noopener ') === -1) rel += (rel ? ' ' : '') + 'noopener';
+        if (lower.indexOf(' noreferrer ') === -1) rel += (rel ? ' ' : '') + 'noreferrer';
+        a.setAttribute('rel', rel);
+      }
+    }
+  }
+
   function ensureBackToTopButton() {
     if (!document.body) return;
     if (document.getElementById('backToTopBtn')) return;
@@ -264,6 +313,7 @@
     document.addEventListener('DOMContentLoaded', function () {
       normalizeHomepageLinks();
       normalizePhoneLinks();
+      ensureOutboundLinksOpenNewTab();
       ensureBlogNavItem();
       ensureFooterSocialLinks();
       ensureBackToTopButton();
@@ -272,6 +322,7 @@
   } else {
     normalizeHomepageLinks();
     normalizePhoneLinks();
+    ensureOutboundLinksOpenNewTab();
     ensureBlogNavItem();
     ensureFooterSocialLinks();
     ensureBackToTopButton();
