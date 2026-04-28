@@ -62,6 +62,26 @@
     }
   }
 
+  function normalizePhoneLinks() {
+    var desiredE164 = '+19414049699';
+    var desiredDigits = '19414049699';
+    var localDigits = '9414049699';
+
+    var links = document.querySelectorAll('a[href^="tel:"]');
+    for (var i = 0; i < links.length; i++) {
+      var a = links[i];
+      var href = a.getAttribute('href') || '';
+      // Strip scheme + punctuation to compare digits only.
+      var digits = href.replace(/^tel:/i, '').replace(/[^\d]/g, '');
+      if (!digits) continue;
+
+      // If it matches our known number in any common format, normalize to E.164.
+      if (digits === localDigits || digits === desiredDigits || digits.slice(-10) === localDigits) {
+        a.setAttribute('href', 'tel:' + desiredE164);
+      }
+    }
+  }
+
   function ensureBackToTopButton() {
     if (!document.body) return;
     if (document.getElementById('backToTopBtn')) return;
@@ -243,6 +263,7 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       normalizeHomepageLinks();
+      normalizePhoneLinks();
       ensureBlogNavItem();
       ensureFooterSocialLinks();
       ensureBackToTopButton();
@@ -250,6 +271,7 @@
     });
   } else {
     normalizeHomepageLinks();
+    normalizePhoneLinks();
     ensureBlogNavItem();
     ensureFooterSocialLinks();
     ensureBackToTopButton();
