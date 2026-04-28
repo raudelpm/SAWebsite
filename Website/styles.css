@@ -4228,7 +4228,12 @@ footer {
 
 .quote-request-form #rq_submit {
     width: 100%;
+    box-sizing: border-box;
+    display: flex;
     justify-content: center;
+    justify-self: stretch;
+    margin-left: auto;
+    margin-right: auto;
     min-height: 54px;
     font-weight: 800;
     letter-spacing: 0.08em;
