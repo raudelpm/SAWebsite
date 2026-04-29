@@ -25,6 +25,7 @@
   };
   var DISCOUNT_THRESHOLD = 5;
   var DISCOUNT_RATE = 0.1;
+  var MIN_SERVICE_CHARGE = 100;
 
   var tool = document.getElementById('screenQuoteTool');
   var diagram = document.getElementById('screenQuoteDiagram');
@@ -43,6 +44,8 @@
   var sqSubtotal = document.getElementById('sqSubtotal');
   var sqDiscountRow = document.getElementById('sqDiscountRow');
   var sqDiscount = document.getElementById('sqDiscount');
+  var sqMinRow = document.getElementById('sqMinRow');
+  var sqMinCharge = document.getElementById('sqMinCharge');
   var sqGrand = document.getElementById('sqGrand');
   var btnEditMore = document.getElementById('screenQuoteEditMore');
   var stage = document.querySelector('.screen-quote-stage');
@@ -137,8 +140,20 @@
     var sub = subtotal();
     var discount = 0;
     if (count >= DISCOUNT_THRESHOLD) discount = Math.round(sub * DISCOUNT_RATE * 100) / 100;
-    var grand = Math.round((sub - discount) * 100) / 100;
-    return { count: count, sub: sub, discount: discount, grand: grand };
+    var grandBeforeMin = Math.round((sub - discount) * 100) / 100;
+    var minimumChargeApplied = 0;
+    var grand = grandBeforeMin;
+    if (count > 0 && grand > 0 && grand < MIN_SERVICE_CHARGE) {
+      minimumChargeApplied = Math.round((MIN_SERVICE_CHARGE - grand) * 100) / 100;
+      grand = MIN_SERVICE_CHARGE;
+    }
+    return {
+      count: count,
+      sub: sub,
+      discount: discount,
+      minimumChargeApplied: minimumChargeApplied,
+      grand: grand
+    };
   }
 
   function renderCart() {
@@ -277,6 +292,15 @@
       sqDiscountRow.hidden = true;
       sqDiscount.textContent = '−$0';
     }
+    if (sqMinRow && sqMinCharge) {
+      if (t.minimumChargeApplied > 0) {
+        sqMinRow.hidden = false;
+        sqMinCharge.textContent = fmtMoney(t.minimumChargeApplied);
+      } else {
+        sqMinRow.hidden = true;
+        sqMinCharge.textContent = '$0';
+      }
+    }
     sqGrand.textContent = fmtMoney(t.grand);
   }
 
@@ -308,12 +332,16 @@
     if (t.discount > 0) {
       parts.push('Volume discount (10% when 5+ panels): −' + fmtMoney(t.discount));
     }
+    if (t.minimumChargeApplied > 0) {
+      parts.push('Minimum service charge applied: +' + fmtMoney(t.minimumChargeApplied) + ' (minimum $' + MIN_SERVICE_CHARGE + ')');
+    }
     parts.push('Estimated total: ' + fmtMoney(t.grand));
     return {
       panelCount: t.count,
       subtotal: t.sub,
       discount: t.discount,
       grand: t.grand,
+      minimumChargeApplied: t.minimumChargeApplied,
       lines: lines,
       summaryText: parts.join('\n')
     };

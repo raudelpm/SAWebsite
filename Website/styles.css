@@ -706,6 +706,17 @@ body.nav-menu-open::before {
 	color: #1e3a8a;
 }
 
+.screen-quote-summary__minimum-note {
+	margin: 0.5rem 0 0;
+	font-size: 0.9rem;
+	color: #334155;
+	text-align: left;
+}
+
+.screen-quote-summary__minimum-note strong {
+	font-weight: 700;
+}
+
 .screen-quote-summary__note {
 	margin: 1.25rem 0 0;
 	font-size: 0.9rem;
