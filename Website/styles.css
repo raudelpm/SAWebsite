@@ -2720,7 +2720,7 @@ body.nav-menu-open::before {
 	font-size: clamp(1.45rem, 1rem + 2.1vw, 2.2rem);
 	line-height: 1.14;
 	letter-spacing: -0.03em;
-	color: #101010;
+	color: var(--color-brand-red);
 	text-align: center;
 }
 
@@ -2835,6 +2835,184 @@ body.nav-menu-open::before {
 
 .screen-repair-intent__ctas .btn {
 	order: unset;
+}
+
+/* Estimate by text / SMS (service-screening.html) */
+.estimate-by-text {
+	padding: clamp(1.5rem, 3.5vw, 2.5rem) 0;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, #f0f4f9 55%, #e8eef5 100%);
+	border-top: 1px solid rgba(30, 40, 60, 0.08);
+	border-bottom: 1px solid rgba(30, 40, 60, 0.08);
+	position: relative;
+	z-index: 6;
+}
+
+/* Nested under service-showcase: sits below photo + quick-quote CTA card */
+.estimate-by-text--in-showcase {
+	margin-top: clamp(1.35rem, 3vw, 2rem);
+	padding: clamp(1.35rem, 3vw, 2.15rem) clamp(0.5rem, 2vw, 0.25rem);
+	border-radius: 14px;
+	border: 1px solid rgba(30, 40, 60, 0.1);
+	border-left: 5px solid var(--color-brand-red);
+	box-shadow: 0 12px 32px rgba(30, 45, 75, 0.06);
+	z-index: auto;
+}
+
+.estimate-by-text--in-showcase .estimate-by-text__inner {
+	max-width: none;
+	margin: 0;
+	padding: 0;
+}
+
+.estimate-by-text__grid {
+	display: grid;
+	gap: clamp(1.35rem, 3vw, 2rem);
+	align-items: center;
+}
+
+@media (min-width: 900px) {
+	.estimate-by-text__grid {
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+		gap: 2rem 2.5rem;
+	}
+}
+
+.estimate-by-text__figure {
+	margin: 0;
+}
+
+.estimate-by-text__img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 16px;
+	border: 1px solid rgba(30, 40, 60, 0.12);
+	box-shadow: 0 16px 40px rgba(30, 45, 75, 0.1);
+}
+
+.estimate-by-text__title {
+	margin: 0 0 0.65rem;
+	font-family: var(--font-display), system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(1.2rem, 1rem + 1.1vw, 1.75rem);
+	line-height: 1.18;
+	letter-spacing: -0.02em;
+	color: var(--color-brand-red);
+}
+
+.estimate-by-text__lead {
+	margin: 0 0 0.75rem;
+	font-size: clamp(0.98rem, 0.93rem + 0.2vw, 1.06rem);
+	line-height: 1.62;
+	color: #3a3a3a;
+}
+
+.estimate-by-text__h3 {
+	margin: 1.2rem 0 0.5rem;
+	font-family: var(--font-display), system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(1rem, 0.92rem + 0.28vw, 1.12rem);
+	letter-spacing: 0.02em;
+	color: var(--color-brand-red);
+}
+
+.estimate-by-text__steps {
+	margin: 0 0 0.35rem;
+	padding-left: 1.35rem;
+	color: #353535;
+	font-size: clamp(0.95rem, 0.9rem + 0.12vw, 1.02rem);
+	line-height: 1.7;
+}
+
+.estimate-by-text__bullets {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+}
+
+.estimate-by-text__bullets li {
+	position: relative;
+	padding-left: 1.3rem;
+	font-size: clamp(0.95rem, 0.9rem + 0.12vw, 1.02rem);
+	line-height: 1.5;
+	color: #353535;
+}
+
+.estimate-by-text__bullets li::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0.52em;
+	width: 6px;
+	height: 6px;
+	background: var(--color-brand-red);
+	transform: rotate(45deg);
+	border-radius: 1px;
+	opacity: 0.9;
+}
+
+.estimate-by-text__cta-label {
+	margin: 1.25rem 0 0.45rem;
+	font-size: clamp(0.98rem, 0.93rem + 0.15vw, 1.05rem);
+	color: #222;
+}
+
+.estimate-by-text__phone {
+	margin: 0 0 0.6rem;
+}
+
+.estimate-by-text__sms-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.45rem;
+	padding: 0.85rem 1.35rem;
+	font-size: clamp(1rem, 0.92rem + 0.35vw, 1.15rem);
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	text-decoration: none;
+	color: #fff;
+	background: var(--btn-bg-green);
+	border: 1px solid rgba(255, 255, 255, 0.28);
+	border-radius: var(--btn-radius);
+	box-shadow: var(--btn-relief-green);
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease,
+		background 0.2s ease;
+}
+
+.estimate-by-text__sms-btn:hover {
+	background: var(--btn-bg-green-hover);
+	transform: translateY(-2px);
+	box-shadow: var(--btn-relief-green-hover);
+}
+
+.estimate-by-text__sms-icon {
+	font-size: 1.1em;
+	line-height: 1;
+}
+
+.estimate-by-text__tagline {
+	margin: 0.7rem 0 0;
+	font-size: clamp(0.93rem, 0.9rem + 0.1vw, 1rem);
+	font-weight: 600;
+	color: #555;
+	line-height: 1.45;
+}
+
+@media (max-width: 520px) {
+	.estimate-by-text__sms-btn {
+		display: flex;
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+		text-align: center;
+		white-space: normal;
+	}
 }
 
 /* White + green CTAs in intent row: .btn uses nowrap/inline-flex → label bleeds past background on phones */
