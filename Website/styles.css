@@ -1181,6 +1181,22 @@ body.nav-menu-open::before {
 	}
 }
 
+/* Screening LP: waves sit above hero text on small screens — keep tagline clear of overlap */
+@media (max-width: 768px) {
+	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) {
+		box-sizing: border-box;
+		padding-bottom: clamp(5.5rem, 20vw, 8.25rem);
+	}
+
+	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) .hero-content {
+		padding-bottom: 0.25rem;
+	}
+
+	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) .hero p {
+		margin-bottom: 0;
+	}
+}
+
 .hero--quick-screen-tool .hero-content {
     text-align: center;
 }
