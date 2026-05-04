@@ -1181,19 +1181,33 @@ body.nav-menu-open::before {
 	}
 }
 
-/* Screening LP: waves sit above hero text on small screens — keep tagline clear of overlap */
+/* Screening LP mobile: red waves/CTA stack above hero — push CTA down + reserve space for tagline */
 @media (max-width: 768px) {
+	/* Less negative overlap than generic .hero + .hero-cta-after so the red block sits lower */
+	.hero.hero--repair-landing + .hero-cta-after.hero-cta-after--repair-lp {
+		margin-top: clamp(-28px, -5vw, -10px);
+	}
+
 	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) {
 		box-sizing: border-box;
-		padding-bottom: clamp(5.5rem, 20vw, 8.25rem);
+		padding-bottom: clamp(7.5rem, 30vw, 11.5rem);
 	}
 
 	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) .hero-content {
-		padding-bottom: 0.25rem;
+		padding-bottom: 0.75rem;
 	}
 
 	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) .hero p {
 		margin-bottom: 0;
+	}
+
+	/* Shorter wave = less vertical intrusion over the photo on narrow screens */
+	.hero.hero--repair-landing + .hero-cta-after.hero-cta-after--repair-lp .hero-cta-after__waves {
+		height: clamp(48px, 11vw, 72px);
+	}
+
+	.hero.hero--repair-landing + .hero-cta-after.hero-cta-after--repair-lp .hero-cta-after__svg {
+		min-height: 48px;
 	}
 }
 
