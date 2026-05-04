@@ -3479,13 +3479,18 @@ body.nav-menu-open::before {
 	font-weight: 700;
 	color: rgba(255, 255, 255, 0.94);
 	font-size: clamp(0.9rem, 0.84rem + 0.28vw, 1.02rem);
+	text-transform: uppercase;
+	letter-spacing: 0.055em;
 }
 
-.hero-cta-after--repair-lp .hero-cta-after__repair-call-btn {
+/* Long selector beats .hero-cta-after__lead a[href^="tel:"] (same-ish specificity, later in file) */
+.hero-cta-after--repair-lp .hero-cta-after__lead--repair-lp a.hero-cta-after__repair-call-btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 44px;
+	box-sizing: border-box;
+	width: min(100%, 22rem);
+	min-height: 48px;
 	padding: 0.4rem 1.1rem;
 	font-family: var(--font-display), system-ui, sans-serif;
 	font-size: clamp(0.84rem, 0.78rem + 0.28vw, 0.98rem);
@@ -3510,7 +3515,7 @@ body.nav-menu-open::before {
 		box-shadow 0.2s ease;
 }
 
-.hero-cta-after--repair-lp .hero-cta-after__repair-call-btn:hover {
+.hero-cta-after--repair-lp .hero-cta-after__lead--repair-lp a.hero-cta-after__repair-call-btn:hover {
 	color: #fff;
 	background: linear-gradient(180deg, #4ade80 0%, #22c55e 50%, #166534 100%);
 	border-color: rgba(255, 255, 255, 0.45);
@@ -3521,9 +3526,16 @@ body.nav-menu-open::before {
 		0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
-.hero-cta-after--repair-lp .hero-cta-after__repair-call-btn:focus-visible {
+.hero-cta-after--repair-lp .hero-cta-after__lead--repair-lp a.hero-cta-after__repair-call-btn:focus-visible {
 	outline: 2px solid #fff;
 	outline-offset: 3px;
+}
+
+/* Screening repair LP: CTAs read in caps without shouting in source */
+.hero-cta-after--repair-lp .hero-cta-after__lead--repair-lp a.hero-cta-after__repair-call-btn,
+.hero-cta-after--repair-lp .hero-cta-after__repair-ctas .hero-cta-after__repair-btn {
+	text-transform: uppercase;
+	letter-spacing: 0.055em;
 }
 
 .hero-cta-after__repair-ctas {
@@ -3562,7 +3574,37 @@ body.nav-menu-open::before {
 		box-shadow 0.2s ease;
 }
 
-.hero-cta-after__repair-btn--blue {
+/* Request quote — strong red */
+.hero-cta-after__repair-btn--quote {
+	color: #fff;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+	background: linear-gradient(180deg, #f87171 0%, #b91c1c 42%, #7f1d1d 100%);
+	border: 1px solid rgba(255, 255, 255, 0.32);
+	box-shadow:
+		0 2px 0 rgba(0, 0, 0, 0.15) inset,
+		0 1px 0 rgba(255, 255, 255, 0.22) inset,
+		0 4px 18px rgba(127, 29, 29, 0.55),
+		0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.hero-cta-after__repair-btn--quote:hover {
+	color: #fff;
+	background: linear-gradient(180deg, #fca5a5 0%, #dc2626 48%, #991b1b 100%);
+	border-color: rgba(255, 255, 255, 0.48);
+	box-shadow:
+		0 2px 0 rgba(255, 255, 255, 0.12) inset,
+		0 6px 22px rgba(185, 28, 28, 0.5),
+		0 3px 8px rgba(0, 0, 0, 0.15);
+	transform: translateY(-2px);
+}
+
+.hero-cta-after__repair-btn--quote:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 3px;
+}
+
+/* Quick screen tool — blue */
+.hero-cta-after__repair-btn--quick {
 	color: #fff;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
 	background: linear-gradient(180deg, #3b82f6 0%, #2563eb 48%, #1d4ed8 100%);
@@ -3574,7 +3616,7 @@ body.nav-menu-open::before {
 		0 2px 6px rgba(0, 0, 0, 0.14);
 }
 
-.hero-cta-after__repair-btn--blue:hover {
+.hero-cta-after__repair-btn--quick:hover {
 	color: #fff;
 	background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 50%, #1e40af 100%);
 	border-color: rgba(255, 255, 255, 0.45);
@@ -3585,46 +3627,36 @@ body.nav-menu-open::before {
 	transform: translateY(-2px);
 }
 
-.hero-cta-after__repair-btn--blue:focus-visible {
+.hero-cta-after__repair-btn--quick:focus-visible {
 	outline: 2px solid #fff;
 	outline-offset: 3px;
 }
 
-.hero-cta-after__repair-btn--outline {
+/* Text / SMS — orange */
+.hero-cta-after__repair-btn--sms {
 	color: #fff;
-	background: rgba(255, 255, 255, 0.08);
-	border: 2px solid rgba(255, 255, 255, 0.88);
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) inset;
-}
-
-.hero-cta-after__repair-btn--outline:hover {
-	background: rgba(255, 255, 255, 0.18);
-	border-color: #fff;
-	transform: translateY(-1px);
-}
-
-.hero-cta-after__repair-btn--outline:focus-visible {
-	outline: 2px solid #fff;
-	outline-offset: 3px;
-}
-
-.hero-cta-after__repair-btn--green {
-	color: #fff;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-	background: linear-gradient(180deg, #22c55e 0%, #16a34a 48%, #15803d 100%);
-	border: 1px solid rgba(255, 255, 255, 0.25);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+	background: linear-gradient(180deg, #fb923c 0%, #ea580c 48%, #c2410c 100%);
+	border: 1px solid rgba(255, 255, 255, 0.28);
 	box-shadow:
 		0 2px 0 rgba(0, 0, 0, 0.1) inset,
-		0 1px 0 rgba(255, 255, 255, 0.2) inset,
-		0 4px 14px rgba(22, 163, 74, 0.35);
+		0 1px 0 rgba(255, 255, 255, 0.22) inset,
+		0 4px 16px rgba(234, 88, 12, 0.42),
+		0 2px 6px rgba(0, 0, 0, 0.14);
 }
 
-.hero-cta-after__repair-btn--green:hover {
-	background: linear-gradient(180deg, #4ade80 0%, #22c55e 50%, #166534 100%);
+.hero-cta-after__repair-btn--sms:hover {
+	color: #fff;
+	background: linear-gradient(180deg, #fdba74 0%, #fb923c 50%, #9a3412 100%);
+	border-color: rgba(255, 255, 255, 0.45);
 	transform: translateY(-2px);
+	box-shadow:
+		0 2px 0 rgba(255, 255, 255, 0.12) inset,
+		0 6px 22px rgba(234, 88, 12, 0.45),
+		0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
-.hero-cta-after__repair-btn--green:focus-visible {
+.hero-cta-after__repair-btn--sms:focus-visible {
 	outline: 2px solid #fff;
 	outline-offset: 3px;
 }
@@ -3666,13 +3698,13 @@ body.nav-menu-open::before {
 		font-size: 0.82rem;
 	}
 
-	.hero-cta-after--repair-lp .hero-cta-after__repair-call-btn {
+	.hero-cta-after--repair-lp .hero-cta-after__lead--repair-lp a.hero-cta-after__repair-call-btn {
 		min-height: 44px;
 		padding: 0.35rem 0.85rem;
 		font-size: 0.78rem;
 		white-space: normal;
 		text-align: center;
-		width: min(100%, 19rem);
+		width: min(100%, 22rem);
 	}
 
 	.hero-cta-after--repair-lp .hero-cta-after__repair-ctas {
