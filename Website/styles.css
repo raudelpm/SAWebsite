@@ -2756,6 +2756,19 @@ body.nav-menu-open::before {
 	padding: 0;
 }
 
+/* Mobile: thin neutral left border — removes double red stripe (showcase + estimate card), screening only */
+@media (max-width: 768px) {
+	article.service-showcase:has(.estimate-by-text--in-showcase) {
+		border-left-width: 1px;
+		border-left-color: rgba(30, 40, 60, 0.12);
+	}
+
+	.estimate-by-text--in-showcase {
+		border-left-width: 1px;
+		border-left-color: rgba(30, 40, 60, 0.1);
+	}
+}
+
 .estimate-by-text__grid {
 	display: grid;
 	gap: clamp(1.35rem, 3vw, 2rem);
