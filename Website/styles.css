@@ -3376,10 +3376,20 @@ body.nav-menu-open::before {
 	color: #fff;
 }
 
-/* Screening repair LP (service-screening.html): merged copy + CTAs in red band */
+/* Screening repair LP (service-screening.html): compact band + CTAs */
 .hero-cta-after--repair-lp .hero-cta-after__band {
-	padding-top: clamp(1.65rem, 3.8vw, 2.6rem);
-	padding-bottom: clamp(1.75rem, 3.8vw, 2.65rem);
+	padding-top: clamp(1rem, 2.4vw, 1.85rem);
+	padding-bottom: clamp(1.05rem, 2.4vw, 1.9rem);
+}
+
+.hero-cta-after--repair-lp .hero-cta-after__repair-h1 {
+	margin-bottom: 0.5rem;
+}
+
+.hero-cta-after--repair-lp .hero-cta-after__repair-intro {
+	margin-bottom: 0.6rem;
+	max-width: 36rem;
+	line-height: 1.45;
 }
 
 .hero-cta-after__repair-h1 {
@@ -3411,104 +3421,64 @@ body.nav-menu-open::before {
 }
 
 .hero-cta-after__lead--repair-lp {
-	margin: 0 auto 1.35rem;
+	margin: 0 auto 0.75rem;
 	justify-content: center;
 	text-align: center;
 	max-width: none;
+	flex-wrap: wrap;
+	gap: 0.45rem 0.6rem;
+	align-items: center;
 }
 
-.hero-cta-after__repair-columns {
-	display: grid;
-	gap: clamp(1rem, 2.5vw, 1.45rem);
-	margin-bottom: 1.25rem;
+.hero-cta-after__repair-lead-muted {
+	font-weight: 700;
+	color: rgba(255, 255, 255, 0.94);
+	font-size: clamp(0.9rem, 0.84rem + 0.28vw, 1.02rem);
 }
 
-@media (min-width: 880px) {
-	.hero-cta-after__repair-columns {
-		grid-template-columns: 1fr 1fr;
-		gap: 1.75rem 2.5rem;
-		align-items: start;
-	}
-}
-
-.hero-cta-after__repair-h2 {
-	margin: 0 0 0.55rem;
+.hero-cta-after--repair-lp .hero-cta-after__repair-call-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0.4rem 1.1rem;
 	font-family: var(--font-display), system-ui, sans-serif;
+	font-size: clamp(0.84rem, 0.78rem + 0.28vw, 0.98rem);
 	font-weight: 800;
-	font-size: clamp(1.02rem, 0.92rem + 0.45vw, 1.18rem);
-	line-height: 1.22;
-	letter-spacing: 0.02em;
+	letter-spacing: 0.03em;
+	white-space: nowrap;
+	text-decoration: none;
 	color: #fff;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	border: 1px solid rgba(255, 255, 255, 0.28);
+	border-radius: 8px;
+	background: linear-gradient(180deg, #22c55e 0%, #16a34a 48%, #15803d 100%);
+	box-shadow:
+		0 2px 0 rgba(0, 0, 0, 0.1) inset,
+		0 1px 0 rgba(255, 255, 255, 0.2) inset,
+		0 4px 14px rgba(22, 163, 74, 0.38),
+		0 2px 6px rgba(0, 0, 0, 0.12);
+	transition:
+		background 0.2s ease,
+		border-color 0.2s ease,
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
 }
 
-.hero-cta-after__repair-h2--spaced {
-	margin-top: 1.35rem;
-}
-
-.hero-cta-after__repair-p {
-	margin: 0 0 0.85rem;
-	font-size: clamp(0.95rem, 0.9rem + 0.15vw, 1.03rem);
-	line-height: 1.6;
-	color: rgba(255, 255, 255, 0.93);
-}
-
-.hero-cta-after__repair-p:last-child {
-	margin-bottom: 0;
-}
-
-.hero-cta-after__repair-p strong {
-	font-weight: 700;
+.hero-cta-after--repair-lp .hero-cta-after__repair-call-btn:hover {
 	color: #fff;
+	background: linear-gradient(180deg, #4ade80 0%, #22c55e 50%, #166534 100%);
+	border-color: rgba(255, 255, 255, 0.45);
+	transform: translateY(-2px);
+	box-shadow:
+		0 2px 0 rgba(255, 255, 255, 0.12) inset,
+		0 6px 18px rgba(22, 163, 74, 0.45),
+		0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
-.hero-cta-after__repair-label {
-	margin: 0 0 0.4rem;
-	font-weight: 700;
-	font-size: 0.95rem;
-	color: rgba(255, 255, 255, 0.98);
-}
-
-.hero-cta-after__repair-list {
-	list-style: none;
-	margin: 0 0 0.85rem;
-	padding: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 0.42rem;
-}
-
-.hero-cta-after__repair-list li {
-	position: relative;
-	padding-left: 1.3rem;
-	margin: 0;
-	font-size: clamp(0.95rem, 0.9rem + 0.12vw, 1.02rem);
-	line-height: 1.52;
-	color: rgba(255, 255, 255, 0.92);
-}
-
-.hero-cta-after__repair-list li::before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 0.52em;
-	width: 6px;
-	height: 6px;
-	background: #fff;
-	opacity: 0.9;
-	transform: rotate(45deg);
-	border-radius: 1px;
-}
-
-.hero-cta-after__repair-foot {
-	margin: 0;
-	font-size: clamp(0.94rem, 0.9rem + 0.1vw, 1.01rem);
-	line-height: 1.58;
-	color: rgba(255, 255, 255, 0.9);
-}
-
-.hero-cta-after__repair-foot strong {
-	color: #fff;
+.hero-cta-after--repair-lp .hero-cta-after__repair-call-btn:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 3px;
 }
 
 .hero-cta-after__repair-ctas {
@@ -3617,6 +3587,64 @@ body.nav-menu-open::before {
 .hero-cta-after__repair-btn--green:focus-visible {
 	outline: 2px solid #fff;
 	outline-offset: 3px;
+}
+
+/* service-screening.html: compact red band on small screens */
+@media (max-width: 640px) {
+	.hero-cta-after--repair-lp .hero-cta-after__waves {
+		height: clamp(36px, 9vw, 48px);
+	}
+
+	.hero-cta-after--repair-lp .hero-cta-after__svg {
+		min-height: 36px;
+	}
+
+	.hero-cta-after--repair-lp .hero-cta-after__band {
+		padding: 0.55rem 0.55rem 0.65rem;
+	}
+
+	.hero-cta-after--repair-lp .hero-cta-after__repair-h1 {
+		font-size: 1.02rem;
+		margin-bottom: 0.35rem;
+		line-height: 1.12;
+	}
+
+	.hero-cta-after--repair-lp .hero-cta-after__repair-intro {
+		font-size: 0.82rem;
+		line-height: 1.38;
+		margin-bottom: 0.45rem;
+	}
+
+	.hero-cta-after--repair-lp .hero-cta-after__lead--repair-lp {
+		margin-bottom: 0.5rem;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.hero-cta-after--repair-lp .hero-cta-after__repair-lead-muted {
+		font-size: 0.82rem;
+	}
+
+	.hero-cta-after--repair-lp .hero-cta-after__repair-call-btn {
+		min-height: 44px;
+		padding: 0.35rem 0.85rem;
+		font-size: 0.78rem;
+		white-space: normal;
+		text-align: center;
+		width: min(100%, 19rem);
+	}
+
+	.hero-cta-after--repair-lp .hero-cta-after__repair-ctas {
+		margin-top: 0;
+		gap: 0.38rem;
+	}
+
+	.hero-cta-after--repair-lp .hero-cta-after__repair-btn {
+		padding: 0.55rem 0.65rem;
+		min-height: 44px;
+		font-size: 0.74rem;
+	}
 }
 
 @media (max-width: 520px) {
