@@ -1061,7 +1061,8 @@ body.nav-menu-open::before {
         drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
 }
 
-.hero h1 {
+.hero h1,
+.hero h2.hero-content__visual-title {
     font-family: var(--font-display);
     font-weight: 800;
     letter-spacing: var(--title-tracking);
@@ -1169,11 +1170,23 @@ body.nav-menu-open::before {
     box-sizing: border-box;
 }
 
+/* Screening repair LP: shorter hero so photo + headline return above the fold */
+.hero--repair-landing {
+	min-height: 280px !important;
+}
+
+@media (min-width: 769px) {
+	.hero--repair-landing {
+		min-height: 300px !important;
+	}
+}
+
 .hero--quick-screen-tool .hero-content {
     text-align: center;
 }
 
-.hero--quick-screen-tool .hero h1 {
+.hero--quick-screen-tool .hero h1,
+.hero--quick-screen-tool .hero h2.hero-content__visual-title {
     text-align: center;
 }
 
@@ -2686,6 +2699,238 @@ body.nav-menu-open::before {
     }
 }
 
+/* Screen repair landing: intent-first block (service-screening.html, top of page) */
+.screen-repair-intent {
+	background: linear-gradient(180deg, #f9fafb 0%, #eef2f8 55%, #e8edf5 100%);
+	border-bottom: 1px solid rgba(30, 40, 60, 0.1);
+	padding: clamp(1rem, 2.5vw, 1.35rem) 0 clamp(1.15rem, 2.8vw, 1.85rem);
+}
+
+.screen-repair-intent__inner {
+	max-width: 1120px;
+	margin: 0 auto;
+	padding-left: clamp(1rem, 4vw, 1.5rem);
+	padding-right: clamp(1rem, 4vw, 1.5rem);
+}
+
+.screen-repair-intent__h1 {
+	margin: 0 0 0.65rem;
+	font-family: var(--font-display), system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(1.45rem, 1rem + 2.1vw, 2.2rem);
+	line-height: 1.14;
+	letter-spacing: -0.03em;
+	color: #101010;
+	text-align: center;
+}
+
+.screen-repair-intent__h1--caps {
+	text-transform: uppercase;
+	letter-spacing: 0.045em;
+	font-size: clamp(1.15rem, 0.82rem + 1.65vw, 1.85rem);
+	line-height: 1.12;
+}
+
+.screen-repair-intent__lead {
+	margin: 0 auto 1.15rem;
+	max-width: 46rem;
+	text-align: center;
+	font-size: clamp(0.98rem, 0.93rem + 0.22vw, 1.1rem);
+	line-height: 1.6;
+	color: #383838;
+}
+
+.screen-repair-intent__grid {
+	display: grid;
+	gap: clamp(1rem, 2.5vw, 1.45rem);
+}
+
+@media (min-width: 880px) {
+	.screen-repair-intent__grid {
+		grid-template-columns: 1fr 1fr;
+		gap: 1.75rem 2.5rem;
+		align-items: start;
+	}
+}
+
+.screen-repair-intent__h2 {
+	margin: 0 0 0.55rem;
+	font-family: var(--font-display), system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(1.02rem, 0.92rem + 0.45vw, 1.18rem);
+	line-height: 1.22;
+	letter-spacing: 0.01em;
+	color: var(--color-brand-red);
+}
+
+.screen-repair-intent__h2--spaced {
+	margin-top: 1.35rem;
+}
+
+.screen-repair-intent__micro {
+	margin: 0 0 0.7rem;
+	font-size: clamp(0.95rem, 0.9rem + 0.15vw, 1.03rem);
+	line-height: 1.6;
+	color: #424242;
+}
+
+.screen-repair-intent__label {
+	margin: 0 0 0.4rem;
+	font-weight: 700;
+	font-size: 0.95rem;
+	color: #222;
+}
+
+.screen-repair-intent__list {
+	list-style: none;
+	margin: 0 0 0.85rem;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.42rem;
+}
+
+.screen-repair-intent__list li {
+	position: relative;
+	padding-left: 1.3rem;
+	margin: 0;
+	font-size: clamp(0.95rem, 0.9rem + 0.12vw, 1.02rem);
+	line-height: 1.52;
+	color: #353535;
+}
+
+.screen-repair-intent__list li::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0.52em;
+	width: 6px;
+	height: 6px;
+	background: var(--color-brand-red);
+	opacity: 0.9;
+	transform: rotate(45deg);
+	border-radius: 1px;
+}
+
+.screen-repair-intent__note {
+	margin: 0;
+	font-size: clamp(0.94rem, 0.9rem + 0.1vw, 1.01rem);
+	line-height: 1.58;
+	color: #444;
+}
+
+.screen-repair-intent__ctas {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.65rem 0.85rem;
+	margin-top: 1.05rem;
+	align-items: center;
+}
+
+@media (max-width: 879px) {
+	.screen-repair-intent__ctas {
+		justify-content: center;
+	}
+}
+
+.screen-repair-intent__ctas .btn {
+	order: unset;
+}
+
+/* White + green CTAs in intent row: .btn uses nowrap/inline-flex → label bleeds past background on phones */
+.screen-repair-intent__ctas .btn-secondary,
+.screen-repair-intent__ctas .btn-primary {
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+	box-sizing: border-box;
+	text-align: center;
+	white-space: normal;
+	line-height: 1.35;
+	margin: 0;
+	overflow-wrap: break-word;
+	font-size: clamp(0.72rem, 0.68rem + 0.32vw, 0.92rem);
+	padding: 0.85rem clamp(0.8rem, 2.8vw, 1.45rem);
+}
+
+@media (max-width: 520px) {
+	.screen-repair-intent__ctas {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.screen-repair-intent__ctas .btn-screen-repair-blue,
+	.screen-repair-intent__ctas .btn-secondary,
+	.screen-repair-intent__ctas .btn-primary {
+		width: 100%;
+		max-width: 100%;
+	}
+}
+
+/* Shared blue CTA (screen repair landing + photo block under IMG) */
+.btn-screen-repair-blue {
+	margin: 0;
+}
+
+.service-showcase__photo-cta__btn,
+.screen-repair-intent__ctas .btn-screen-repair-blue {
+	order: unset;
+	/* Override .btn: nowrap + inline-flex caused label to paint wider than the blue box on phones */
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+	box-sizing: border-box;
+	text-align: center;
+	white-space: normal;
+	line-height: 1.35;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-weight: 800;
+	font-size: clamp(0.72rem, 0.68rem + 0.35vw, 0.92rem);
+	padding: 0.88rem clamp(0.85rem, 3vw, 1.5rem);
+	color: #fff;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+	background: linear-gradient(180deg, #3b82f6 0%, #2563eb 48%, #1d4ed8 100%);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow:
+		0 2px 0 rgba(0, 0, 0, 0.12) inset,
+		0 1px 0 rgba(255, 255, 255, 0.28) inset,
+		0 4px 16px rgba(37, 99, 235, 0.4),
+		0 2px 6px rgba(0, 0, 0, 0.14);
+	overflow-wrap: break-word;
+}
+
+.service-showcase__photo-cta__btn {
+	margin: 0 auto;
+}
+
+.screen-repair-intent__ctas .btn-screen-repair-blue {
+	margin: 0;
+}
+
+@media (max-width: 420px) {
+	.service-showcase__photo-cta__btn,
+	.screen-repair-intent__ctas .btn-screen-repair-blue {
+		width: 100%;
+		font-size: 0.72rem;
+		letter-spacing: 0.05em;
+		padding: 0.95rem 0.85rem;
+	}
+}
+
+.service-showcase__photo-cta__btn:hover,
+.screen-repair-intent__ctas .btn-screen-repair-blue:hover {
+	color: #fff;
+	background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 50%, #1e40af 100%);
+	border-color: rgba(255, 255, 255, 0.45);
+	box-shadow:
+		0 2px 0 rgba(255, 255, 255, 0.12) inset,
+		0 6px 22px rgba(37, 99, 235, 0.45),
+		0 3px 8px rgba(0, 0, 0, 0.12);
+	transform: translateY(-3px) scale(1.03);
+	z-index: 2;
+}
+
 /* Service detail showcase — richer layout (service-custom-enclosures + other service-*.html pages) */
 .service-showcase {
 	margin: clamp(0.5rem, 2vw, 1.25rem) 0 clamp(1.5rem, 3vw, 2.25rem);
@@ -2803,55 +3048,6 @@ body.nav-menu-open::before {
 	font-size: clamp(0.95rem, 0.9rem + 0.15vw, 1.05rem);
 	line-height: 1.55;
 	color: #4a4a4a;
-}
-
-.service-showcase__photo-cta__btn {
-	margin: 0 auto;
-	order: unset;
-	/* Override .btn: nowrap + inline-flex caused label to paint wider than the blue box on phones */
-	display: block;
-	width: fit-content;
-	max-width: 100%;
-	box-sizing: border-box;
-	text-align: center;
-	white-space: normal;
-	line-height: 1.35;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
-	font-weight: 800;
-	font-size: clamp(0.72rem, 0.68rem + 0.35vw, 0.92rem);
-	padding: 0.88rem clamp(0.85rem, 3vw, 1.5rem);
-	color: #fff;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
-	background: linear-gradient(180deg, #3b82f6 0%, #2563eb 48%, #1d4ed8 100%);
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	box-shadow:
-		0 2px 0 rgba(0, 0, 0, 0.12) inset,
-		0 1px 0 rgba(255, 255, 255, 0.28) inset,
-		0 4px 16px rgba(37, 99, 235, 0.4),
-		0 2px 6px rgba(0, 0, 0, 0.14);
-	overflow-wrap: break-word;
-}
-
-@media (max-width: 420px) {
-	.service-showcase__photo-cta__btn {
-		width: 100%;
-		font-size: 0.72rem;
-		letter-spacing: 0.05em;
-		padding: 0.95rem 0.85rem;
-	}
-}
-
-.service-showcase__photo-cta__btn:hover {
-	color: #fff;
-	background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 50%, #1e40af 100%);
-	border-color: rgba(255, 255, 255, 0.45);
-	box-shadow:
-		0 2px 0 rgba(255, 255, 255, 0.12) inset,
-		0 6px 22px rgba(37, 99, 235, 0.45),
-		0 3px 8px rgba(0, 0, 0, 0.12);
-	transform: translateY(-3px) scale(1.03);
-	z-index: 2;
 }
 
 .service-showcase__body {
@@ -3215,6 +3411,16 @@ body.nav-menu-open::before {
 	padding-top: 0;
 }
 
+/* Screening repair LP: white intent block between red band and .container */
+.hero-cta-after + .screen-repair-intent {
+	position: relative;
+	z-index: 6;
+}
+
+.hero-cta-after + .screen-repair-intent + .container {
+	padding-top: 0;
+}
+
 /* FAQ: keep clear space below red CTA band so the white window does not tuck under the waves/band */
 .hero-cta-after + .faq-page-wrap {
 	padding-top: clamp(1.75rem, 4.5vw, 2.75rem);
@@ -3249,6 +3455,8 @@ body.nav-menu-open::before {
 }
 
 .hero-cta-after__band {
+	position: relative;
+	z-index: 2;
 	width: 100%;
 	box-sizing: border-box;
 	padding: clamp(1.5rem, 3.5vw, 2.35rem) clamp(1.15rem, 4vw, 2.75rem) clamp(1.6rem, 3.8vw, 2.5rem);
@@ -3376,6 +3584,8 @@ body.nav-menu-open::before {
 }
 
 .hero-cta-after__cta {
+	position: relative;
+	z-index: 2;
 	flex-shrink: 0;
 }
 
@@ -4686,7 +4896,8 @@ footer {
         margin-top: -0.5rem;
     }
 
-    .hero h1 {
+    .hero h1,
+    .hero h2.hero-content__visual-title {
         font-size: 2rem;
         padding: 0.8rem 1.5rem;
         margin-bottom: 1.5rem;
@@ -5105,7 +5316,7 @@ footer {
 /* Floating Get Quote — bottom right (above safe area / home indicator) */
 .floating-quote-btn {
     position: fixed;
-    z-index: 1100;
+    z-index: 10050;
     bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     right: calc(0.75rem + env(safe-area-inset-right, 0px));
     display: inline-flex;
