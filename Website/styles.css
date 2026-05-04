@@ -3983,11 +3983,6 @@ body.nav-menu-open::before {
     letter-spacing: 0.01em;
 }
 
-/* Hide the "Service Area" tile in the footer grid site-wide. */
-footer .footer-grid a.footer-item[href="areas-we-serve.html"] {
-    display: none;
-}
-
 /* Screen Mesh Types (Screening service page) */
 .mesh-types {
     padding: 3.25rem 0;
