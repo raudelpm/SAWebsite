@@ -2775,6 +2775,85 @@ body.nav-menu-open::before {
 	box-shadow: 0 18px 40px rgba(30, 45, 75, 0.08);
 }
 
+/* CTA under hero photo (service-screening.html) */
+.service-showcase__photo-cta {
+	margin: clamp(1.35rem, 3.5vw, 2rem) auto 0;
+	max-width: 36rem;
+	padding: clamp(1.25rem, 3vw, 1.65rem) clamp(1.15rem, 3vw, 1.75rem);
+	text-align: center;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, #f4f6fa 100%);
+	border: 1px solid rgba(30, 40, 60, 0.12);
+	border-left: 5px solid var(--color-brand-red);
+	border-radius: 14px;
+	box-shadow: 0 12px 32px rgba(30, 45, 75, 0.08);
+}
+
+.service-showcase__photo-cta__headline {
+	margin: 0 0 0.45rem;
+	font-family: var(--font-display), system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(1.2rem, 1rem + 1vw, 1.55rem);
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	color: #141414;
+}
+
+.service-showcase__photo-cta__sub {
+	margin: 0 0 1.1rem;
+	font-size: clamp(0.95rem, 0.9rem + 0.15vw, 1.05rem);
+	line-height: 1.55;
+	color: #4a4a4a;
+}
+
+.service-showcase__photo-cta__btn {
+	margin: 0 auto;
+	order: unset;
+	/* Override .btn: nowrap + inline-flex caused label to paint wider than the blue box on phones */
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+	box-sizing: border-box;
+	text-align: center;
+	white-space: normal;
+	line-height: 1.35;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-weight: 800;
+	font-size: clamp(0.72rem, 0.68rem + 0.35vw, 0.92rem);
+	padding: 0.88rem clamp(0.85rem, 3vw, 1.5rem);
+	color: #fff;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+	background: linear-gradient(180deg, #3b82f6 0%, #2563eb 48%, #1d4ed8 100%);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow:
+		0 2px 0 rgba(0, 0, 0, 0.12) inset,
+		0 1px 0 rgba(255, 255, 255, 0.28) inset,
+		0 4px 16px rgba(37, 99, 235, 0.4),
+		0 2px 6px rgba(0, 0, 0, 0.14);
+	overflow-wrap: break-word;
+}
+
+@media (max-width: 420px) {
+	.service-showcase__photo-cta__btn {
+		width: 100%;
+		font-size: 0.72rem;
+		letter-spacing: 0.05em;
+		padding: 0.95rem 0.85rem;
+	}
+}
+
+.service-showcase__photo-cta__btn:hover {
+	color: #fff;
+	background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 50%, #1e40af 100%);
+	border-color: rgba(255, 255, 255, 0.45);
+	box-shadow:
+		0 2px 0 rgba(255, 255, 255, 0.12) inset,
+		0 6px 22px rgba(37, 99, 235, 0.45),
+		0 3px 8px rgba(0, 0, 0, 0.12);
+	transform: translateY(-3px) scale(1.03);
+	z-index: 2;
+}
+
 .service-showcase__body {
 	margin: 0;
 	font-size: clamp(0.98rem, 0.92rem + 0.2vw, 1.08rem);
@@ -2853,6 +2932,89 @@ body.nav-menu-open::before {
 		padding-top: 1.5rem;
 		border-top: 1px solid rgba(30, 40, 60, 0.08);
 	}
+}
+
+/* Screen repair landing — small jobs / single panels (service-screening.html) */
+.service-showcase__pull {
+	margin: 1.25rem auto 0;
+	max-width: 38rem;
+	padding: 0.95rem 1.35rem;
+	border-left: 4px solid var(--color-brand-red);
+	background: rgba(177, 15, 46, 0.07);
+	font-size: clamp(1.02rem, 0.96rem + 0.3vw, 1.18rem);
+	font-weight: 700;
+	line-height: 1.45;
+	color: #161616;
+	text-align: center;
+	border-radius: 0 10px 10px 0;
+	box-shadow: 0 4px 18px rgba(30, 45, 75, 0.06);
+}
+
+.service-showcase__pillars-wrap {
+	margin: clamp(1.75rem, 4vw, 2.5rem) auto 0;
+	padding-top: clamp(1.75rem, 4vw, 2.25rem);
+	border-top: 1px solid rgba(30, 40, 60, 0.1);
+	max-width: 72rem;
+	text-align: center;
+}
+
+.service-showcase__pillars-title {
+	margin: 0 0 0.5rem;
+	font-family: var(--font-display), system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.55rem);
+	letter-spacing: -0.02em;
+	color: #141414;
+}
+
+.service-showcase__pillars-deck {
+	margin: 0 auto 1.35rem;
+	max-width: 44rem;
+	font-size: clamp(0.98rem, 0.92rem + 0.2vw, 1.06rem);
+	line-height: 1.65;
+	color: #444;
+}
+
+.service-showcase__pillars {
+	display: grid;
+	gap: 1.35rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	text-align: left;
+}
+
+@media (min-width: 768px) {
+	.service-showcase__pillars {
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.5rem;
+	}
+}
+
+.service-showcase__pillar {
+	margin: 0;
+	padding: 1.1rem 1.15rem 1.2rem;
+	background: rgba(255, 255, 255, 0.75);
+	border: 1px solid rgba(30, 40, 60, 0.12);
+	border-radius: 14px;
+	box-shadow: 0 8px 24px rgba(30, 45, 75, 0.05);
+}
+
+.service-showcase__pillar-title {
+	margin: 0 0 0.55rem;
+	font-family: var(--font-display), system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(0.95rem, 0.88rem + 0.35vw, 1.08rem);
+	line-height: 1.25;
+	color: var(--color-brand-red);
+	letter-spacing: 0.02em;
+}
+
+.service-showcase__pillar-body {
+	margin: 0;
+	font-size: clamp(0.92rem, 0.88rem + 0.12vw, 1.02rem);
+	line-height: 1.62;
+	color: #3d3d3d;
 }
 
 /* Content Sections */
@@ -3133,18 +3295,47 @@ body.nav-menu-open::before {
 	font-size: clamp(0.98rem, 0.92rem + 0.35vw, 1.12rem);
 	font-weight: 700;
 	color: rgba(255, 255, 255, 0.98);
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 0.7rem;
 }
 
-.hero-cta-after__lead a {
+/* Phone in red band: reads as a real CTA (matches ghost button weight) */
+.hero-cta-after__lead a[href^="tel:"] {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0.45rem 1.15rem;
+	font-family: var(--font-display), system-ui, sans-serif;
+	font-size: clamp(0.88rem, 0.8rem + 0.35vw, 1.06rem);
+	font-weight: 800;
+	letter-spacing: 0.03em;
+	white-space: nowrap;
+	text-decoration: none;
 	color: #fff;
-	text-decoration: underline;
-	text-underline-offset: 3px;
-	text-decoration-thickness: 1px;
-	text-decoration-color: rgba(255, 255, 255, 0.45);
+	border: 2px solid rgba(255, 255, 255, 0.92);
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.12);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12) inset;
+	transition:
+		background 0.2s ease,
+		border-color 0.2s ease,
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
 }
 
-.hero-cta-after__lead a:hover {
-	text-decoration-color: rgba(255, 255, 255, 0.9);
+.hero-cta-after__lead a[href^="tel:"]:hover {
+	background: rgba(255, 255, 255, 0.22);
+	border-color: #fff;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.hero-cta-after__lead a[href^="tel:"]:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 3px;
 }
 
 .hero-cta-after__text {
@@ -3346,6 +3537,142 @@ body.nav-menu-open::before {
     width: min(200px, 70vw);
     height: auto;
     display: block;
+}
+
+.home-reviews-google-meta {
+    margin: 0.4rem 0 0;
+    text-align: center;
+    font-weight: 700;
+    color: #334155;
+    letter-spacing: 0.01em;
+}
+
+/* Hide the "Service Area" tile in the footer grid site-wide. */
+footer .footer-grid a.footer-item[href="areas-we-serve.html"] {
+    display: none;
+}
+
+/* Screen Mesh Types (Screening service page) */
+.mesh-types {
+    padding: 3.25rem 0;
+    background: #ffffff;
+}
+
+.mesh-types__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+}
+
+.mesh-types__eyebrow {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #b91c1c;
+}
+
+.mesh-types__title {
+    margin: 0;
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    color: #0f172a;
+}
+
+.mesh-types__subtitle {
+    margin: 0;
+    color: #475569;
+    max-width: 62ch;
+    line-height: 1.5;
+}
+
+.mesh-types__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.mesh-card {
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+    box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+}
+
+.mesh-card__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: #0b0f16;
+}
+
+.mesh-card__badge {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(185, 28, 28, 0.98);
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.22);
+    user-select: none;
+}
+
+.mesh-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1);
+    transition: transform 260ms ease;
+    will-change: transform;
+}
+
+.mesh-card:hover .mesh-card__media img {
+    transform: scale(1.08);
+}
+
+.mesh-card__body {
+    padding: 0.95rem 1rem 1.05rem;
+}
+
+.mesh-card__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.mesh-card__desc {
+    margin: 0.35rem 0 0;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: #475569;
+}
+
+@media (max-width: 1100px) {
+    .mesh-types__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .mesh-types {
+        padding: 2.5rem 0;
+    }
+    .mesh-types__grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .reviews-carousel {
