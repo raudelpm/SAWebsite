@@ -3387,9 +3387,8 @@ body.nav-menu-open::before {
 	font-family: var(--font-display), system-ui, sans-serif;
 	font-weight: 800;
 	font-size: clamp(1.15rem, 0.82rem + 1.65vw, 1.85rem);
-	line-height: 1.12;
-	letter-spacing: 0.045em;
-	text-transform: uppercase;
+	line-height: 1.18;
+	letter-spacing: -0.02em;
 	text-align: center;
 	color: #fff;
 	text-shadow:
