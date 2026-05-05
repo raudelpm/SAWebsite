@@ -3476,11 +3476,21 @@ body.nav-menu-open::before {
 }
 
 .hero-cta-after__repair-lead-muted {
+	display: block;
 	font-weight: 700;
 	color: rgba(255, 255, 255, 0.94);
 	font-size: clamp(0.9rem, 0.84rem + 0.28vw, 1.02rem);
 	text-transform: uppercase;
 	letter-spacing: 0.055em;
+}
+
+/* Repair LP: stack "Free estimate" + Call vertically (desktop too) */
+.hero-cta-after--repair-lp .hero-cta-after__lead--repair-lp {
+	flex-direction: column;
+	align-items: center;
+	flex-wrap: nowrap;
+	gap: 0.45rem;
+	margin-bottom: 0.55rem;
 }
 
 /* Long selector beats .hero-cta-after__lead a[href^="tel:"] (same-ish specificity, later in file) */
@@ -3548,6 +3558,15 @@ body.nav-menu-open::before {
 	width: 100%;
 }
 
+/* Keep "Request your quote" aligned with the call button width on the repair LP */
+.hero-cta-after--repair-lp .hero-cta-after__repair-ctas {
+	flex-direction: column;
+}
+
+.hero-cta-after--repair-lp .hero-cta-after__repair-ctas .hero-cta-after__repair-btn {
+	width: min(100%, 22rem);
+}
+
 .hero-cta-after__repair-btn {
 	display: inline-block;
 	width: fit-content;
@@ -3574,26 +3593,26 @@ body.nav-menu-open::before {
 		box-shadow 0.2s ease;
 }
 
-/* Request quote — strong red */
+/* Request quote — orange */
 .hero-cta-after__repair-btn--quote {
 	color: #fff;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-	background: linear-gradient(180deg, #f87171 0%, #b91c1c 42%, #7f1d1d 100%);
+	background: linear-gradient(180deg, #fb923c 0%, #f97316 45%, #c2410c 100%);
 	border: 1px solid rgba(255, 255, 255, 0.32);
 	box-shadow:
 		0 2px 0 rgba(0, 0, 0, 0.15) inset,
 		0 1px 0 rgba(255, 255, 255, 0.22) inset,
-		0 4px 18px rgba(127, 29, 29, 0.55),
+		0 4px 18px rgba(194, 65, 12, 0.55),
 		0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .hero-cta-after__repair-btn--quote:hover {
 	color: #fff;
-	background: linear-gradient(180deg, #fca5a5 0%, #dc2626 48%, #991b1b 100%);
+	background: linear-gradient(180deg, #fdba74 0%, #fb923c 50%, #9a3412 100%);
 	border-color: rgba(255, 255, 255, 0.48);
 	box-shadow:
 		0 2px 0 rgba(255, 255, 255, 0.12) inset,
-		0 6px 22px rgba(185, 28, 28, 0.5),
+		0 6px 22px rgba(234, 88, 12, 0.5),
 		0 3px 8px rgba(0, 0, 0, 0.15);
 	transform: translateY(-2px);
 }
