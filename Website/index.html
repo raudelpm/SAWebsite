@@ -199,6 +199,48 @@
         </div>
     </section>
 
+    <!-- Hurricane Season Countdown -->
+    <section class="hurricane-countdown" aria-labelledby="hurricane-countdown-heading">
+        <div class="hurricane-countdown__inner">
+            <p class="hurricane-countdown__eyebrow" aria-hidden="true">⚠ Florida storm prep</p>
+            <h2 id="hurricane-countdown-heading" class="hurricane-countdown__title">
+                Hurricane Season Starts In
+            </h2>
+            <div class="hurricane-countdown__timer" data-hurricane-countdown role="timer" aria-live="polite" aria-atomic="true">
+                <div class="hurricane-countdown__unit">
+                    <span class="hurricane-countdown__num" data-hc-days>--</span>
+                    <span class="hurricane-countdown__label">Days</span>
+                </div>
+                <div class="hurricane-countdown__sep" aria-hidden="true">:</div>
+                <div class="hurricane-countdown__unit">
+                    <span class="hurricane-countdown__num" data-hc-hours>--</span>
+                    <span class="hurricane-countdown__label">Hours</span>
+                </div>
+                <div class="hurricane-countdown__sep" aria-hidden="true">:</div>
+                <div class="hurricane-countdown__unit">
+                    <span class="hurricane-countdown__num" data-hc-minutes>--</span>
+                    <span class="hurricane-countdown__label">Minutes</span>
+                </div>
+                <div class="hurricane-countdown__sep" aria-hidden="true">:</div>
+                <div class="hurricane-countdown__unit">
+                    <span class="hurricane-countdown__num" data-hc-seconds>--</span>
+                    <span class="hurricane-countdown__label">Seconds</span>
+                </div>
+            </div>
+            <p class="hurricane-countdown__copy">
+                Protect your pool cage before storms arrive. Inspect loose screws, damaged screens, weak cables, and aging frames before hurricane season begins.
+            </p>
+            <div class="hurricane-countdown__ctas">
+                <a href="tel:941-404-9699" class="btn btn-primary hurricane-countdown__cta">
+                    📞 Call (941) 404-9699
+                </a>
+                <a href="quote.html#quote-form" class="btn btn-quote hurricane-countdown__cta">
+                    💬 Get free inspection
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- More Photos Modal -->
     <div class="modal-backdrop" data-more-projects-modal aria-hidden="true">
         <div class="modal-window" role="dialog" aria-modal="true" aria-label="More completed projects photos">
@@ -251,7 +293,7 @@
                             <p class="review-author">— Justin Bingham</p>
                         </article>
                         <article class="reviews-carousel-slide" data-carousel-slide>
-                            <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, T P"><img src="public/tp.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                            <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, T P"><img src="public/tp.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                             <div class="review-stars" aria-hidden="true"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="" width="18" height="18" loading="lazy" decoding="async"></div>
                             <p class="review-text">"Raul, the owner, was excellent to work with. He responded quickly to calls and texts and showed up the next day to provide a quote. His team maintained a clean, safe work site, and the quality of their work really shows. I would absolutely recommend them."</p>
                             <p class="review-author">— T P</p>
@@ -446,6 +488,18 @@
                     <span class="home-service-tile-stack">
                         <span class="home-service-tile-title">Gutter Services</span>
                         <span class="home-service-tile-desc">Replacement, cleaning, leak sealing, and super gutter upgrades—built to handle Florida’s heavy rain.</span>
+                    </span>
+                    <span class="home-service-tile-cta">Learn more →</span>
+                </span>
+            </a>
+            <a href="service-new-pool-cage.html" class="home-service-tile home-service-tile--wide">
+                <span class="home-service-tile-bg" style="background-image: url('public/cages2.webp')" aria-hidden="true"></span>
+                <span class="home-service-tile-overlay" aria-hidden="true"></span>
+                <span class="home-service-tile-body">
+                    <span class="home-service-tile-stack">
+                        <span class="home-service-tile-eyebrow">Featured</span>
+                        <span class="home-service-tile-title">New Pool Cage Construction &amp; Extensions</span>
+                        <span class="home-service-tile-desc">Brand-new pool cages built from the ground up <strong>and</strong> seamless extensions to existing enclosures—custom aluminum, Florida-tough.</span>
                     </span>
                     <span class="home-service-tile-cta">Learn more →</span>
                 </span>
@@ -891,6 +945,42 @@
         });
         return false;
       }
+    </script>
+    <!-- Hurricane Season Countdown logic -->
+    <script>
+        (function() {
+            var TARGET = new Date('2026-06-01T00:00:00-04:00').getTime();
+            var root = document.querySelector('[data-hurricane-countdown]');
+            if (!root) return;
+            var elDays    = root.querySelector('[data-hc-days]');
+            var elHours   = root.querySelector('[data-hc-hours]');
+            var elMinutes = root.querySelector('[data-hc-minutes]');
+            var elSeconds = root.querySelector('[data-hc-seconds]');
+            function pad(n) { return n < 10 ? '0' + n : '' + n; }
+            function tick() {
+                var now = Date.now();
+                var diff = TARGET - now;
+                if (diff <= 0) {
+                    elDays.textContent = '00';
+                    elHours.textContent = '00';
+                    elMinutes.textContent = '00';
+                    elSeconds.textContent = '00';
+                    root.classList.add('is-zero');
+                    clearInterval(timerId);
+                    return;
+                }
+                var s = Math.floor(diff / 1000);
+                var days = Math.floor(s / 86400); s -= days * 86400;
+                var hours = Math.floor(s / 3600); s -= hours * 3600;
+                var minutes = Math.floor(s / 60); s -= minutes * 60;
+                elDays.textContent = pad(days);
+                elHours.textContent = pad(hours);
+                elMinutes.textContent = pad(minutes);
+                elSeconds.textContent = pad(s);
+            }
+            tick();
+            var timerId = setInterval(tick, 1000);
+        })();
     </script>
     <script src="random-photos.js"></script>
     <script src="nav-menu.js"></script>
