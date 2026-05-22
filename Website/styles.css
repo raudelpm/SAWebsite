@@ -5459,6 +5459,25 @@ footer {
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    cursor: pointer;
+}
+
+.quote-request-form #sendRequestBtn.btn-quote {
+    border: 1px solid rgba(255, 220, 220, 0.45);
+    box-shadow: var(--btn-relief-red);
+}
+
+.quote-request-form #sendRequestBtn.btn-quote:hover:not(:disabled) {
+    background: var(--btn-bg-red-hover);
+    border-color: rgba(255, 240, 240, 0.75);
+    box-shadow: var(--btn-relief-red-hover);
+    transform: translateY(-2px);
+}
+
+.quote-request-form #sendRequestBtn.btn-quote:disabled {
+    opacity: 0.72;
+    cursor: wait;
+    transform: none;
 }
 
 .quote-request-form .form-status {
