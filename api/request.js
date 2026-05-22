@@ -132,6 +132,15 @@ const JOBBER_CLIENT_EDIT_MUTATION = `
   }
 `;
 
+const JOBBER_CLIENT_CREATE_NOTE_MUTATION = `
+  mutation CreateClientNote($clientId: EncodedId!, $input: ClientCreateNoteInput!) {
+    clientCreateNote(clientId: $clientId, input: $input) {
+      clientNote { id }
+      userErrors { message path }
+    }
+  }
+`;
+
 const JOBBER_REQUEST_CREATE_MUTATION = `
   mutation CreateRequest($input: RequestCreateInput!) {
     requestCreate(input: $input) {
@@ -330,8 +339,11 @@ async function resolveLeadSourceCustomFieldConfig() {
       const name = normalizeLeadSourceConfigName(node?.name);
       const appliesTo = getString(node?.appliesTo);
       return (
-        (name === "lead source" || name === "website lead source") &&
-        appliesTo === "ALL_CLIENTS"
+        appliesTo === "ALL_CLIENTS" &&
+        (name === "lead source" ||
+          name === "website lead source" ||
+          name === "form lead source" ||
+          name.includes("website lead"))
       );
     });
 
@@ -369,19 +381,45 @@ function buildJobberClientLeadSourceCustomFields(leadSource, config) {
   };
 }
 
-async function applyJobberClientLeadSourceTag(clientId, leadSource) {
+async function createJobberClientLeadSourceNote(clientId, leadSource) {
+  const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_CREATE_NOTE_MUTATION, {
+    clientId,
+    input: {
+      message: `Lead source (website form): ${leadSource}`,
+    },
+  });
+  const result = payload?.data?.clientCreateNote;
+  const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+
+  if (userErrors.length > 0) {
+    throw new Error(
+      userErrors.map((e) => getString(e?.message)).filter(Boolean).join("; ") ||
+        "clientCreateNote userErrors"
+    );
+  }
+
+  console.log("[api/request][jobber] Client lead source note created", {
+    clientId,
+    leadSource,
+    noteId: getString(result?.clientNote?.id) || "(none)",
+  });
+}
+
+async function recordJobberClientLeadSource(clientId, leadSource) {
   if (!clientId || !leadSource) return;
 
   const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_EDIT_MUTATION, {
     clientId,
     input: { tagsToAdd: [leadSource] },
   });
-  const result = payload?.data?.clientEdit;
-  const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+  const editResult = payload?.data?.clientEdit;
+  const editErrors = Array.isArray(editResult?.userErrors)
+    ? editResult.userErrors
+    : [];
 
-  if (userErrors.length > 0) {
+  if (editErrors.length > 0) {
     throw new Error(
-      userErrors.map((e) => getString(e?.message)).filter(Boolean).join("; ") ||
+      editErrors.map((e) => getString(e?.message)).filter(Boolean).join("; ") ||
         "clientEdit userErrors (tagsToAdd)"
     );
   }
@@ -390,6 +428,40 @@ async function applyJobberClientLeadSourceTag(clientId, leadSource) {
     clientId,
     tag: leadSource,
   });
+
+  await createJobberClientLeadSourceNote(clientId, leadSource);
+}
+
+function buildJobberRequestDetailsInput(form) {
+  const leadSource = getString(form.leadSource);
+  const service = getString(form.service) || getString(form.projectType);
+  const message = getString(form.message);
+
+  const items = [];
+  if (leadSource) {
+    items.push({ label: "Lead source", answerText: leadSource });
+  }
+  if (service) {
+    items.push({ label: "Project details", answerText: service });
+  }
+  if (message) {
+    items.push({ label: "Additional details", answerText: message });
+  }
+
+  if (items.length === 0) return {};
+
+  return {
+    requestDetails: {
+      form: {
+        sections: [
+          {
+            label: "Website quote form",
+            items,
+          },
+        ],
+      },
+    },
+  };
 }
 
 async function fetchJobberClientFirstPropertyId(clientId) {
@@ -530,7 +602,7 @@ async function createJobberClient(form) {
   });
 
   if (leadSource) {
-    await applyJobberClientLeadSourceTag(clientId, leadSource);
+    await recordJobberClientLeadSource(clientId, leadSource);
   }
 
   return { clientId, propertyId };
@@ -547,7 +619,7 @@ async function findOrCreateJobberClient(form) {
   if (existingId) {
     const propertyId = await fetchJobberClientFirstPropertyId(existingId);
     if (leadSource) {
-      await applyJobberClientLeadSourceTag(existingId, leadSource);
+      await recordJobberClientLeadSource(existingId, leadSource);
     }
     return { clientId: existingId, propertyId };
   }
@@ -559,6 +631,7 @@ async function createJobberRequest({ clientId, propertyId }, form) {
     clientId,
     title: buildJobberRequestTitle(form),
     ...(propertyId ? { propertyId } : {}),
+    ...buildJobberRequestDetailsInput(form),
   };
 
   if (JOBBER_REQUEST_CREATE_MUTATION.includes("requestCreate(request:")) {

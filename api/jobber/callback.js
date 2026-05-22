@@ -131,9 +131,6 @@ export default async function handler(req, res) {
     console.log("[api/jobber/callback] Token exchange succeeded", {
       hasRefreshToken: Boolean(refreshToken),
     });
-    // TEMPORARY: remove after updating Vercel JOBBER_* env vars
-    console.log("NEW_JOBBER_ACCESS_TOKEN =", tokenData.access_token);
-    console.log("NEW_JOBBER_REFRESH_TOKEN =", tokenData.refresh_token);
 
     return html(res, 200, successPage());
   } catch (e) {
