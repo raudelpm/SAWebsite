@@ -31,6 +31,32 @@ function parseEmailList(value) {
     .filter(Boolean);
 }
 
+function isValidEmail(value) {
+  if (!value) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+const CONFIRMATION_FROM =
+  process.env.CONFIRMATION_FROM_EMAIL || "Screen Armors <info@screenarmors.com>";
+
+function buildConfirmationHtml(firstName) {
+  const greeting = firstName
+    ? `Hi ${escapeHtml(firstName)},`
+    : "Hi,";
+  return `
+    <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; line-height: 1.6; color: #1a1a1a;">
+      <p style="margin:0 0 16px;">${greeting}</p>
+      <p style="margin:0 0 16px;">Thank you for contacting Screen Armors. We've received your request and appreciate you reaching out.</p>
+      <p style="margin:0 0 16px;">We usually respond within 1 hour during business hours.</p>
+      <p style="margin:0 0 8px;">
+        Screen Armors<br>
+        941-524-6233<br>
+        <a href="https://www.screenarmors.com">www.screenarmors.com</a>
+      </p>
+    </div>
+  `.trim();
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -138,8 +164,20 @@ export default async function handler(req, res) {
           };
         });
 
+  console.log("[api/request] Form submission received", {
+    fullName,
+    customerEmail: email || "(none)",
+    leadSource,
+    hasAttachments: Boolean(resendAttachments),
+  });
+
   try {
-    const { data, error } = await resend.emails.send({
+    console.log("[api/request] Sending internal notification", {
+      from: fromEmail,
+      to: toEmails,
+    });
+
+    const internalResult = await resend.emails.send({
       from: fromEmail,
       to: toEmails.length === 1 ? toEmails[0] : toEmails,
       ...(email ? { replyTo: email } : {}),
@@ -148,9 +186,69 @@ export default async function handler(req, res) {
       ...(resendAttachments ? { attachments: resendAttachments } : {}),
     });
 
-    if (error) return json(res, 502, { ok: false, error: error.message || "Resend error" });
-    return json(res, 200, { ok: true, id: data?.id });
+    if (internalResult.error) {
+      console.error("[api/request] Internal notification failed", internalResult.error);
+      return json(res, 502, {
+        ok: false,
+        error: internalResult.error.message || "Resend error (internal)",
+      });
+    }
+
+    console.log("[api/request] Internal notification sent", {
+      id: internalResult.data?.id,
+    });
+
+    let confirmationSent = false;
+    let confirmationId = null;
+
+    if (isValidEmail(email)) {
+      console.log("[api/request] Sending customer confirmation", {
+        from: CONFIRMATION_FROM,
+        to: email,
+      });
+
+      const confirmationResult = await resend.emails.send({
+        from: CONFIRMATION_FROM,
+        to: email,
+        subject: "We Received Your Request",
+        html: buildConfirmationHtml(firstName),
+      });
+
+      if (confirmationResult.error) {
+        console.error("[api/request] Customer confirmation failed", {
+          to: email,
+          error: confirmationResult.error,
+        });
+        return json(res, 200, {
+          ok: true,
+          id: internalResult.data?.id,
+          confirmationSent: false,
+          confirmationError:
+            confirmationResult.error.message ||
+            "Resend error (customer confirmation)",
+        });
+      }
+
+      confirmationSent = true;
+      confirmationId = confirmationResult.data?.id;
+      console.log("[api/request] Customer confirmation sent", {
+        to: email,
+        id: confirmationId,
+      });
+    } else {
+      console.log("[api/request] Skipping customer confirmation (no valid email)", {
+        email: email || "(empty)",
+      });
+    }
+
+    return json(res, 200, {
+      ok: true,
+      id: internalResult.data?.id,
+      confirmationSent,
+      ...(confirmationId ? { confirmationId } : {}),
+    });
   } catch (e) {
+    console.error("[api/request] Unexpected error", e);
     return json(res, 500, { ok: false, error: e?.message || "Server error" });
   }
 }
