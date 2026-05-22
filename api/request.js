@@ -110,7 +110,15 @@ function buildJobberRequestDetails({ leadSource, service, message, phone, email 
 
 function buildJobberRequestTitle(form) {
   const base = form.service || "Website quote request";
-  return `${base} — ${form.fullName || "Website"}`.slice(0, 255);
+  const header = `${base} — ${form.fullName || "Website"}`;
+  const details = buildJobberRequestDetails({
+    leadSource: form.leadSource,
+    service: form.service,
+    message: form.message,
+    phone: form.phone,
+    email: form.email,
+  });
+  return `${header}\n\n${details}`.slice(0, 1000);
 }
 
 async function jobberGraphql(accessToken, query, variables) {
@@ -375,13 +383,6 @@ async function createJobberRequest(clientId, form) {
   const requestInput = {
     clientId,
     title: buildJobberRequestTitle(form),
-    details: buildJobberRequestDetails({
-      leadSource: form.leadSource,
-      service: form.service,
-      message: form.message,
-      phone: form.phone,
-      email: form.email,
-    }),
   };
 
   if (JOBBER_REQUEST_CREATE_MUTATION.includes("requestCreate(request:")) {
