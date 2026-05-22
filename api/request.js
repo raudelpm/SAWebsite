@@ -57,6 +57,417 @@ function buildConfirmationHtml(firstName) {
   `.trim();
 }
 
+const JOBBER_GRAPHQL_URL = "https://api.getjobber.com/api/graphql";
+const JOBBER_TOKEN_URL = "https://api.getjobber.com/api/oauth/token";
+const JOBBER_GRAPHQL_VERSION =
+  process.env.JOBBER_GRAPHQL_VERSION || "2025-04-16";
+const JOBBER_CLIENT_SEARCH_PAGES = 8;
+const JOBBER_CLIENT_PAGE_SIZE = 50;
+
+function normalizePhone(value) {
+  return getString(value).replace(/\D/g, "");
+}
+
+function buildJobberClientNote({ leadSource, service, message, phone, email }) {
+  const lines = ["Website quote form submission"];
+  if (leadSource) lines.push(`Lead source: ${leadSource}`);
+  if (service) lines.push(`Service: ${service}`);
+  if (phone) lines.push(`Phone: ${phone}`);
+  if (email) lines.push(`Email: ${email}`);
+  if (message) lines.push("", message);
+  return lines.join("\n");
+}
+
+function buildJobberRequestTitle({ service, fullName, message }) {
+  const base = service || "Website quote request";
+  const title = `${base} — ${fullName || "Website"}`;
+  if (!message) return title.slice(0, 255);
+  const combined = `${title}\n\n${message}`;
+  return combined.slice(0, 1000);
+}
+
+async function jobberGraphql(accessToken, query, variables) {
+  const response = await fetch(JOBBER_GRAPHQL_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+      "X-JOBBER-GRAPHQL-VERSION": JOBBER_GRAPHQL_VERSION,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const err = new Error(
+      getString(payload?.message) ||
+        `Jobber HTTP ${response.status}`
+    );
+    err.status = response.status;
+    err.payload = payload;
+    throw err;
+  }
+
+  if (Array.isArray(payload?.errors) && payload.errors.length > 0) {
+    const err = new Error(payload.errors[0]?.message || "Jobber GraphQL error");
+    err.graphqlErrors = payload.errors;
+    err.payload = payload;
+    throw err;
+  }
+
+  return payload;
+}
+
+async function refreshJobberAccessToken() {
+  const clientId = process.env.JOBBER_CLIENT_ID;
+  const clientSecret = process.env.JOBBER_CLIENT_SECRET;
+  const refreshToken = process.env.JOBBER_REFRESH_TOKEN;
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    throw new Error("Missing Jobber OAuth credentials for token refresh");
+  }
+
+  console.log("[api/request][jobber] Refreshing access token");
+
+  const body = new URLSearchParams({
+    client_id: clientId,
+    client_secret: clientSecret,
+    grant_type: "refresh_token",
+    refresh_token: refreshToken,
+  });
+
+  const response = await fetch(JOBBER_TOKEN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: body.toString(),
+  });
+
+  const rawText = await response.text();
+  let tokenData = {};
+  try {
+    tokenData = rawText ? JSON.parse(rawText) : {};
+  } catch {
+    tokenData = {};
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      getString(tokenData?.error_description) ||
+        getString(tokenData?.error) ||
+        `Token refresh HTTP ${response.status}`
+    );
+  }
+
+  const accessToken = getString(tokenData?.access_token);
+  if (!accessToken) {
+    throw new Error("Token refresh succeeded but access_token was missing");
+  }
+
+  console.log("[api/request][jobber] Access token refreshed (update Vercel env if refresh_token rotated)");
+  if (tokenData?.refresh_token) {
+    console.log("[api/request][jobber] New refresh_token received — save to JOBBER_REFRESH_TOKEN");
+  }
+
+  return accessToken;
+}
+
+async function getJobberAccessToken() {
+  let accessToken = getString(process.env.JOBBER_ACCESS_TOKEN);
+  if (accessToken) return accessToken;
+  return refreshJobberAccessToken();
+}
+
+async function jobberGraphqlWithAuth(query, variables) {
+  let accessToken = await getJobberAccessToken();
+
+  try {
+    return await jobberGraphql(accessToken, query, variables);
+  } catch (e) {
+    if (e?.status !== 401) throw e;
+    console.log("[api/request][jobber] Access token rejected, refreshing");
+    accessToken = await refreshJobberAccessToken();
+    return jobberGraphql(accessToken, query, variables);
+  }
+}
+
+function clientMatches(node, email, phoneDigits) {
+  if (email) {
+    const target = email.toLowerCase();
+    const emails = Array.isArray(node?.emails) ? node.emails : [];
+    if (
+      emails.some(
+        (item) => getString(item?.address).toLowerCase() === target
+      )
+    ) {
+      return true;
+    }
+  }
+
+  if (phoneDigits) {
+    const phones = Array.isArray(node?.phones) ? node.phones : [];
+    if (
+      phones.some((item) => normalizePhone(item?.number) === phoneDigits)
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+async function findExistingJobberClient({ email, phone }) {
+  const phoneDigits = normalizePhone(phone);
+  if (!email && !phoneDigits) return null;
+
+  console.log("[api/request][jobber] Searching for existing client", {
+    email: email || "(none)",
+    phone: phone || "(none)",
+  });
+
+  const query = `
+    query FindClients($after: String) {
+      clients(
+        first: ${JOBBER_CLIENT_PAGE_SIZE}
+        after: $after
+        filter: { isArchived: false }
+        sort: [{ key: UPDATED_AT, direction: DESCENDING }]
+      ) {
+        nodes {
+          id
+          emails { address }
+          phones { number }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  `;
+
+  let after = null;
+
+  for (let page = 0; page < JOBBER_CLIENT_SEARCH_PAGES; page += 1) {
+    const payload = await jobberGraphqlWithAuth(query, { after });
+    const connection = payload?.data?.clients;
+    const nodes = Array.isArray(connection?.nodes) ? connection.nodes : [];
+
+    for (const node of nodes) {
+      if (clientMatches(node, email, phoneDigits)) {
+        console.log("[api/request][jobber] Found existing client", {
+          clientId: node.id,
+          page: page + 1,
+        });
+        return node.id;
+      }
+    }
+
+    const pageInfo = connection?.pageInfo;
+    if (!pageInfo?.hasNextPage || !pageInfo?.endCursor) break;
+    after = pageInfo.endCursor;
+  }
+
+  console.log("[api/request][jobber] No existing client match");
+  return null;
+}
+
+async function createJobberClient(form) {
+  const {
+    firstName,
+    lastName,
+    email,
+    phone,
+    address1,
+    address2,
+    city,
+    state,
+    zip,
+    leadSource,
+    service,
+    message,
+  } = form;
+
+  const client = {
+    firstName,
+    lastName,
+    isLead: true,
+    ...(email
+      ? {
+          emails: [
+            { address: email, primary: true, description: "MAIN" },
+          ],
+        }
+      : {}),
+    ...(phone
+      ? {
+          phones: [{ number: phone, primary: true, description: "MAIN" }],
+        }
+      : {}),
+    ...(address1
+      ? {
+          billingAddress: {
+            street1: address1,
+            ...(address2 ? { street2: address2 } : {}),
+            ...(city ? { city } : {}),
+            province: state || "FL",
+            ...(zip ? { postalCode: zip } : {}),
+            country: "United States",
+          },
+        }
+      : {}),
+    note: buildJobberClientNote({
+      leadSource,
+      service,
+      message,
+      phone,
+      email,
+    }),
+  };
+
+  const mutation = `
+    mutation CreateClient($client: ClientCreateInput!) {
+      clientCreate(client: $client) {
+        client { id name jobberWebUri }
+        userErrors { message path }
+      }
+    }
+  `;
+
+  console.log("[api/request][jobber] Creating client", {
+    firstName,
+    lastName,
+    email: email || "(none)",
+  });
+
+  const payload = await jobberGraphqlWithAuth(mutation, { client });
+  const result = payload?.data?.clientCreate;
+  const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+
+  if (userErrors.length > 0) {
+    throw new Error(
+      userErrors.map((e) => getString(e?.message)).filter(Boolean).join("; ") ||
+        "clientCreate userErrors"
+    );
+  }
+
+  const clientId = getString(result?.client?.id);
+  if (!clientId) throw new Error("clientCreate returned no client id");
+
+  console.log("[api/request][jobber] Client created", {
+    clientId,
+    jobberWebUri: result?.client?.jobberWebUri,
+  });
+
+  return clientId;
+}
+
+async function findOrCreateJobberClient(form) {
+  const existingId = await findExistingJobberClient({
+    email: form.email,
+    phone: form.phone,
+  });
+  if (existingId) return existingId;
+  return createJobberClient(form);
+}
+
+async function createJobberRequest(clientId, form) {
+  const request = {
+    clientId,
+    title: buildJobberRequestTitle({
+      service: form.service,
+      fullName: form.fullName,
+      message: form.message,
+    }),
+    source: "Website",
+    ...(form.address1
+      ? {
+          property: {
+            addressAttributes: {
+              street1: form.address1,
+              ...(form.address2 ? { street2: form.address2 } : {}),
+              ...(form.city ? { city: form.city } : {}),
+              province: form.state || "FL",
+              ...(form.zip ? { postalCode: form.zip } : {}),
+              country: "United States",
+            },
+          },
+        }
+      : {}),
+  };
+
+  const mutation = `
+    mutation CreateRequest($request: RequestCreateInput!) {
+      requestCreate(request: $request) {
+        request { id title requestStatus jobberWebUri }
+        userErrors { message path }
+      }
+    }
+  `;
+
+  console.log("[api/request][jobber] Creating request", {
+    clientId,
+    title: request.title.slice(0, 120),
+  });
+
+  const payload = await jobberGraphqlWithAuth(mutation, { request });
+  const result = payload?.data?.requestCreate;
+  const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+
+  if (userErrors.length > 0) {
+    throw new Error(
+      userErrors.map((e) => getString(e?.message)).filter(Boolean).join("; ") ||
+        "requestCreate userErrors"
+    );
+  }
+
+  const requestId = getString(result?.request?.id);
+  if (!requestId) throw new Error("requestCreate returned no request id");
+
+  console.log("[api/request][jobber] Request created", {
+    requestId,
+    requestStatus: result?.request?.requestStatus,
+    jobberWebUri: result?.request?.jobberWebUri,
+  });
+
+  return requestId;
+}
+
+async function syncJobberFromQuoteForm(form) {
+  if (!getString(process.env.JOBBER_ACCESS_TOKEN) && !getString(process.env.JOBBER_REFRESH_TOKEN)) {
+    console.log("[api/request][jobber] Skipped (no Jobber tokens configured)");
+    return { created: false, skipped: true };
+  }
+
+  console.log("[api/request][jobber] Starting Jobber sync");
+
+  const clientId = await findOrCreateJobberClient(form);
+  const requestId = await createJobberRequest(clientId, form);
+
+  return { created: true, clientId, requestId };
+}
+
+async function tryJobberSync(form) {
+  try {
+    const result = await syncJobberFromQuoteForm(form);
+    return {
+      jobberRequestCreated: Boolean(result.created),
+      jobberRequestId: result.requestId || null,
+      jobberClientId: result.clientId || null,
+    };
+  } catch (jobberError) {
+    console.error("[api/request][jobber] Jobber sync failed", {
+      message: jobberError?.message || String(jobberError),
+      graphqlErrors: jobberError?.graphqlErrors,
+    });
+    return {
+      jobberRequestCreated: false,
+      jobberRequestId: null,
+      jobberClientId: null,
+    };
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -219,10 +630,28 @@ export default async function handler(req, res) {
           to: email,
           error: confirmationResult.error,
         });
+
+        const jobber = await tryJobberSync({
+          firstName,
+          lastName,
+          email,
+          phone,
+          address1,
+          address2,
+          city,
+          state,
+          zip,
+          leadSource,
+          service: projectType,
+          message,
+          fullName,
+        });
+
         return json(res, 200, {
           ok: true,
           id: internalResult.data?.id,
           confirmationSent: false,
+          jobberRequestCreated: jobber.jobberRequestCreated,
           confirmationError:
             confirmationResult.error.message ||
             "Resend error (customer confirmation)",
@@ -241,11 +670,30 @@ export default async function handler(req, res) {
       });
     }
 
+    const jobber = await tryJobberSync({
+      firstName,
+      lastName,
+      email,
+      phone,
+      address1,
+      address2,
+      city,
+      state,
+      zip,
+      leadSource,
+      service: projectType,
+      message,
+      fullName,
+    });
+
     return json(res, 200, {
       ok: true,
       id: internalResult.data?.id,
       confirmationSent,
+      jobberRequestCreated: jobber.jobberRequestCreated,
       ...(confirmationId ? { confirmationId } : {}),
+      ...(jobber.jobberRequestId ? { jobberRequestId: jobber.jobberRequestId } : {}),
+      ...(jobber.jobberClientId ? { jobberClientId: jobber.jobberClientId } : {}),
     });
   } catch (e) {
     console.error("[api/request] Unexpected error", e);
