@@ -177,11 +177,23 @@ const JOBBER_CLIENT_EDIT_MUTATION = `
 const JOBBER_REQUEST_CREATE_MUTATION = `
   mutation CreateRequest($input: RequestCreateInput!) {
     requestCreate(input: $input) {
-      request { id title requestStatus jobberWebUri }
+      request { id title requestStatus source jobberWebUri }
       userErrors { message path }
     }
   }
 `;
+
+const JOBBER_CLIENT_CREATE_NOTE_MUTATION = `
+  mutation CreateClientNote($clientId: EncodedId!, $input: ClientCreateNoteInput!) {
+    clientCreateNote(clientId: $clientId, input: $input) {
+      clientNote { id }
+      userErrors { message path }
+    }
+  }
+`;
+
+const JOBBER_OAUTH_ATTRIBUTION_DOC_URL =
+  "https://developer.getjobber.com/docs/using_jobbers_api/api_queries_and_mutations/";
 
 function normalizeUsPhone(value) {
   const digits = getString(value).replace(/\D/g, "");
@@ -359,8 +371,10 @@ function getFirstPropertyIdFromClient(client) {
 }
 
 let cachedCustomFieldConfigs;
+let cachedRequestCreateInputFieldNames;
 let cachedRequestCreateSupportsCustomFields;
 let cachedClientCreateLeadSourceFieldName;
+let loggedJobberOAuthAttributionWarning;
 
 function normalizeCustomFieldName(name) {
   return getString(name).toLowerCase().replace(/\s+/g, " ").trim();
@@ -512,9 +526,18 @@ async function resolveJobberRequestLeadSourceConfig() {
   return config;
 }
 
-async function requestCreateSupportsCustomFields() {
-  if (cachedRequestCreateSupportsCustomFields !== undefined) {
-    return cachedRequestCreateSupportsCustomFields;
+function warnJobberOAuthAppAttribution() {
+  if (loggedJobberOAuthAttributionWarning) return;
+  loggedJobberOAuthAttributionWarning = true;
+  console.warn(
+    "[api/request][jobber] Jobber sets Request Source and built-in Client Lead source to your OAuth app display name (often 'Screen Armors Website'). That value is read-only in Jobber and is not sent from our API. Rename the app in the Jobber Developer Center or use the Overview Lead source field and client tags for reporting.",
+    { doc: JOBBER_OAUTH_ATTRIBUTION_DOC_URL }
+  );
+}
+
+async function loadRequestCreateInputFieldNames() {
+  if (cachedRequestCreateInputFieldNames !== undefined) {
+    return cachedRequestCreateInputFieldNames;
   }
 
   try {
@@ -522,22 +545,52 @@ async function requestCreateSupportsCustomFields() {
       JOBBER_REQUEST_CREATE_INPUT_INTROSPECTION
     );
     const fields = payload?.data?.__type?.inputFields;
-    cachedRequestCreateSupportsCustomFields = Array.isArray(fields)
-      ? fields.some((field) => field?.name === "customFields")
-      : false;
+    cachedRequestCreateInputFieldNames = Array.isArray(fields)
+      ? fields.map((field) => getString(field?.name)).filter(Boolean)
+      : [];
   } catch (e) {
     console.error(
       "[api/request][jobber] RequestCreateInput introspection failed",
       { message: e?.message || String(e) }
     );
-    cachedRequestCreateSupportsCustomFields = false;
+    cachedRequestCreateInputFieldNames = [];
   }
+
+  console.log("[api/request][jobber] RequestCreateInput fields", {
+    fields: cachedRequestCreateInputFieldNames,
+  });
+
+  return cachedRequestCreateInputFieldNames;
+}
+
+async function requestCreateSupportsCustomFields() {
+  if (cachedRequestCreateSupportsCustomFields !== undefined) {
+    return cachedRequestCreateSupportsCustomFields;
+  }
+
+  const fieldNames = await loadRequestCreateInputFieldNames();
+  cachedRequestCreateSupportsCustomFields = fieldNames.includes("customFields");
 
   console.log("[api/request][jobber] RequestCreateInput supports customFields", {
     supported: cachedRequestCreateSupportsCustomFields,
   });
 
   return cachedRequestCreateSupportsCustomFields;
+}
+
+async function requestCreateSupportsSourceField() {
+  const fieldNames = await loadRequestCreateInputFieldNames();
+  const supported = fieldNames.includes("source");
+  console.log("[api/request][jobber] RequestCreateInput supports source", {
+    supported,
+  });
+  if (!supported) warnJobberOAuthAppAttribution();
+  return supported;
+}
+
+function buildJobberRequestSourceInput(validatedLeadSource, supportsSource) {
+  if (!validatedLeadSource || !supportsSource) return {};
+  return { source: validatedLeadSource };
 }
 
 async function resolveJobberClientCreateLeadSourceFieldName() {
@@ -586,6 +639,7 @@ async function resolveJobberClientCreateLeadSourceFieldName() {
   console.log(
     "[api/request][jobber] ClientCreateInput has no native lead source field in schema"
   );
+  warnJobberOAuthAppAttribution();
   return null;
 }
 
@@ -710,36 +764,87 @@ function buildJobberRequestDetailsInput(form, validatedLeadSource) {
   const service = getString(form.service) || getString(form.projectType);
   const message = getString(form.message);
 
-  const sections = [];
-
+  const items = [];
   if (leadSource) {
-    sections.push({
+    items.push({
       label: JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME,
-      items: [{ label: JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME, answerText: leadSource }],
+      answerText: leadSource,
     });
   }
-
-  const otherItems = [];
   if (service) {
-    otherItems.push({ label: "Project details", answerText: service });
+    items.push({ label: "Project details", answerText: service });
   }
   if (message) {
-    otherItems.push({ label: "Additional details", answerText: message });
-  }
-  if (otherItems.length > 0) {
-    sections.push({
-      label: "Website quote form",
-      items: otherItems,
-    });
+    items.push({ label: "Additional details", answerText: message });
   }
 
-  if (sections.length === 0) return {};
+  if (items.length === 0) return {};
 
   return {
     requestDetails: {
-      form: { sections },
+      form: {
+        sections: [{ label: "Quote form details", items }],
+      },
     },
   };
+}
+
+async function applyJobberClientLeadSourceTag(clientId, validatedLeadSource) {
+  if (!clientId || !validatedLeadSource) return;
+
+  const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_EDIT_MUTATION, {
+    clientId,
+    input: { tagsToAdd: [validatedLeadSource] },
+  });
+  const result = payload?.data?.clientEdit;
+  const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+
+  if (userErrors.length > 0) {
+    console.error("[api/request][jobber] Client lead source tag failed", {
+      clientId,
+      tag: validatedLeadSource,
+      errors: userErrors.map((e) => getString(e?.message)).filter(Boolean),
+    });
+    return;
+  }
+
+  console.log("[api/request][jobber] Client lead source tag applied", {
+    clientId,
+    tag: validatedLeadSource,
+  });
+}
+
+async function createJobberClientLeadSourceNote(clientId, validatedLeadSource) {
+  if (!clientId || !validatedLeadSource) return;
+
+  const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_CREATE_NOTE_MUTATION, {
+    clientId,
+    input: {
+      message: `${JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME} (website form): ${validatedLeadSource}`,
+    },
+  });
+  const result = payload?.data?.clientCreateNote;
+  const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+
+  if (userErrors.length > 0) {
+    console.error("[api/request][jobber] Client lead source note failed", {
+      clientId,
+      leadSource: validatedLeadSource,
+      errors: userErrors.map((e) => getString(e?.message)).filter(Boolean),
+    });
+    return;
+  }
+
+  console.log("[api/request][jobber] Client lead source note created", {
+    clientId,
+    leadSource: validatedLeadSource,
+  });
+}
+
+async function recordJobberClientLeadSourceVisibility(clientId, validatedLeadSource) {
+  if (!clientId || !validatedLeadSource) return;
+  await applyJobberClientLeadSourceTag(clientId, validatedLeadSource);
+  await createJobberClientLeadSourceNote(clientId, validatedLeadSource);
 }
 
 async function fetchJobberClientFirstPropertyId(clientId) {
@@ -902,6 +1007,10 @@ async function createJobberClient(form) {
     jobberWebUri: client?.jobberWebUri,
   });
 
+  if (validatedLeadSource) {
+    await recordJobberClientLeadSourceVisibility(clientId, validatedLeadSource);
+  }
+
   return { clientId, propertyId };
 }
 
@@ -926,6 +1035,9 @@ async function findOrCreateJobberClient(form) {
       customFieldConfigIds,
       validatedLeadSource
     );
+    if (validatedLeadSource) {
+      await recordJobberClientLeadSourceVisibility(existingId, validatedLeadSource);
+    }
     return { clientId: existingId, propertyId };
   }
   return createJobberClient(form);
@@ -940,6 +1052,7 @@ async function createJobberRequest({ clientId, propertyId }, form) {
   );
 
   const requestLeadSourceConfig = await resolveJobberRequestLeadSourceConfig();
+  const supportsRequestSource = await requestCreateSupportsSourceField();
   const supportsRequestCustomFields = await requestCreateSupportsCustomFields();
   const requestLeadSourceCustomFields =
     supportsRequestCustomFields && requestLeadSourceConfig
@@ -960,6 +1073,7 @@ async function createJobberRequest({ clientId, propertyId }, form) {
     clientId,
     title: buildJobberRequestTitle(form),
     ...(propertyId ? { propertyId } : {}),
+    ...buildJobberRequestSourceInput(validatedLeadSource, supportsRequestSource),
     ...buildJobberRequestDetailsInput(form, validatedLeadSource),
     ...requestLeadSourceCustomFields,
   };
@@ -986,11 +1100,23 @@ async function createJobberRequest({ clientId, propertyId }, form) {
   const requestId = getString(result?.request?.id);
   if (!requestId) throw new Error("requestCreate returned no request id");
 
+  const requestSource = getString(result?.request?.source);
   console.log("[api/request][jobber] Request created", {
     requestId,
     requestStatus: result?.request?.requestStatus,
+    requestSource: requestSource || "(none)",
     jobberWebUri: result?.request?.jobberWebUri,
   });
+  if (
+    requestSource &&
+    requestSource === JOBBER_FORBIDDEN_LEAD_SOURCE &&
+    validatedLeadSource
+  ) {
+    console.warn(
+      "[api/request][jobber] Request Source still shows OAuth app name; website lead source is in Overview/tags only",
+      { websiteLeadSource: validatedLeadSource, requestSource }
+    );
+  }
 
   return requestId;
 }
