@@ -397,7 +397,6 @@ async function createJobberRequest(clientId, form) {
       fullName: form.fullName,
       message: form.message,
     }),
-    source: "Website",
     ...(form.address1
       ? {
           property: {
