@@ -109,16 +109,17 @@ function buildJobberRequestDetails({ leadSource, service, message, phone, email 
 }
 
 function buildJobberRequestTitle(form) {
-  const base = form.service || "Website quote request";
-  const header = `${base} — ${form.fullName || "Website"}`;
-  const details = buildJobberRequestDetails({
+  return `New Request - ${form.fullName || `${form.firstName || ""} ${form.lastName || ""}`.trim() || "Website Lead"}`;
+}
+
+function buildJobberFormDetailsLog(form) {
+  return buildJobberRequestDetails({
     leadSource: form.leadSource,
     service: form.service,
     message: form.message,
     phone: form.phone,
     email: form.email,
   });
-  return `${header}\n\n${details}`.slice(0, 1000);
 }
 
 async function jobberGraphql(accessToken, query, variables) {
@@ -298,17 +299,15 @@ async function findExistingJobberClient({ email, phone }) {
 }
 
 async function createJobberClient(form) {
-  const {
-    firstName,
-    lastName,
-    email,
-    phone,
-    address1,
-    address2,
-    city,
-    state,
-    zip,
-  } = form;
+  const firstName = getString(form.firstName);
+  const lastName = getString(form.lastName);
+  const email = getString(form.email);
+  const phone = getString(form.phone);
+  const address1 = getString(form.address1);
+  const address2 = getString(form.address2);
+  const city = getString(form.city);
+  const state = getString(form.state);
+  const zip = getString(form.zip);
 
   const clientInput = {
     firstName,
@@ -339,12 +338,7 @@ async function createJobberClient(form) {
       : {}),
   };
 
-  console.log("[api/request][jobber] Creating client", {
-    firstName,
-    lastName,
-    email: email || "(none)",
-    usesInputArg: JOBBER_CLIENT_CREATE_MUTATION.includes("clientCreate(input:"),
-  });
+  console.log("[api/request][jobber] Client input sent to Jobber", clientInput);
 
   const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_CREATE_MUTATION, {
     input: clientInput,
@@ -389,12 +383,7 @@ async function createJobberRequest(clientId, form) {
     throw new Error("Invalid Jobber requestCreate mutation signature in source");
   }
 
-  console.log("[api/request][jobber] Creating request", {
-    clientId,
-    title: requestInput.title.slice(0, 120),
-    usesInputArg: JOBBER_REQUEST_CREATE_MUTATION.includes("requestCreate(input:"),
-    variablesKey: "input",
-  });
+  console.log("[api/request][jobber] Request input sent to Jobber", requestInput);
 
   const payload = await jobberGraphqlWithAuth(JOBBER_REQUEST_CREATE_MUTATION, {
     input: requestInput,
@@ -428,6 +417,10 @@ async function syncJobberFromQuoteForm(form) {
   }
 
   console.log("[api/request][jobber] Starting Jobber sync");
+  console.log(
+    "[api/request][jobber] Full form details (Resend email; lead source on client is set by Jobber app)",
+    buildJobberFormDetailsLog(form)
+  );
 
   const clientId = await findOrCreateJobberClient(form);
   const requestId = await createJobberRequest(clientId, form);
