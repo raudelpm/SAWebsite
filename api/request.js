@@ -98,7 +98,7 @@ function normalizePhone(value) {
   return getString(value).replace(/\D/g, "");
 }
 
-function buildJobberClientNote({ leadSource, service, message, phone, email }) {
+function buildJobberRequestDetails({ leadSource, service, message, phone, email }) {
   const lines = ["Website quote form submission"];
   if (leadSource) lines.push(`Lead source: ${leadSource}`);
   if (service) lines.push(`Service: ${service}`);
@@ -108,12 +108,17 @@ function buildJobberClientNote({ leadSource, service, message, phone, email }) {
   return lines.join("\n");
 }
 
-function buildJobberRequestTitle({ service, fullName, message }) {
-  const base = service || "Website quote request";
-  const title = `${base} — ${fullName || "Website"}`;
-  if (!message) return title.slice(0, 255);
-  const combined = `${title}\n\n${message}`;
-  return combined.slice(0, 1000);
+function buildJobberRequestTitle(form) {
+  const base = form.service || "Website quote request";
+  const header = `${base} — ${form.fullName || "Website"}`;
+  const details = buildJobberRequestDetails({
+    leadSource: form.leadSource,
+    service: form.service,
+    message: form.message,
+    phone: form.phone,
+    email: form.email,
+  });
+  return `${header}\n\n${details}`.slice(0, 1000);
 }
 
 async function jobberGraphql(accessToken, query, variables) {
@@ -308,9 +313,6 @@ async function createJobberClient(form) {
     city,
     state,
     zip,
-    leadSource,
-    service,
-    message,
   } = form;
 
   const clientInput = {
@@ -340,13 +342,6 @@ async function createJobberClient(form) {
           },
         }
       : {}),
-    note: buildJobberClientNote({
-      leadSource,
-      service,
-      message,
-      phone,
-      email,
-    }),
   };
 
   console.log("[api/request][jobber] Creating client", {
@@ -392,11 +387,7 @@ async function findOrCreateJobberClient(form) {
 async function createJobberRequest(clientId, form) {
   const requestInput = {
     clientId,
-    title: buildJobberRequestTitle({
-      service: form.service,
-      fullName: form.fullName,
-      message: form.message,
-    }),
+    title: buildJobberRequestTitle(form),
     ...(form.address1
       ? {
           property: {
