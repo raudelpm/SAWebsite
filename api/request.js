@@ -130,11 +130,40 @@ const JOBBER_REQUEST_CREATE_INPUT_INTROSPECTION = `
   }
 `;
 
+const JOBBER_CLIENT_CREATE_INPUT_INTROSPECTION = `
+  query ClientCreateInputFields {
+    __type(name: "ClientCreateInput") {
+      inputFields { name }
+    }
+  }
+`;
+
 const JOBBER_CLIENT_CUSTOM_FIELD_NAMES = {
   projectType: "Type of project",
 };
 
 const JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME = "Lead source";
+
+const ALLOWED_LEAD_SOURCES = [
+  "Google",
+  "Referral",
+  "Vehicle Wrap",
+  "Facebook",
+  "Instagram",
+  "Yard Signs",
+  "Existing Client",
+  "Other",
+  "Flyer",
+];
+
+const JOBBER_FORBIDDEN_LEAD_SOURCE = "Screen Armors Website";
+
+const CLIENT_CREATE_LEAD_SOURCE_FIELD_CANDIDATES = [
+  "leadSource",
+  "leadSourceName",
+  "clientLeadSource",
+  "leadSourceId",
+];
 
 const JOBBER_CLIENT_EDIT_MUTATION = `
   mutation EditClient($clientId: EncodedId!, $input: ClientEditInput!) {
@@ -331,6 +360,7 @@ function getFirstPropertyIdFromClient(client) {
 
 let cachedCustomFieldConfigs;
 let cachedRequestCreateSupportsCustomFields;
+let cachedClientCreateLeadSourceFieldName;
 
 function normalizeCustomFieldName(name) {
   return getString(name).toLowerCase().replace(/\s+/g, " ").trim();
@@ -344,6 +374,34 @@ function findClientTextCustomFieldConfigId(configs, targetName) {
     return name === target && appliesTo === "ALL_CLIENTS";
   });
   return getString(match?.id) || null;
+}
+
+function findClientLeadSourceCustomFieldConfig(configs) {
+  const target = normalizeCustomFieldName(JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME);
+  const matches = configs.filter((node) => {
+    const name = normalizeCustomFieldName(node?.name);
+    const appliesTo = getString(node?.appliesTo);
+    return (
+      (name === target ||
+        name === "lead source" ||
+        name === "website lead source") &&
+      appliesTo === "ALL_CLIENTS"
+    );
+  });
+
+  if (matches.length === 0) return null;
+
+  const preferred =
+    matches.find((node) => Array.isArray(node?.dropdownOptions)) || matches[0];
+
+  return {
+    id: getString(preferred?.id) || null,
+    appliesTo: getString(preferred?.appliesTo) || "(unknown)",
+    valueType: Array.isArray(preferred?.dropdownOptions) ? "dropdown" : "text",
+    dropdownOptions: Array.isArray(preferred?.dropdownOptions)
+      ? preferred.dropdownOptions.map((o) => getString(o)).filter(Boolean)
+      : [],
+  };
 }
 
 function findRequestLeadSourceCustomFieldConfig(configs) {
@@ -386,6 +444,24 @@ function pickJobberDropdownValue(leadSource, dropdownOptions) {
   return caseInsensitive ? getString(caseInsensitive) : value;
 }
 
+function validateJobberLeadSource(leadSource) {
+  const value = getString(leadSource);
+  if (!value) return undefined;
+  if (value === JOBBER_FORBIDDEN_LEAD_SOURCE) {
+    console.error(
+      "[api/request][jobber] Invalid lead source:",
+      value,
+      "(forbidden fallback)"
+    );
+    return undefined;
+  }
+  if (!ALLOWED_LEAD_SOURCES.includes(value)) {
+    console.error("[api/request][jobber] Invalid lead source:", value);
+    return undefined;
+  }
+  return value;
+}
+
 async function loadJobberCustomFieldConfigs() {
   if (cachedCustomFieldConfigs !== undefined) {
     return cachedCustomFieldConfigs;
@@ -411,12 +487,15 @@ async function resolveJobberClientCustomFieldConfigIds() {
     configs,
     JOBBER_CLIENT_CUSTOM_FIELD_NAMES.projectType
   );
+  const clientLeadSourceConfig = findClientLeadSourceCustomFieldConfig(configs);
 
   console.log("[api/request][jobber] Client custom field config lookup", {
     projectTypeConfigId: projectTypeConfigId || "(not found)",
+    clientLeadSourceConfigId: clientLeadSourceConfig?.id || "(not found)",
+    clientLeadSourceValueType: clientLeadSourceConfig?.valueType || "(not found)",
   });
 
-  return { projectTypeConfigId };
+  return { projectTypeConfigId, clientLeadSourceConfig };
 }
 
 async function resolveJobberRequestLeadSourceConfig() {
@@ -461,9 +540,93 @@ async function requestCreateSupportsCustomFields() {
   return cachedRequestCreateSupportsCustomFields;
 }
 
-function buildJobberClientCustomFields(form, configIds) {
+async function resolveJobberClientCreateLeadSourceFieldName() {
+  if (cachedClientCreateLeadSourceFieldName !== undefined) {
+    return cachedClientCreateLeadSourceFieldName;
+  }
+
+  try {
+    const payload = await jobberGraphqlWithAuth(
+      JOBBER_CLIENT_CREATE_INPUT_INTROSPECTION
+    );
+    const fields = payload?.data?.__type?.inputFields;
+    if (Array.isArray(fields)) {
+      for (const candidate of CLIENT_CREATE_LEAD_SOURCE_FIELD_CANDIDATES) {
+        if (fields.some((field) => field?.name === candidate)) {
+          cachedClientCreateLeadSourceFieldName = candidate;
+          console.log(
+            "[api/request][jobber] ClientCreateInput native lead source field",
+            { field: candidate }
+          );
+          return candidate;
+        }
+      }
+
+      const fuzzy = fields.find((field) => {
+        const name = getString(field?.name).toLowerCase();
+        return name.includes("lead") && name.includes("source");
+      });
+      if (fuzzy?.name) {
+        cachedClientCreateLeadSourceFieldName = fuzzy.name;
+        console.log(
+          "[api/request][jobber] ClientCreateInput native lead source field",
+          { field: fuzzy.name }
+        );
+        return fuzzy.name;
+      }
+    }
+  } catch (e) {
+    console.error(
+      "[api/request][jobber] ClientCreateInput introspection failed",
+      { message: e?.message || String(e) }
+    );
+  }
+
+  cachedClientCreateLeadSourceFieldName = null;
+  console.log(
+    "[api/request][jobber] ClientCreateInput has no native lead source field in schema"
+  );
+  return null;
+}
+
+function buildJobberClientNativeLeadSourceInput(validatedLeadSource, fieldName) {
+  if (!validatedLeadSource || !fieldName) return {};
+  return { [fieldName]: validatedLeadSource };
+}
+
+function buildJobberClientLeadSourceCustomFieldEntry(
+  validatedLeadSource,
+  config
+) {
+  if (!validatedLeadSource || !config?.id) return null;
+
+  if (config.valueType === "dropdown") {
+    const valueDropdown = pickJobberDropdownValue(
+      validatedLeadSource,
+      config.dropdownOptions
+    );
+    if (!valueDropdown) return null;
+    return {
+      customFieldConfigurationId: config.id,
+      valueDropdown,
+    };
+  }
+
+  return {
+    customFieldConfigurationId: config.id,
+    valueText: validatedLeadSource,
+  };
+}
+
+function buildJobberClientCustomFields(form, configIds, validatedLeadSource) {
   const projectType = getString(form.service) || getString(form.projectType);
   const customFields = [];
+
+  const leadSourceEntry = buildJobberClientLeadSourceCustomFieldEntry(
+    validatedLeadSource,
+    configIds?.clientLeadSourceConfig
+  );
+  if (leadSourceEntry) customFields.push(leadSourceEntry);
 
   if (projectType && configIds?.projectTypeConfigId) {
     customFields.push({
@@ -505,8 +668,17 @@ function buildJobberRequestLeadSourceCustomFields(leadSource, config) {
   };
 }
 
-async function applyJobberClientCustomFields(clientId, form, configIds) {
-  const customFieldPatch = buildJobberClientCustomFields(form, configIds);
+async function applyJobberClientCustomFields(
+  clientId,
+  form,
+  configIds,
+  validatedLeadSource
+) {
+  const customFieldPatch = buildJobberClientCustomFields(
+    form,
+    configIds,
+    validatedLeadSource
+  );
   if (!customFieldPatch.customFields?.length) return;
 
   const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_EDIT_MUTATION, {
@@ -528,12 +700,13 @@ async function applyJobberClientCustomFields(clientId, form, configIds) {
     fields: customFieldPatch.customFields.map((f) => ({
       configId: f.customFieldConfigurationId,
       valueText: f.valueText,
+      valueDropdown: f.valueDropdown,
     })),
   });
 }
 
-function buildJobberRequestDetailsInput(form) {
-  const leadSource = getString(form.leadSource);
+function buildJobberRequestDetailsInput(form, validatedLeadSource) {
+  const leadSource = validatedLeadSource;
   const service = getString(form.service) || getString(form.projectType);
   const message = getString(form.message);
 
@@ -643,6 +816,14 @@ async function createJobberClient(form) {
   const state = getString(form.state);
   const zip = getString(form.zip);
   const customFieldConfigIds = await resolveJobberClientCustomFieldConfigIds();
+  const validatedLeadSource = validateJobberLeadSource(form.leadSource);
+  const nativeLeadSourceFieldName =
+    await resolveJobberClientCreateLeadSourceFieldName();
+
+  console.log(
+    "[api/request][jobber] FINAL lead source being sent:",
+    form.leadSource
+  );
 
   console.log(
     "[api/request][jobber] Project type custom text sent",
@@ -680,10 +861,21 @@ async function createJobberClient(form) {
           ],
         }
       : {}),
-    ...buildJobberClientCustomFields(form, customFieldConfigIds),
+    ...buildJobberClientNativeLeadSourceInput(
+      validatedLeadSource,
+      nativeLeadSourceFieldName
+    ),
+    ...buildJobberClientCustomFields(
+      form,
+      customFieldConfigIds,
+      validatedLeadSource
+    ),
   };
 
-  console.log("[api/request][jobber] Client input sent to Jobber", clientInput);
+  console.log(
+    "[api/request][jobber] Client create input sent to Jobber",
+    JSON.stringify(clientInput)
+  );
 
   const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_CREATE_MUTATION, {
     input: clientInput,
@@ -715,6 +907,7 @@ async function createJobberClient(form) {
 
 async function findOrCreateJobberClient(form) {
   const customFieldConfigIds = await resolveJobberClientCustomFieldConfigIds();
+  const validatedLeadSource = validateJobberLeadSource(form.leadSource);
 
   console.log(
     "[api/request][jobber] Project type custom text sent",
@@ -727,18 +920,23 @@ async function findOrCreateJobberClient(form) {
   });
   if (existingId) {
     const propertyId = await fetchJobberClientFirstPropertyId(existingId);
-    await applyJobberClientCustomFields(existingId, form, customFieldConfigIds);
+    await applyJobberClientCustomFields(
+      existingId,
+      form,
+      customFieldConfigIds,
+      validatedLeadSource
+    );
     return { clientId: existingId, propertyId };
   }
   return createJobberClient(form);
 }
 
 async function createJobberRequest({ clientId, propertyId }, form) {
-  const leadSource = getString(form.leadSource);
+  const validatedLeadSource = validateJobberLeadSource(form.leadSource);
 
   console.log(
     "[api/request][jobber] Lead source selected on website",
-    leadSource || "(none)"
+    form.leadSource || "(none)"
   );
 
   const requestLeadSourceConfig = await resolveJobberRequestLeadSourceConfig();
@@ -746,15 +944,15 @@ async function createJobberRequest({ clientId, propertyId }, form) {
   const requestLeadSourceCustomFields =
     supportsRequestCustomFields && requestLeadSourceConfig
       ? buildJobberRequestLeadSourceCustomFields(
-          leadSource,
+          validatedLeadSource,
           requestLeadSourceConfig
         )
       : {};
 
-  if (leadSource) {
+  if (validatedLeadSource) {
     console.log(
       "[api/request][jobber] Lead source custom field sent to Jobber request",
-      leadSource
+      validatedLeadSource
     );
   }
 
@@ -762,7 +960,7 @@ async function createJobberRequest({ clientId, propertyId }, form) {
     clientId,
     title: buildJobberRequestTitle(form),
     ...(propertyId ? { propertyId } : {}),
-    ...buildJobberRequestDetailsInput(form),
+    ...buildJobberRequestDetailsInput(form, validatedLeadSource),
     ...requestLeadSourceCustomFields,
   };
 
