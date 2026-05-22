@@ -34,6 +34,53 @@
     <!-- Analytics loads after page so form gets full bandwidth -->
 </head>
 <body>
+    <script>
+    (function() {
+      var thankYouAllowed = false;
+      window.__QUOTE_ALLOW_THANK_YOU__ = function() { thankYouAllowed = true; };
+      function isThankYouUrl(url) {
+        return /thank-you/i.test(String(url || ''));
+      }
+      function blockThankYou(url, method) {
+        if (thankYouAllowed || !isThankYouUrl(url)) return false;
+        console.error('[quote-form] BLOCKED thank-you navigation via ' + method, url);
+        return true;
+      }
+      var nativeAssign = window.location.assign.bind(window.location);
+      var nativeReplace = window.location.replace.bind(window.location);
+      window.location.assign = function(url) {
+        if (blockThankYou(url, 'assign')) return;
+        return nativeAssign(url);
+      };
+      window.location.replace = function(url) {
+        if (blockThankYou(url, 'replace')) return;
+        return nativeReplace(url);
+      };
+      try {
+        var hrefDesc = Object.getOwnPropertyDescriptor(window.Location.prototype, 'href');
+        if (hrefDesc && hrefDesc.set) {
+          Object.defineProperty(window.Location.prototype, 'href', {
+            configurable: true,
+            enumerable: hrefDesc.enumerable,
+            get: hrefDesc.get,
+            set: function(url) {
+              if (blockThankYou(url, 'href')) return;
+              hrefDesc.set.call(this, url);
+            },
+          });
+        }
+      } catch (guardErr) {
+        console.warn('[quote-form] Could not patch location.href', guardErr);
+      }
+      if (window.navigation && typeof window.navigation.addEventListener === 'function') {
+        window.navigation.addEventListener('navigate', function(e) {
+          var dest = e && e.destination ? String(e.destination.url || '') : '';
+          if (blockThankYou(dest, 'navigation')) e.preventDefault();
+        });
+      }
+      console.log('[quote-form] thank-you navigation guard active');
+    })();
+    </script>
     <a href="index.html" class="floating-quote-btn" aria-label="Back to home">HOME</a>
 	<!-- Navigation -->
 	<nav>
@@ -162,7 +209,8 @@
                             </div>
                         </div>
                         <div class="form-actions">
-                            <button type="button" class="btn btn-quote" id="sendRequestBtn">Send request</button>
+                            <button id="sendRequestBtn" type="button">Send request</button>
+                            <button id="testApiBtn" type="button">TEST API</button>
                             <p class="form-status" id="rq_status" role="status" aria-live="polite"></p>
                             <div class="quote-trust__badges quote-trust__badges--under-submit" aria-label="Trust badges">
                                 <img class="quote-trust__badge quote-trust__badge--google" src="public/googlepng.webp" alt="Google Reviews" width="220" height="106" loading="lazy" decoding="async">
@@ -508,6 +556,9 @@
                     } catch (e3) {}
                     quickQuoteEmailBlock = null;
                     console.log('[quote-form] Success — redirecting to thank-you.html');
+                    if (typeof window.__QUOTE_ALLOW_THANK_YOU__ === 'function') {
+                        window.__QUOTE_ALLOW_THANK_YOU__();
+                    }
                     window.location.href = 'thank-you.html';
                 } catch (err) {
                     console.error('[quote-form] Fetch error — staying on page', err);
@@ -518,7 +569,52 @@
                 }
             });
 
-            console.log('[quote-form] #sendRequestBtn click handler attached build=2026-05-22-v5-hard-click');
+            var testApiBtn = document.getElementById('testApiBtn');
+            if (testApiBtn) {
+                testApiBtn.addEventListener('click', async function() {
+                    console.log('[quote-form] TEST API clicked');
+                    var testPayload = {
+                        firstName: 'Test',
+                        lastName: 'API',
+                        phone: '9415551234',
+                        email: 'test-api@screenarmors.com',
+                        leadSource: 'Google',
+                        projectType: 'Other',
+                        message: 'TEST API button — safe to ignore',
+                        website: '',
+                    };
+                    try {
+                        var testRes = await fetch(API_REQUEST_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(testPayload),
+                        });
+                        var testRaw = await testRes.text().catch(function() { return ''; });
+                        var testJson = {};
+                        try {
+                            testJson = testRaw ? JSON.parse(testRaw) : {};
+                        } catch (e) {
+                            testJson = { parseError: true, raw: testRaw.slice(0, 500) };
+                        }
+                        console.log('[quote-form] TEST API response', {
+                            httpOk: testRes.ok,
+                            status: testRes.status,
+                            json: testJson,
+                        });
+                        setStatus(
+                            testRes.ok && testJson.ok
+                                ? 'TEST API OK — check Vercel logs (no redirect).'
+                                : 'TEST API failed — see console.',
+                            !(testRes.ok && testJson.ok)
+                        );
+                    } catch (testErr) {
+                        console.error('[quote-form] TEST API error', testErr);
+                        setStatus('TEST API network error — see console.', true);
+                    }
+                });
+            }
+
+            console.log('[quote-form] #sendRequestBtn click handler attached build=2026-05-22-v6-guard');
         })();
     </script>
     <script>
