@@ -144,6 +144,14 @@ const JOBBER_CLIENT_CUSTOM_FIELD_NAMES = {
 
 const JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME = "Lead source";
 
+/** Jobber may use these names for the lead-source dropdown (not only "Lead source"). */
+const JOBBER_LEAD_SOURCE_FIELD_ALIASES = [
+  "lead source",
+  "how did you hear about us?",
+  "website lead source",
+  "form lead source",
+];
+
 const ALLOWED_LEAD_SOURCES = [
   "Google",
   "Referral",
@@ -380,6 +388,55 @@ function normalizeCustomFieldName(name) {
   return getString(name).toLowerCase().replace(/\s+/g, " ").trim();
 }
 
+function matchesLeadSourceCustomFieldName(name) {
+  const normalized = normalizeCustomFieldName(name);
+  if (!normalized) return false;
+  if (JOBBER_LEAD_SOURCE_FIELD_ALIASES.includes(normalized)) return true;
+  return (
+    normalized.includes("how did you hear") ||
+    (normalized.includes("lead") && normalized.includes("source"))
+  );
+}
+
+function resolveLeadSourceCustomFieldConfig(configs, { scope }) {
+  const matches = configs.filter((node) => {
+    const appliesTo = getString(node?.appliesTo);
+    if (!matchesLeadSourceCustomFieldName(node?.name)) return false;
+    if (scope === "client") return appliesTo === "ALL_CLIENTS";
+    if (scope === "request") return appliesTo !== "ALL_CLIENTS";
+    return true;
+  });
+
+  if (matches.length === 0) return null;
+
+  const dropdownMatch = matches.find(
+    (node) =>
+      Array.isArray(node?.dropdownOptions) && node.dropdownOptions.length > 0
+  );
+  const preferred = dropdownMatch || matches[0];
+  const hasDropdown = Boolean(dropdownMatch);
+
+  if (matches.length > 1) {
+    console.log("[api/request][jobber] Multiple lead source field configs", {
+      scope,
+      count: matches.length,
+      names: matches.map((n) => getString(n?.name)),
+      using: getString(preferred?.name),
+      valueType: hasDropdown ? "dropdown" : "text",
+    });
+  }
+
+  return {
+    id: getString(preferred?.id) || null,
+    name: getString(preferred?.name) || "(unknown)",
+    appliesTo: getString(preferred?.appliesTo) || "(unknown)",
+    valueType: hasDropdown ? "dropdown" : "text",
+    dropdownOptions: Array.isArray(preferred?.dropdownOptions)
+      ? preferred.dropdownOptions.map((o) => getString(o)).filter(Boolean)
+      : [],
+  };
+}
+
 function findClientTextCustomFieldConfigId(configs, targetName) {
   const target = normalizeCustomFieldName(targetName);
   const match = configs.find((node) => {
@@ -391,54 +448,11 @@ function findClientTextCustomFieldConfigId(configs, targetName) {
 }
 
 function findClientLeadSourceCustomFieldConfig(configs) {
-  const target = normalizeCustomFieldName(JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME);
-  const matches = configs.filter((node) => {
-    const name = normalizeCustomFieldName(node?.name);
-    const appliesTo = getString(node?.appliesTo);
-    return (
-      (name === target ||
-        name === "lead source" ||
-        name === "website lead source") &&
-      appliesTo === "ALL_CLIENTS"
-    );
-  });
-
-  if (matches.length === 0) return null;
-
-  const preferred =
-    matches.find((node) => Array.isArray(node?.dropdownOptions)) || matches[0];
-
-  return {
-    id: getString(preferred?.id) || null,
-    appliesTo: getString(preferred?.appliesTo) || "(unknown)",
-    valueType: Array.isArray(preferred?.dropdownOptions) ? "dropdown" : "text",
-    dropdownOptions: Array.isArray(preferred?.dropdownOptions)
-      ? preferred.dropdownOptions.map((o) => getString(o)).filter(Boolean)
-      : [],
-  };
+  return resolveLeadSourceCustomFieldConfig(configs, { scope: "client" });
 }
 
 function findRequestLeadSourceCustomFieldConfig(configs) {
-  const target = normalizeCustomFieldName(JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME);
-  const matches = configs.filter((node) => {
-    const name = normalizeCustomFieldName(node?.name);
-    const appliesTo = getString(node?.appliesTo);
-    return name === target && appliesTo !== "ALL_CLIENTS";
-  });
-
-  if (matches.length === 0) return null;
-
-  const preferred =
-    matches.find((node) => Array.isArray(node?.dropdownOptions)) || matches[0];
-
-  return {
-    id: getString(preferred?.id) || null,
-    appliesTo: getString(preferred?.appliesTo) || "(unknown)",
-    valueType: Array.isArray(preferred?.dropdownOptions) ? "dropdown" : "text",
-    dropdownOptions: Array.isArray(preferred?.dropdownOptions)
-      ? preferred.dropdownOptions.map((o) => getString(o)).filter(Boolean)
-      : [],
-  };
+  return resolveLeadSourceCustomFieldConfig(configs, { scope: "request" });
 }
 
 function pickJobberDropdownValue(leadSource, dropdownOptions) {
@@ -506,6 +520,7 @@ async function resolveJobberClientCustomFieldConfigIds() {
   console.log("[api/request][jobber] Client custom field config lookup", {
     projectTypeConfigId: projectTypeConfigId || "(not found)",
     clientLeadSourceConfigId: clientLeadSourceConfig?.id || "(not found)",
+    clientLeadSourceFieldName: clientLeadSourceConfig?.name || "(not found)",
     clientLeadSourceValueType: clientLeadSourceConfig?.valueType || "(not found)",
   });
 
@@ -517,10 +532,13 @@ async function resolveJobberRequestLeadSourceConfig() {
   const config = findRequestLeadSourceCustomFieldConfig(configs);
 
   console.log("[api/request][jobber] Request lead source custom field lookup", {
-    fieldName: JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME,
+    fieldName: config?.name || JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME,
     configId: config?.id || "(not found)",
     appliesTo: config?.appliesTo || "(not found)",
     valueType: config?.valueType || "(not found)",
+    dropdownOptions: config?.dropdownOptions?.length
+      ? config.dropdownOptions
+      : "(none)",
   });
 
   return config;
@@ -659,13 +677,31 @@ function buildJobberClientLeadSourceCustomFieldEntry(
       validatedLeadSource,
       config.dropdownOptions
     );
-    if (!valueDropdown) return null;
+    if (!valueDropdown) {
+      console.error(
+        "[api/request][jobber] Lead source dropdown value not matched",
+        {
+          fieldName: config.name,
+          submitted: validatedLeadSource,
+          options: config.dropdownOptions,
+        }
+      );
+      return null;
+    }
+    console.log("[api/request][jobber] Lead source dropdown selected", {
+      fieldName: config.name,
+      valueDropdown,
+    });
     return {
       customFieldConfigurationId: config.id,
       valueDropdown,
     };
   }
 
+  console.log("[api/request][jobber] Lead source sent as text (no dropdown config)", {
+    fieldName: config.name,
+    valueText: validatedLeadSource,
+  });
   return {
     customFieldConfigurationId: config.id,
     valueText: validatedLeadSource,
@@ -676,11 +712,20 @@ function buildJobberClientCustomFields(form, configIds, validatedLeadSource) {
   const projectType = getString(form.service) || getString(form.projectType);
   const customFields = [];
 
-  const leadSourceEntry = buildJobberClientLeadSourceCustomFieldEntry(
-    validatedLeadSource,
-    configIds?.clientLeadSourceConfig
-  );
-  if (leadSourceEntry) customFields.push(leadSourceEntry);
+  // Only set lead source on the client when Jobber exposes a dropdown there.
+  // A text custom field with the same label would show free text, not a selected option.
+  if (configIds?.clientLeadSourceConfig?.valueType === "dropdown") {
+    const leadSourceEntry = buildJobberClientLeadSourceCustomFieldEntry(
+      validatedLeadSource,
+      configIds.clientLeadSourceConfig
+    );
+    if (leadSourceEntry) customFields.push(leadSourceEntry);
+  } else if (validatedLeadSource && configIds?.clientLeadSourceConfig?.valueType === "text") {
+    console.log(
+      "[api/request][jobber] Skipping client text lead source field; using request dropdown instead",
+      { fieldName: configIds.clientLeadSourceConfig.name }
+    );
+  }
 
   if (projectType && configIds?.projectTypeConfigId) {
     customFields.push({
@@ -759,15 +804,17 @@ async function applyJobberClientCustomFields(
   });
 }
 
-function buildJobberRequestDetailsInput(form, validatedLeadSource) {
+function buildJobberRequestDetailsInput(form, validatedLeadSource, leadSourceFieldLabel) {
   const leadSource = validatedLeadSource;
   const service = getString(form.service) || getString(form.projectType);
   const message = getString(form.message);
+  const leadLabel =
+    getString(leadSourceFieldLabel) || JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME;
 
   const items = [];
   if (leadSource) {
     items.push({
-      label: JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME,
+      label: leadLabel,
       answerText: leadSource,
     });
   }
@@ -1065,7 +1112,11 @@ async function createJobberRequest({ clientId, propertyId }, form) {
   if (validatedLeadSource) {
     console.log(
       "[api/request][jobber] Lead source custom field sent to Jobber request",
-      validatedLeadSource
+      {
+        value: validatedLeadSource,
+        fieldName: requestLeadSourceConfig?.name || "(overview only)",
+        valueType: requestLeadSourceConfig?.valueType || "(none)",
+      }
     );
   }
 
@@ -1074,7 +1125,11 @@ async function createJobberRequest({ clientId, propertyId }, form) {
     title: buildJobberRequestTitle(form),
     ...(propertyId ? { propertyId } : {}),
     ...buildJobberRequestSourceInput(validatedLeadSource, supportsRequestSource),
-    ...buildJobberRequestDetailsInput(form, validatedLeadSource),
+    ...buildJobberRequestDetailsInput(
+      form,
+      validatedLeadSource,
+      requestLeadSourceConfig?.name
+    ),
     ...requestLeadSourceCustomFields,
   };
 
