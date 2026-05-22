@@ -227,12 +227,7 @@ async function findExistingJobberClient({ email, phone }) {
 
   const query = `
     query FindClients($after: String) {
-      clients(
-        first: ${JOBBER_CLIENT_PAGE_SIZE}
-        after: $after
-        filter: { isArchived: false }
-        sort: [{ key: UPDATED_AT, direction: DESCENDING }]
-      ) {
+      clients(first: ${JOBBER_CLIENT_PAGE_SIZE}, after: $after) {
         nodes {
           id
           emails { address }
@@ -255,7 +250,7 @@ async function findExistingJobberClient({ email, phone }) {
 
     for (const node of nodes) {
       if (clientMatches(node, email, phoneDigits)) {
-        console.log("[api/request][jobber] Found existing client", {
+        console.log("[api/request][jobber] Existing client lookup successful", {
           clientId: node.id,
           page: page + 1,
         });
