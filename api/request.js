@@ -112,11 +112,6 @@ const JOBBER_CUSTOM_FIELD_CONFIG_QUERY = `
           appliesTo
           dropdownOptions
         }
-        ... on CustomFieldConfigurationText {
-          id
-          name
-          appliesTo
-        }
       }
     }
   }
@@ -214,13 +209,29 @@ function normalizeUsPhone(value) {
 }
 
 /** Jobber ClientCreateInput.phones → PhoneNumberCreateAttributes */
-function buildJobberPhoneCreateAttributes(normalizedPhone) {
-  return {
+function buildJobberPhoneCreateAttributes(normalizedPhone, { smsAllowed = false } = {}) {
+  const attrs = {
     number: normalizedPhone,
     primary: true,
     description: "MAIN",
-    smsAllowed: true,
   };
+  if (smsAllowed) attrs.smsAllowed = true;
+  return attrs;
+}
+
+function isJobberSmsPhoneUserError(message) {
+  const lower = getString(message).toLowerCase();
+  return (
+    lower.includes("cannot receive text messages") ||
+    lower.includes("receives text messages") ||
+    lower.includes("valid mobile phone")
+  );
+}
+
+function getJobberUserErrorMessages(userErrors) {
+  return (Array.isArray(userErrors) ? userErrors : [])
+    .map((e) => getString(e?.message))
+    .filter(Boolean);
 }
 
 function buildJobberRequestDetails({ leadSource, service, message, phone, email }) {
@@ -512,6 +523,7 @@ async function loadJobberCustomFieldConfigs() {
   } catch (e) {
     console.error("[api/request][jobber] Custom field config lookup failed", {
       message: e?.message || String(e),
+      hint: "Enable Custom Field Configurations read scope in Jobber Developer Center if dropdown mapping is needed.",
     });
     cachedCustomFieldConfigs = [];
     return cachedCustomFieldConfigs;
@@ -976,7 +988,7 @@ async function createJobberClient(form) {
       : {}),
     ...(phone
       ? {
-          phones: [buildJobberPhoneCreateAttributes(phone)],
+          phones: [buildJobberPhoneCreateAttributes(phone, { smsAllowed: true })],
         }
       : {}),
     ...(address1
@@ -1011,16 +1023,40 @@ async function createJobberClient(form) {
     JSON.stringify(clientInput)
   );
 
-  const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_CREATE_MUTATION, {
+  let payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_CREATE_MUTATION, {
     input: clientInput,
   });
-  const result = payload?.data?.clientCreate;
-  const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+  let result = payload?.data?.clientCreate;
+  let userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+
+  if (
+    userErrors.length > 0 &&
+    phone &&
+    clientInput.phones?.[0]?.smsAllowed &&
+    getJobberUserErrorMessages(userErrors).some(isJobberSmsPhoneUserError)
+  ) {
+    console.warn(
+      "[api/request][jobber] clientCreate rejected phone SMS; retrying without smsAllowed",
+      { errors: getJobberUserErrorMessages(userErrors) }
+    );
+    const retryInput = {
+      ...clientInput,
+      phones: [buildJobberPhoneCreateAttributes(phone, { smsAllowed: false })],
+    };
+    console.log(
+      "[api/request][jobber] Client create retry input sent to Jobber",
+      JSON.stringify(retryInput)
+    );
+    payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_CREATE_MUTATION, {
+      input: retryInput,
+    });
+    result = payload?.data?.clientCreate;
+    userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+  }
 
   if (userErrors.length > 0) {
     throw new Error(
-      userErrors.map((e) => getString(e?.message)).filter(Boolean).join("; ") ||
-        "clientCreate userErrors"
+      getJobberUserErrorMessages(userErrors).join("; ") || "clientCreate userErrors"
     );
   }
 
