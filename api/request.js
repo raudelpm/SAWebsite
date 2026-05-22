@@ -163,8 +163,6 @@ async function refreshJobberAccessToken() {
     throw new Error("Missing Jobber OAuth credentials for token refresh");
   }
 
-  console.log("[api/request][jobber] Refreshing access token");
-
   const body = new URLSearchParams({
     client_id: clientId,
     client_secret: clientSecret,
@@ -199,10 +197,7 @@ async function refreshJobberAccessToken() {
     throw new Error("Token refresh succeeded but access_token was missing");
   }
 
-  console.log("[api/request][jobber] Access token refreshed (update Vercel env if refresh_token rotated)");
-  if (tokenData?.refresh_token) {
-    console.log("[api/request][jobber] New refresh_token received — save to JOBBER_REFRESH_TOKEN");
-  }
+  console.log("[api/request][jobber] Token refreshed");
 
   return accessToken;
 }
@@ -220,7 +215,7 @@ async function jobberGraphqlWithAuth(query, variables) {
     return await jobberGraphql(accessToken, query, variables);
   } catch (e) {
     if (e?.status !== 401) throw e;
-    console.log("[api/request][jobber] Access token rejected, refreshing");
+    console.log("[api/request][jobber] Token rejected, refreshing");
     accessToken = await refreshJobberAccessToken();
     return jobberGraphql(accessToken, query, variables);
   }
@@ -418,10 +413,6 @@ async function createJobberRequest(clientId, form) {
   const payload = await jobberGraphqlWithAuth(JOBBER_REQUEST_CREATE_MUTATION, {
     input: requestInput,
   });
-  console.log(
-    "[api/request][jobber] requestCreate response",
-    JSON.stringify(payload)
-  );
   const result = payload?.data?.requestCreate;
   const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
 

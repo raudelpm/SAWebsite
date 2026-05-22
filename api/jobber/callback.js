@@ -24,7 +24,7 @@ function successPage() {
 </head>
 <body style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; line-height: 1.5; padding: 2rem; max-width: 36rem;">
   <h1 style="margin: 0 0 0.75rem;">Jobber connected successfully</h1>
-  <p style="margin: 0;">Check Vercel logs for tokens.</p>
+  <p style="margin: 0;">Add JOBBER_ACCESS_TOKEN and JOBBER_REFRESH_TOKEN to your Vercel environment variables.</p>
 </body>
 </html>`;
 }
@@ -89,7 +89,7 @@ export default async function handler(req, res) {
   });
 
   try {
-    console.log("[api/jobber/callback] Exchanging code for tokens", {
+    console.log("[api/jobber/callback] Exchanging authorization code", {
       redirect_uri: JOBBER_REDIRECT_URI,
     });
 
@@ -110,7 +110,8 @@ export default async function handler(req, res) {
     if (!tokenResponse.ok) {
       console.error("[api/jobber/callback] Token exchange failed", {
         status: tokenResponse.status,
-        body: rawText.slice(0, 500),
+        error: getString(tokenData?.error),
+        error_description: getString(tokenData?.error_description),
       });
       const detail =
         getString(tokenData?.error_description) ||
@@ -123,13 +124,13 @@ export default async function handler(req, res) {
     const refreshToken = getString(tokenData?.refresh_token);
 
     if (!accessToken) {
-      console.error("[api/jobber/callback] No access_token in response", tokenData);
+      console.error("[api/jobber/callback] Token exchange succeeded but access_token was missing");
       return html(res, 502, errorPage("Token exchange succeeded but access_token was missing."));
     }
 
-    // Temporary setup logging — remove after storing tokens in env/secrets.
-    console.log("[api/jobber/callback] access_token:", accessToken);
-    console.log("[api/jobber/callback] refresh_token:", refreshToken || "(none)");
+    console.log("[api/jobber/callback] Token exchange succeeded", {
+      hasRefreshToken: Boolean(refreshToken),
+    });
 
     return html(res, 200, successPage());
   } catch (e) {
