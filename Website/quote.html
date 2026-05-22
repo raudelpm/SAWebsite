@@ -93,7 +93,7 @@
                             <p class="rq-quick-quote-banner__hint">You arrived from the Quick Screen Quote tool. Complete the form and send request — your panel breakdown is included with this submission only.</p>
                         </div>
                     </div>
-                    <form id="requestForm" class="quote-request-form" novalidate>
+                    <form id="requestForm" class="quote-request-form" action="#" method="post" novalidate>
                         <div class="form-grid">
                             <div class="form-field">
                                 <label for="rq_firstName">First name *</label>
@@ -301,7 +301,20 @@
             var quickBannerTotal = document.getElementById('rqQuickQuoteBannerTotal');
             var quickBannerList = document.getElementById('rqQuickQuoteBannerList');
             var projectTypeEl = document.getElementById('rq_projectType');
-            if (!form || !statusEl || !submitBtn) return;
+            var API_REQUEST_URL = '/api/request';
+            if (!form || !statusEl || !submitBtn) {
+                console.error('[quote-form] Missing form elements — submit handler not attached');
+                return;
+            }
+
+            function byId(id) {
+                try {
+                    if (typeof CSS !== 'undefined' && CSS.escape) {
+                        return form.querySelector('#' + CSS.escape(id));
+                    }
+                } catch (e) {}
+                return form.querySelector('#' + id.replace(/[^a-zA-Z0-9_-]/g, ''));
+            }
 
             (function purgeStaleQuickQuoteStorage() {
                 try {
@@ -383,25 +396,6 @@
 
             tryLoadQuickScreenQuoteFromStorage();
 
-            // If a label contains "*", treat that field as required.
-            (function syncRequiredFromAsterisk() {
-                var labels = form.querySelectorAll('label[for]');
-                labels.forEach(function(label) {
-                    var text = (label.textContent || '').trim();
-                    if (!text.includes('*')) return;
-                    var id = label.getAttribute('for');
-                    if (!id) return;
-                    var el = form.querySelector('#' + CSS.escape(id));
-                    if (!el) return;
-                    if (el.closest('.form-field--hp')) return; // never require honeypot
-                    el.setAttribute('required', '');
-                    // Improve native validation UX
-                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                        el.setAttribute('aria-required', 'true');
-                    }
-                });
-            })();
-
             function setStatus(msg, isError) {
                 statusEl.textContent = msg || '';
                 statusEl.style.color = isError ? '#ffb4b4' : '#b7ffd8';
@@ -412,7 +406,7 @@
             }
 
             function validatePhone() {
-                var phoneEl = form.querySelector('#' + CSS.escape('rq_phone'));
+                var phoneEl = byId('rq_phone');
                 if (!phoneEl) return true;
                 var digits = digitsOnly(phoneEl.value);
                 var ok = digits.length >= 10;
@@ -420,12 +414,9 @@
                 return ok;
             }
 
-            form.addEventListener('input', function(e) {
-                if (e && e.target && e.target.id === 'rq_phone') validatePhone();
-            });
-
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 setStatus('', false);
 
                 validatePhone();
@@ -433,7 +424,7 @@
                     var firstInvalid = form.querySelector(':invalid');
                     if (firstInvalid && typeof firstInvalid.focus === 'function') firstInvalid.focus();
                     setStatus('Please fill out all required fields (*).', true);
-                    return;
+                    return false;
                 }
 
                 var fd = new FormData(form);
@@ -445,26 +436,41 @@
                     baseMsg = baseMsg.replace(/\n*--- Quick Screen Quote \(included with this request\) ---[\s\S]*$/m, '').trim();
                     payload.message = baseMsg ? baseMsg + '\n\n' + block : block;
                 }
+
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Sending…';
+                console.log('[quote-form] POST', API_REQUEST_URL, payload);
+
                 try {
-                    var res = await fetch('/api/request', {
+                    var res = await fetch(API_REQUEST_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(payload),
                     });
                     var rawText = await res.text().catch(function() { return ''; });
-                    var data = {};
-                    try { data = rawText ? JSON.parse(rawText) : {}; } catch (e) { data = {}; }
-                    if (!res.ok || !data.ok) {
+                    var json = {};
+                    try {
+                        json = rawText ? JSON.parse(rawText) : {};
+                    } catch (parseErr) {
+                        json = {};
+                    }
+
+                    console.log('[quote-form] API response', {
+                        httpOk: res.ok,
+                        status: res.status,
+                        json: json,
+                    });
+
+                    if (!res.ok || json.ok !== true) {
                         var msg =
-                            (data && data.error) ? String(data.error) :
+                            (json && json.error) ? String(json.error) :
                             (rawText && rawText.trim()) ? rawText.trim().slice(0, 240) :
                             ('Could not send. Please try again or call us. (HTTP ' + res.status + ')');
+                        console.error('[quote-form] Submit failed — staying on page', msg);
                         setStatus(msg, true);
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'Send request';
-                        return;
+                        return false;
                     }
 
                     if (typeof gtag === 'function') {
@@ -474,13 +480,43 @@
                         sessionStorage.removeItem(QUOTE_STORAGE_KEY);
                     } catch (e3) {}
                     quickQuoteEmailBlock = null;
+                    console.log('[quote-form] Success — redirecting to thank-you.html');
                     window.location.href = 'thank-you.html';
+                    return false;
                 } catch (err) {
+                    console.error('[quote-form] Fetch error — staying on page', err);
                     setStatus('Network error. Please try again.', true);
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Send request';
+                    return false;
                 }
             });
+
+            form.addEventListener('input', function(e) {
+                if (e && e.target && e.target.id === 'rq_phone') validatePhone();
+            });
+
+            // If a label contains "*", treat that field as required.
+            try {
+                var labels = form.querySelectorAll('label[for]');
+                labels.forEach(function(label) {
+                    var text = (label.textContent || '').trim();
+                    if (!text.includes('*')) return;
+                    var id = label.getAttribute('for');
+                    if (!id) return;
+                    var el = byId(id);
+                    if (!el) return;
+                    if (el.closest('.form-field--hp')) return;
+                    el.setAttribute('required', '');
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.setAttribute('aria-required', 'true');
+                    }
+                });
+            } catch (syncErr) {
+                console.warn('[quote-form] Could not sync required fields', syncErr);
+            }
+
+            console.log('[quote-form] Submit handler attached to #requestForm');
         })();
     </script>
     <script>
