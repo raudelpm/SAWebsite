@@ -79,8 +79,25 @@ const JOBBER_CLIENT_PAGE_SIZE = 50;
 const JOBBER_CLIENT_CREATE_MUTATION = `
   mutation CreateClient($input: ClientCreateInput!) {
     clientCreate(input: $input) {
-      client { id name jobberWebUri }
+      client {
+        id
+        name
+        jobberWebUri
+        clientProperties(first: 1) {
+          nodes { id }
+        }
+      }
       userErrors { message path }
+    }
+  }
+`;
+
+const JOBBER_CLIENT_PROPERTY_QUERY = `
+  query ClientFirstProperty($id: EncodedId!) {
+    client(id: $id) {
+      clientProperties(first: 1) {
+        nodes { id }
+      }
     }
   }
 `;
@@ -247,6 +264,24 @@ function clientMatches(node, email, phoneDigits) {
   return false;
 }
 
+function getFirstPropertyIdFromClient(client) {
+  const nodes = client?.clientProperties?.nodes;
+  if (!Array.isArray(nodes) || nodes.length === 0) return null;
+  return getString(nodes[0]?.id) || null;
+}
+
+async function fetchJobberClientFirstPropertyId(clientId) {
+  const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_PROPERTY_QUERY, {
+    id: clientId,
+  });
+  const propertyId = getFirstPropertyIdFromClient(payload?.data?.client);
+  console.log("[api/request][jobber] Client property lookup", {
+    clientId,
+    propertyId: propertyId || "(none)",
+  });
+  return propertyId;
+}
+
 async function findExistingJobberClient({ email, phone }) {
   const phoneDigits = normalizePhone(phone);
   if (!email && !phoneDigits) return null;
@@ -357,15 +392,19 @@ async function createJobberClient(form) {
     );
   }
 
-  const clientId = getString(result?.client?.id);
+  const client = result?.client;
+  const clientId = getString(client?.id);
   if (!clientId) throw new Error("clientCreate returned no client id");
+
+  const propertyId = getFirstPropertyIdFromClient(client);
 
   console.log("[api/request][jobber] Client created", {
     clientId,
-    jobberWebUri: result?.client?.jobberWebUri,
+    propertyId: propertyId || "(none)",
+    jobberWebUri: client?.jobberWebUri,
   });
 
-  return clientId;
+  return { clientId, propertyId };
 }
 
 async function findOrCreateJobberClient(form) {
@@ -373,14 +412,18 @@ async function findOrCreateJobberClient(form) {
     email: form.email,
     phone: form.phone,
   });
-  if (existingId) return existingId;
+  if (existingId) {
+    const propertyId = await fetchJobberClientFirstPropertyId(existingId);
+    return { clientId: existingId, propertyId };
+  }
   return createJobberClient(form);
 }
 
-async function createJobberRequest(clientId, form) {
+async function createJobberRequest({ clientId, propertyId }, form) {
   const requestInput = {
     clientId,
     title: buildJobberRequestTitle(form),
+    ...(propertyId ? { propertyId } : {}),
   };
 
   if (JOBBER_REQUEST_CREATE_MUTATION.includes("requestCreate(request:")) {
@@ -426,10 +469,10 @@ async function syncJobberFromQuoteForm(form) {
     buildJobberFormDetailsLog(form)
   );
 
-  const clientId = await findOrCreateJobberClient(form);
-  const requestId = await createJobberRequest(clientId, form);
+  const { clientId, propertyId } = await findOrCreateJobberClient(form);
+  const requestId = await createJobberRequest({ clientId, propertyId }, form);
 
-  return { created: true, clientId, requestId };
+  return { created: true, clientId, propertyId, requestId };
 }
 
 async function tryJobberSync(form) {
@@ -439,6 +482,7 @@ async function tryJobberSync(form) {
       jobberRequestCreated: Boolean(result.created),
       jobberRequestId: result.requestId || null,
       jobberClientId: result.clientId || null,
+      jobberPropertyId: result.propertyId || null,
     };
   } catch (jobberError) {
     console.error("[api/request][jobber] Jobber sync failed", {
@@ -449,6 +493,7 @@ async function tryJobberSync(form) {
       jobberRequestCreated: false,
       jobberRequestId: null,
       jobberClientId: null,
+      jobberPropertyId: null,
     };
   }
 }
