@@ -283,7 +283,7 @@ async function createJobberClient(form) {
     message,
   } = form;
 
-  const client = {
+  const clientInput = {
     firstName,
     lastName,
     isLead: true,
@@ -321,8 +321,8 @@ async function createJobberClient(form) {
   };
 
   const mutation = `
-    mutation CreateClient($client: ClientCreateInput!) {
-      clientCreate(client: $client) {
+    mutation CreateClient($input: ClientCreateInput!) {
+      clientCreate(input: $input) {
         client { id name jobberWebUri }
         userErrors { message path }
       }
@@ -335,7 +335,7 @@ async function createJobberClient(form) {
     email: email || "(none)",
   });
 
-  const payload = await jobberGraphqlWithAuth(mutation, { client });
+  const payload = await jobberGraphqlWithAuth(mutation, { input: clientInput });
   const result = payload?.data?.clientCreate;
   const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
 
@@ -367,7 +367,7 @@ async function findOrCreateJobberClient(form) {
 }
 
 async function createJobberRequest(clientId, form) {
-  const request = {
+  const requestInput = {
     clientId,
     title: buildJobberRequestTitle({
       service: form.service,
@@ -392,8 +392,8 @@ async function createJobberRequest(clientId, form) {
   };
 
   const mutation = `
-    mutation CreateRequest($request: RequestCreateInput!) {
-      requestCreate(request: $request) {
+    mutation CreateRequest($input: RequestCreateInput!) {
+      requestCreate(input: $input) {
         request { id title requestStatus jobberWebUri }
         userErrors { message path }
       }
@@ -402,10 +402,14 @@ async function createJobberRequest(clientId, form) {
 
   console.log("[api/request][jobber] Creating request", {
     clientId,
-    title: request.title.slice(0, 120),
+    title: requestInput.title.slice(0, 120),
   });
 
-  const payload = await jobberGraphqlWithAuth(mutation, { request });
+  const payload = await jobberGraphqlWithAuth(mutation, { input: requestInput });
+  console.log(
+    "[api/request][jobber] requestCreate response",
+    JSON.stringify(payload)
+  );
   const result = payload?.data?.requestCreate;
   const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
 
