@@ -139,8 +139,14 @@ const JOBBER_REQUEST_CREATE_MUTATION = `
   }
 `;
 
-function normalizePhone(value) {
-  return getString(value).replace(/\D/g, "");
+function normalizeUsPhone(value) {
+  const digits = getString(value).replace(/\D/g, "");
+
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return digits.slice(1);
+  }
+
+  return digits;
 }
 
 function buildJobberRequestDetails({ leadSource, service, message, phone, email }) {
@@ -283,7 +289,7 @@ function clientMatches(node, email, phoneDigits) {
   if (phoneDigits) {
     const phones = Array.isArray(node?.phones) ? node.phones : [];
     if (
-      phones.some((item) => normalizePhone(item?.number) === phoneDigits)
+      phones.some((item) => normalizeUsPhone(item?.number) === phoneDigits)
     ) {
       return true;
     }
@@ -452,12 +458,12 @@ async function fetchJobberClientFirstPropertyId(clientId) {
 }
 
 async function findExistingJobberClient({ email, phone }) {
-  const phoneDigits = normalizePhone(phone);
+  const phoneDigits = normalizeUsPhone(phone);
   if (!email && !phoneDigits) return null;
 
   console.log("[api/request][jobber] Searching for existing client", {
     email: email || "(none)",
-    phone: phone || "(none)",
+    phone: phoneDigits || "(none)",
   });
 
   const query = `
@@ -506,7 +512,7 @@ async function createJobberClient(form) {
   const firstName = getString(form.firstName);
   const lastName = getString(form.lastName);
   const email = getString(form.email);
-  const phone = getString(form.phone);
+  const phone = normalizeUsPhone(form.phone);
   const address1 = getString(form.address1);
   const address2 = getString(form.address2);
   const city = getString(form.city);
@@ -650,14 +656,19 @@ async function syncJobberFromQuoteForm(form) {
     return { created: false, skipped: true };
   }
 
+  const jobberForm = {
+    ...form,
+    phone: normalizeUsPhone(form.phone) || getString(form.phone),
+  };
+
   console.log("[api/request][jobber] Starting Jobber sync");
   console.log(
     "[api/request][jobber] Full form details (Resend email)",
-    buildJobberFormDetailsLog(form)
+    buildJobberFormDetailsLog(jobberForm)
   );
 
-  const { clientId, propertyId } = await findOrCreateJobberClient(form);
-  const requestId = await createJobberRequest({ clientId, propertyId }, form);
+  const { clientId, propertyId } = await findOrCreateJobberClient(jobberForm);
+  const requestId = await createJobberRequest({ clientId, propertyId }, jobberForm);
 
   return { created: true, clientId, propertyId, requestId };
 }
