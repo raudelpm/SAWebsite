@@ -210,7 +210,6 @@
                         </div>
                         <div class="form-actions">
                             <button id="sendRequestBtn" type="button">Send request</button>
-                            <button id="testApiBtn" type="button">TEST API</button>
                             <p class="form-status" id="rq_status" role="status" aria-live="polite"></p>
                             <div class="quote-trust__badges quote-trust__badges--under-submit" aria-label="Trust badges">
                                 <img class="quote-trust__badge quote-trust__badge--google" src="public/googlepng.webp" alt="Google Reviews" width="220" height="106" loading="lazy" decoding="async">
@@ -569,52 +568,7 @@
                 }
             });
 
-            var testApiBtn = document.getElementById('testApiBtn');
-            if (testApiBtn) {
-                testApiBtn.addEventListener('click', async function() {
-                    console.log('[quote-form] TEST API clicked');
-                    var testPayload = {
-                        firstName: 'Test',
-                        lastName: 'API',
-                        phone: '9415551234',
-                        email: 'test-api@screenarmors.com',
-                        leadSource: 'Google',
-                        projectType: 'Other',
-                        message: 'TEST API button — safe to ignore',
-                        website: '',
-                    };
-                    try {
-                        var testRes = await fetch(API_REQUEST_URL, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(testPayload),
-                        });
-                        var testRaw = await testRes.text().catch(function() { return ''; });
-                        var testJson = {};
-                        try {
-                            testJson = testRaw ? JSON.parse(testRaw) : {};
-                        } catch (e) {
-                            testJson = { parseError: true, raw: testRaw.slice(0, 500) };
-                        }
-                        console.log('[quote-form] TEST API response', {
-                            httpOk: testRes.ok,
-                            status: testRes.status,
-                            json: testJson,
-                        });
-                        setStatus(
-                            testRes.ok && testJson.ok
-                                ? 'TEST API OK — check Vercel logs (no redirect).'
-                                : 'TEST API failed — see console.',
-                            !(testRes.ok && testJson.ok)
-                        );
-                    } catch (testErr) {
-                        console.error('[quote-form] TEST API error', testErr);
-                        setStatus('TEST API network error — see console.', true);
-                    }
-                });
-            }
-
-            console.log('[quote-form] #sendRequestBtn click handler attached build=2026-05-22-v6-guard');
+            console.log('[quote-form] #sendRequestBtn click handler attached build=2026-05-22-production');
         })();
     </script>
     <script>

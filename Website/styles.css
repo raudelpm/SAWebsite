@@ -5447,7 +5447,6 @@ footer {
 }
 
 .quote-request-form #sendRequestBtn,
-.quote-request-form #testApiBtn,
 .quote-request-form #rq_submit {
     width: 100%;
     box-sizing: border-box;
