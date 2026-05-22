@@ -326,14 +326,18 @@ async function createJobberClient(form) {
       : {}),
     ...(address1
       ? {
-          billingAddress: {
-            street1: address1,
-            ...(address2 ? { street2: address2 } : {}),
-            ...(city ? { city } : {}),
-            province: state || "FL",
-            ...(zip ? { postalCode: zip } : {}),
-            country: "United States",
-          },
+          properties: [
+            {
+              address: {
+                street1: address1,
+                ...(address2 ? { street2: address2 } : {}),
+                ...(city ? { city } : {}),
+                province: state || "FL",
+                ...(zip ? { postalCode: zip } : {}),
+                country: "United States",
+              },
+            },
+          ],
         }
       : {}),
   };
