@@ -149,6 +149,16 @@ function normalizeUsPhone(value) {
   return digits;
 }
 
+/** Jobber ClientCreateInput.phones → PhoneNumberCreateAttributes */
+function buildJobberPhoneCreateAttributes(normalizedPhone) {
+  return {
+    number: normalizedPhone,
+    primary: true,
+    description: "MAIN",
+    smsAllowed: true,
+  };
+}
+
 function buildJobberRequestDetails({ leadSource, service, message, phone, email }) {
   const lines = ["Website quote form submission"];
   if (leadSource) lines.push(`Lead source: ${leadSource}`);
@@ -538,7 +548,7 @@ async function createJobberClient(form) {
       : {}),
     ...(phone
       ? {
-          phones: [{ number: phone, primary: true, description: "MAIN" }],
+          phones: [buildJobberPhoneCreateAttributes(phone)],
         }
       : {}),
     ...(address1
