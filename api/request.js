@@ -398,43 +398,46 @@ function matchesLeadSourceCustomFieldName(name) {
   );
 }
 
-function resolveLeadSourceCustomFieldConfig(configs, { scope }) {
-  const matches = configs.filter((node) => {
-    const appliesTo = getString(node?.appliesTo);
-    if (!matchesLeadSourceCustomFieldName(node?.name)) return false;
-    if (scope === "client") return appliesTo === "ALL_CLIENTS";
-    if (scope === "request") return appliesTo !== "ALL_CLIENTS";
-    return true;
-  });
+function formatLeadSourceCustomFieldConfig(node) {
+  const hasDropdown =
+    Array.isArray(node?.dropdownOptions) && node.dropdownOptions.length > 0;
+  return {
+    id: getString(node?.id) || null,
+    name: getString(node?.name) || "(unknown)",
+    appliesTo: getString(node?.appliesTo) || "(unknown)",
+    valueType: hasDropdown ? "dropdown" : "text",
+    dropdownOptions: hasDropdown
+      ? node.dropdownOptions.map((o) => getString(o)).filter(Boolean)
+      : [],
+  };
+}
 
-  if (matches.length === 0) return null;
+function findLeadSourceCustomFieldMatches(configs) {
+  return configs.filter((node) => matchesLeadSourceCustomFieldName(node?.name));
+}
 
-  const dropdownMatch = matches.find(
+/** Prefer the dropdown custom field (e.g. "How did you hear about us?") over a text field with the same label. */
+function findLeadSourceDropdownConfig(configs) {
+  const matches = findLeadSourceCustomFieldMatches(configs);
+  const dropdown = matches.find(
     (node) =>
       Array.isArray(node?.dropdownOptions) && node.dropdownOptions.length > 0
   );
-  const preferred = dropdownMatch || matches[0];
-  const hasDropdown = Boolean(dropdownMatch);
+  if (!dropdown) return null;
 
   if (matches.length > 1) {
-    console.log("[api/request][jobber] Multiple lead source field configs", {
-      scope,
+    console.log("[api/request][jobber] Lead source configs in Jobber", {
       count: matches.length,
-      names: matches.map((n) => getString(n?.name)),
-      using: getString(preferred?.name),
-      valueType: hasDropdown ? "dropdown" : "text",
+      fields: matches.map((n) => ({
+        name: getString(n?.name),
+        appliesTo: getString(n?.appliesTo),
+        type: Array.isArray(n?.dropdownOptions) ? "dropdown" : "text",
+      })),
+      usingDropdown: getString(dropdown?.name),
     });
   }
 
-  return {
-    id: getString(preferred?.id) || null,
-    name: getString(preferred?.name) || "(unknown)",
-    appliesTo: getString(preferred?.appliesTo) || "(unknown)",
-    valueType: hasDropdown ? "dropdown" : "text",
-    dropdownOptions: Array.isArray(preferred?.dropdownOptions)
-      ? preferred.dropdownOptions.map((o) => getString(o)).filter(Boolean)
-      : [],
-  };
+  return formatLeadSourceCustomFieldConfig(dropdown);
 }
 
 function findClientTextCustomFieldConfigId(configs, targetName) {
@@ -447,12 +450,18 @@ function findClientTextCustomFieldConfigId(configs, targetName) {
   return getString(match?.id) || null;
 }
 
-function findClientLeadSourceCustomFieldConfig(configs) {
-  return resolveLeadSourceCustomFieldConfig(configs, { scope: "client" });
-}
+async function resolveJobberLeadSourceDropdownConfig() {
+  const configs = await loadJobberCustomFieldConfigs();
+  const config = findLeadSourceDropdownConfig(configs);
 
-function findRequestLeadSourceCustomFieldConfig(configs) {
-  return resolveLeadSourceCustomFieldConfig(configs, { scope: "request" });
+  console.log("[api/request][jobber] Lead source dropdown config lookup", {
+    configId: config?.id || "(not found)",
+    fieldName: config?.name || "(not found)",
+    appliesTo: config?.appliesTo || "(not found)",
+    optionCount: config?.dropdownOptions?.length ?? 0,
+  });
+
+  return config;
 }
 
 function pickJobberDropdownValue(leadSource, dropdownOptions) {
@@ -515,33 +524,15 @@ async function resolveJobberClientCustomFieldConfigIds() {
     configs,
     JOBBER_CLIENT_CUSTOM_FIELD_NAMES.projectType
   );
-  const clientLeadSourceConfig = findClientLeadSourceCustomFieldConfig(configs);
+  const leadSourceDropdownConfig = findLeadSourceDropdownConfig(configs);
 
   console.log("[api/request][jobber] Client custom field config lookup", {
     projectTypeConfigId: projectTypeConfigId || "(not found)",
-    clientLeadSourceConfigId: clientLeadSourceConfig?.id || "(not found)",
-    clientLeadSourceFieldName: clientLeadSourceConfig?.name || "(not found)",
-    clientLeadSourceValueType: clientLeadSourceConfig?.valueType || "(not found)",
+    leadSourceDropdownConfigId: leadSourceDropdownConfig?.id || "(not found)",
+    leadSourceDropdownFieldName: leadSourceDropdownConfig?.name || "(not found)",
   });
 
-  return { projectTypeConfigId, clientLeadSourceConfig };
-}
-
-async function resolveJobberRequestLeadSourceConfig() {
-  const configs = await loadJobberCustomFieldConfigs();
-  const config = findRequestLeadSourceCustomFieldConfig(configs);
-
-  console.log("[api/request][jobber] Request lead source custom field lookup", {
-    fieldName: config?.name || JOBBER_REQUEST_LEAD_SOURCE_FIELD_NAME,
-    configId: config?.id || "(not found)",
-    appliesTo: config?.appliesTo || "(not found)",
-    valueType: config?.valueType || "(not found)",
-    dropdownOptions: config?.dropdownOptions?.length
-      ? config.dropdownOptions
-      : "(none)",
-  });
-
-  return config;
+  return { projectTypeConfigId, leadSourceDropdownConfig };
 }
 
 function warnJobberOAuthAppAttribution() {
@@ -712,20 +703,11 @@ function buildJobberClientCustomFields(form, configIds, validatedLeadSource) {
   const projectType = getString(form.service) || getString(form.projectType);
   const customFields = [];
 
-  // Only set lead source on the client when Jobber exposes a dropdown there.
-  // A text custom field with the same label would show free text, not a selected option.
-  if (configIds?.clientLeadSourceConfig?.valueType === "dropdown") {
-    const leadSourceEntry = buildJobberClientLeadSourceCustomFieldEntry(
-      validatedLeadSource,
-      configIds.clientLeadSourceConfig
-    );
-    if (leadSourceEntry) customFields.push(leadSourceEntry);
-  } else if (validatedLeadSource && configIds?.clientLeadSourceConfig?.valueType === "text") {
-    console.log(
-      "[api/request][jobber] Skipping client text lead source field; using request dropdown instead",
-      { fieldName: configIds.clientLeadSourceConfig.name }
-    );
-  }
+  const leadSourceEntry = buildJobberClientLeadSourceCustomFieldEntry(
+    validatedLeadSource,
+    configIds?.leadSourceDropdownConfig
+  );
+  if (leadSourceEntry) customFields.push(leadSourceEntry);
 
   if (projectType && configIds?.projectTypeConfigId) {
     customFields.push({
@@ -1098,26 +1080,31 @@ async function createJobberRequest({ clientId, propertyId }, form) {
     form.leadSource || "(none)"
   );
 
-  const requestLeadSourceConfig = await resolveJobberRequestLeadSourceConfig();
+  const customFieldConfigIds = await resolveJobberClientCustomFieldConfigIds();
+  const leadSourceDropdownConfig =
+    customFieldConfigIds.leadSourceDropdownConfig ||
+    (await resolveJobberLeadSourceDropdownConfig());
   const supportsRequestSource = await requestCreateSupportsSourceField();
   const supportsRequestCustomFields = await requestCreateSupportsCustomFields();
-  const requestLeadSourceCustomFields =
-    supportsRequestCustomFields && requestLeadSourceConfig
-      ? buildJobberRequestLeadSourceCustomFields(
-          validatedLeadSource,
-          requestLeadSourceConfig
-        )
-      : {};
+
+  const requestLeadSourceCustomFields = leadSourceDropdownConfig
+    ? buildJobberRequestLeadSourceCustomFields(
+        validatedLeadSource,
+        leadSourceDropdownConfig
+      )
+    : {};
 
   if (validatedLeadSource) {
-    console.log(
-      "[api/request][jobber] Lead source custom field sent to Jobber request",
-      {
-        value: validatedLeadSource,
-        fieldName: requestLeadSourceConfig?.name || "(overview only)",
-        valueType: requestLeadSourceConfig?.valueType || "(none)",
-      }
-    );
+    console.log("[api/request][jobber] Lead source for Jobber request", {
+      websiteValue: validatedLeadSource,
+      dropdownField: leadSourceDropdownConfig?.name || "(not found)",
+      requestCustomFieldsAttempt:
+        Boolean(requestLeadSourceCustomFields.customFields?.length) ||
+        "overview-only",
+      schemaSupportsRequestCustomFields: supportsRequestCustomFields,
+      note:
+        "Lead source report uses native client field (OAuth app name). Website value goes to dropdown custom field + Overview.",
+    });
   }
 
   const requestInput = {
@@ -1128,7 +1115,7 @@ async function createJobberRequest({ clientId, propertyId }, form) {
     ...buildJobberRequestDetailsInput(
       form,
       validatedLeadSource,
-      requestLeadSourceConfig?.name
+      leadSourceDropdownConfig?.name
     ),
     ...requestLeadSourceCustomFields,
   };
@@ -1139,11 +1126,33 @@ async function createJobberRequest({ clientId, propertyId }, form) {
 
   console.log("[api/request][jobber] Request input sent to Jobber", requestInput);
 
-  const payload = await jobberGraphqlWithAuth(JOBBER_REQUEST_CREATE_MUTATION, {
+  let payload = await jobberGraphqlWithAuth(JOBBER_REQUEST_CREATE_MUTATION, {
     input: requestInput,
   });
-  const result = payload?.data?.requestCreate;
-  const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+  let result = payload?.data?.requestCreate;
+  let userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+
+  if (
+    userErrors.length > 0 &&
+    requestLeadSourceCustomFields.customFields?.length
+  ) {
+    const customFieldRejected = userErrors.some((e) => {
+      const path = Array.isArray(e?.path) ? e.path.join(".") : "";
+      return path.includes("customFields") || /custom\s*field/i.test(getString(e?.message));
+    });
+    if (customFieldRejected) {
+      console.warn(
+        "[api/request][jobber] requestCreate rejected customFields; retrying with Overview only",
+        { errors: userErrors.map((e) => getString(e?.message)).filter(Boolean) }
+      );
+      const { customFields, ...inputWithoutCustomFields } = requestInput;
+      payload = await jobberGraphqlWithAuth(JOBBER_REQUEST_CREATE_MUTATION, {
+        input: inputWithoutCustomFields,
+      });
+      result = payload?.data?.requestCreate;
+      userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
+    }
+  }
 
   if (userErrors.length > 0) {
     throw new Error(
