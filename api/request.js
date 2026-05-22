@@ -36,6 +36,18 @@ function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function isTestApiRequest(body) {
+  const testEmail = getString(body?.email).toLowerCase();
+  const testMessage = getString(body?.message);
+  const testFirst = getString(body?.firstName);
+  const testLast = getString(body?.lastName);
+  return (
+    testEmail === "test-api@screenarmors.com" ||
+    testMessage.includes("TEST API button") ||
+    (testFirst === "Test" && testLast === "API")
+  );
+}
+
 const CONFIRMATION_FROM =
   process.env.CONFIRMATION_FROM_EMAIL || "Screen Armors <info@screenarmors.com>";
 
@@ -304,7 +316,6 @@ async function createJobberClient(form) {
   const clientInput = {
     firstName,
     lastName,
-    isLead: true,
     ...(email
       ? {
           emails: [
@@ -534,9 +545,38 @@ export default async function handler(req, res) {
     return json(res, 400, { ok: false, error: "Missing required fields" });
   }
 
-  const resend = new Resend(apiKey);
-
   const fullName = `${firstName}${lastName ? ` ${lastName}` : ""}`.trim();
+
+  if (isTestApiRequest(body)) {
+    console.log("[api/request] Test API request — skipping Resend emails", {
+      email: email || "(none)",
+    });
+    const jobber = await tryJobberSync({
+      firstName,
+      lastName,
+      email,
+      phone,
+      address1,
+      address2,
+      city,
+      state,
+      zip,
+      leadSource,
+      service: projectType,
+      message,
+      fullName,
+    });
+    return json(res, 200, {
+      ok: true,
+      test: true,
+      emailsSkipped: true,
+      confirmationSent: false,
+      jobberRequestCreated: jobber.jobberRequestCreated,
+      ...(jobber.jobberRequestId ? { jobberRequestId: jobber.jobberRequestId } : {}),
+      ...(jobber.jobberClientId ? { jobberClientId: jobber.jobberClientId } : {}),
+    });
+  }
+
   const hasQuickScreen =
     getString(message).includes("Quick Screen Quote") ||
     getString(message).includes("Panel breakdown:");
@@ -591,6 +631,8 @@ export default async function handler(req, res) {
     leadSource,
     hasAttachments: Boolean(resendAttachments),
   });
+
+  const resend = new Resend(apiKey);
 
   try {
     console.log("[api/request] Sending internal notification", {
