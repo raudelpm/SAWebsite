@@ -14,6 +14,13 @@ function getString(value) {
   return String(value).trim();
 }
 
+function escapeForTextarea(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
 function successPage() {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -131,8 +138,34 @@ export default async function handler(req, res) {
     console.log("[api/jobber/callback] Token exchange succeeded", {
       hasRefreshToken: Boolean(refreshToken),
     });
+    // TEMPORARY: remove after copying tokens into Vercel env vars
+    console.log("NEW_JOBBER_ACCESS_TOKEN =", tokenData.access_token);
+    console.log("NEW_JOBBER_REFRESH_TOKEN =", tokenData.refresh_token);
 
-    return html(res, 200, successPage());
+    const safeAccess = escapeForTextarea(tokenData.access_token);
+    const safeRefresh = escapeForTextarea(tokenData.refresh_token || "");
+
+    return html(
+      res,
+      200,
+      `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jobber connected</title>
+</head>
+<body style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; line-height: 1.5; padding: 2rem; max-width: 48rem;">
+  <h1 style="margin: 0 0 0.75rem;">Jobber connected successfully</h1>
+  <p style="margin: 0 0 1rem;">Copy these into Vercel Environment Variables:</p>
+  <h3 style="margin: 0 0 0.5rem;">JOBBER_ACCESS_TOKEN</h3>
+  <textarea readonly style="width:100%;height:120px;font-family:monospace;">${safeAccess}</textarea>
+  <h3 style="margin: 1rem 0 0.5rem;">JOBBER_REFRESH_TOKEN</h3>
+  <textarea readonly style="width:100%;height:120px;font-family:monospace;">${safeRefresh}</textarea>
+  <p style="margin: 1rem 0 0;color:#666;font-size:0.9rem;">Temporary page — remove from callback after updating Vercel.</p>
+</body>
+</html>`
+    );
   } catch (e) {
     console.error("[api/jobber/callback] Unexpected error", e);
     return html(res, 500, errorPage(e?.message || "Server error"));
