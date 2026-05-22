@@ -126,7 +126,7 @@ function buildJobberRequestDetails({ leadSource, service, message, phone, email 
 }
 
 function buildJobberRequestTitle(form) {
-  return `New Request - ${form.fullName || `${form.firstName || ""} ${form.lastName || ""}`.trim() || "Website Lead"}`;
+  return getString(form.service) || getString(form.projectType) || "Website Quote Request";
 }
 
 function buildJobberFormDetailsLog(form) {
@@ -572,6 +572,7 @@ export default async function handler(req, res) {
       zip,
       leadSource,
       service: projectType,
+      projectType,
       message,
       fullName,
     });
@@ -704,6 +705,7 @@ export default async function handler(req, res) {
           zip,
           leadSource,
           service: projectType,
+          projectType,
           message,
           fullName,
         });
@@ -743,6 +745,7 @@ export default async function handler(req, res) {
       zip,
       leadSource,
       service: projectType,
+      projectType,
       message,
       fullName,
     });
