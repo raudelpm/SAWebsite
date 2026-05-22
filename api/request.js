@@ -64,6 +64,24 @@ const JOBBER_GRAPHQL_VERSION =
 const JOBBER_CLIENT_SEARCH_PAGES = 8;
 const JOBBER_CLIENT_PAGE_SIZE = 50;
 
+const JOBBER_CLIENT_CREATE_MUTATION = `
+  mutation CreateClient($input: ClientCreateInput!) {
+    clientCreate(input: $input) {
+      client { id name jobberWebUri }
+      userErrors { message path }
+    }
+  }
+`;
+
+const JOBBER_REQUEST_CREATE_MUTATION = `
+  mutation CreateRequest($input: RequestCreateInput!) {
+    requestCreate(input: $input) {
+      request { id title requestStatus jobberWebUri }
+      userErrors { message path }
+    }
+  }
+`;
+
 function normalizePhone(value) {
   return getString(value).replace(/\D/g, "");
 }
@@ -320,22 +338,16 @@ async function createJobberClient(form) {
     }),
   };
 
-  const mutation = `
-    mutation CreateClient($input: ClientCreateInput!) {
-      clientCreate(input: $input) {
-        client { id name jobberWebUri }
-        userErrors { message path }
-      }
-    }
-  `;
-
   console.log("[api/request][jobber] Creating client", {
     firstName,
     lastName,
     email: email || "(none)",
+    usesInputArg: JOBBER_CLIENT_CREATE_MUTATION.includes("clientCreate(input:"),
   });
 
-  const payload = await jobberGraphqlWithAuth(mutation, { input: clientInput });
+  const payload = await jobberGraphqlWithAuth(JOBBER_CLIENT_CREATE_MUTATION, {
+    input: clientInput,
+  });
   const result = payload?.data?.clientCreate;
   const userErrors = Array.isArray(result?.userErrors) ? result.userErrors : [];
 
@@ -391,21 +403,20 @@ async function createJobberRequest(clientId, form) {
       : {}),
   };
 
-  const mutation = `
-    mutation CreateRequest($input: RequestCreateInput!) {
-      requestCreate(input: $input) {
-        request { id title requestStatus jobberWebUri }
-        userErrors { message path }
-      }
-    }
-  `;
+  if (JOBBER_REQUEST_CREATE_MUTATION.includes("requestCreate(request:")) {
+    throw new Error("Invalid Jobber requestCreate mutation signature in source");
+  }
 
   console.log("[api/request][jobber] Creating request", {
     clientId,
     title: requestInput.title.slice(0, 120),
+    usesInputArg: JOBBER_REQUEST_CREATE_MUTATION.includes("requestCreate(input:"),
+    variablesKey: "input",
   });
 
-  const payload = await jobberGraphqlWithAuth(mutation, { input: requestInput });
+  const payload = await jobberGraphqlWithAuth(JOBBER_REQUEST_CREATE_MUTATION, {
+    input: requestInput,
+  });
   console.log(
     "[api/request][jobber] requestCreate response",
     JSON.stringify(payload)
