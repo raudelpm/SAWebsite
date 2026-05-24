@@ -1276,6 +1276,18 @@ body.nav-menu-open::before {
     filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.55));
 }
 
+.btn-lottie-icon {
+    display: inline-flex;
+    width: 1.45rem;
+    height: 1.45rem;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+.btn-lottie-icon svg {
+    filter: brightness(0) invert(1);
+}
+
 .btn {
     padding: 0.8rem 1.8rem;
     font-size: 1.05rem;

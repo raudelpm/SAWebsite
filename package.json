@@ -5,6 +5,10 @@
   "engines": {
     "node": ">=18"
   },
+  "scripts": {
+    "dev:site": "npx serve Website -l 3000",
+    "dev:api": "npx vercel dev --listen 3000"
+  },
   "dependencies": {
     "resend": "^6.0.1"
   }
