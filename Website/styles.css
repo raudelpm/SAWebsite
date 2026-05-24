@@ -140,11 +140,12 @@ nav {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.nav-compact .nav-links li a {
+.nav-compact .nav-links li a:not(.nav-cta-btn):not(.nav-quick-screen-quote-btn) {
     display: block;
     width: 100%;
     padding: 1rem;
     text-align: left;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 /* Full-screen hit layer when dropdown is open: below nav (1000), above page content */
@@ -211,13 +212,35 @@ body.nav-menu-open::before {
     flex-wrap: wrap;
 }
 
-.nav-links a {
+.nav-links a:not(.nav-cta-btn):not(.nav-quick-screen-quote-btn) {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s, text-shadow 0.3s;
+    padding: 0.5rem 0;
+    text-shadow:
+        0 0 1px rgba(0, 0, 0, 0.95),
+        0 1px 3px rgba(0, 0, 0, 0.88),
+        0 2px 10px rgba(0, 0, 0, 0.72),
+        0 0 22px rgba(0, 0, 0, 0.55);
+}
+
+.nav-links a:not(.nav-cta-btn):not(.nav-quick-screen-quote-btn):hover {
+    color: #ffd700;
+    text-shadow:
+        0 0 1px rgba(0, 0, 0, 0.95),
+        0 1px 3px rgba(0, 0, 0, 0.88),
+        0 2px 10px rgba(0, 0, 0, 0.72),
+        0 0 18px rgba(255, 215, 0, 0.45);
+}
+
+.nav-links a.nav-cta-btn,
+.nav-links a.nav-quick-screen-quote-btn {
     color: #fff;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s;
     padding: 0.5rem 0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 18px rgba(0, 0, 0, 0.45);
 }
 
 .nav-links a:hover {
@@ -5559,7 +5582,16 @@ footer {
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .nav-links li a {
+    .nav-links li a:not(.nav-cta-btn):not(.nav-quick-screen-quote-btn) {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        text-align: left;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+    }
+
+    .nav-links li a.nav-cta-btn,
+    .nav-links li a.nav-quick-screen-quote-btn {
         display: block;
         width: 100%;
         padding: 1rem;
