@@ -43,7 +43,6 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'AW-17482456160');
-      gtag('config', 'AW-17084873879');
       gtag('config', 'G-88C4GX5DWN');
     </script>
     <!-- Meta Pixel Code -->
@@ -241,7 +240,7 @@
 
                             <p class="estimate-by-text__cta-label"><strong>Text us now for a quick estimate</strong></p>
                             <p class="estimate-by-text__phone">
-                                <a href="sms:+19414049699?body=Hi%20SCREEN%20ARMORS%2C%20I%27d%20like%20a%20text%20estimate%20for%20screen%20repair.%20I%27ll%20send%20photos%20in%20the%20next%20message." class="estimate-by-text__sms-btn" aria-label="Send a text message to (941) 404-9699 for a screen repair estimate" onclick="return gtag_report_contact_conversion(this.href);"><span class="estimate-by-text__sms-icon" aria-hidden="true">📲</span> (941) 404-9699</a>
+                                <a href="sms:+19414049699?body=Hi%20SCREEN%20ARMORS%2C%20I%27d%20like%20a%20text%20estimate%20for%20screen%20repair.%20I%27ll%20send%20photos%20in%20the%20next%20message." class="estimate-by-text__sms-btn" aria-label="Send a text message to (941) 404-9699 for a screen repair estimate" onclick="return gtag_report_conversion(this.href);"><span class="estimate-by-text__sms-icon" aria-hidden="true">📲</span> (941) 404-9699</a>
                             </p>
                             <p class="estimate-by-text__tagline">Fast response. No hassle. Get your screen fixed quicker.</p>
                         </div>
@@ -460,7 +459,7 @@
             document.head.appendChild(s);
         });
     </script>
-    <!-- Google Ads Click to call conversion -->
+    <!-- Google Ads conversions -->
     <script>
       function gtag_report_conversion(url) {
         var callback = function () {
@@ -469,7 +468,7 @@
           }
         };
         gtag('event', 'conversion', {
-          'send_to': 'AW-17482456160/_mKGCNOspfkbEOC4pJBB',
+          'send_to': 'AW-17482456160/ykAlCMfT1LQcEOC4pJBB',
           'value': 1.0,
           'currency': 'USD',
           'event_callback': callback
@@ -477,14 +476,14 @@
         return false;
       }
 
-      function gtag_report_contact_conversion(url) {
+      function gtag_report_call_conversion(url) {
         var callback = function () {
           if (typeof(url) != 'undefined') {
             window.location = url;
           }
         };
         gtag('event', 'conversion', {
-          'send_to': 'AW-17084873879/NETCCIrO1LQcEJf52dI_',
+          'send_to': 'AW-17482456160/_mKGCNOspfkbEOC4pJBB',
           'value': 1.0,
           'currency': 'USD',
           'event_callback': callback

@@ -4,8 +4,12 @@
  */
 (function() {
   function trackCallClick() {
-    if (typeof gtag_report_conversion === 'function') {
-      gtag_report_conversion();
+    var report =
+      typeof gtag_report_call_conversion === "function"
+        ? gtag_report_call_conversion
+        : gtag_report_conversion;
+    if (typeof report === "function") {
+      report();
     }
   }
   function init() {
