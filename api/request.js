@@ -62,7 +62,7 @@ function buildConfirmationHtml(firstName) {
       <p style="margin:0 0 16px;">We usually respond within 1 hour during business hours.</p>
       <p style="margin:0 0 8px;">
         Screen Armors<br>
-        941-524-6233<br>
+        (941) 404-9699<br>
         <a href="https://www.screenarmors.com">www.screenarmors.com</a>
       </p>
     </div>
