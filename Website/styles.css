@@ -4601,11 +4601,20 @@ body.nav-menu-open::before {
 .reviews-carousel-viewport {
     position: relative;
     z-index: 1;
+    display: block;
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 14px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     background: #fff;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.reviews-carousel-viewport:focus-visible {
+    outline: 2px solid var(--brand-red, #c43d52);
+    outline-offset: 3px;
 }
 
 .reviews-carousel-track {
