@@ -20,9 +20,9 @@
     })(window, document, 'clarity', 'script', 'wifrjpxrbv');
   }
   if ('requestIdleCallback' in window) {
-    requestIdleCallback(loadClarity, { timeout: 8000 });
+    requestIdleCallback(loadClarity, { timeout: 12000 });
   } else {
-    window.addEventListener('load', function () { setTimeout(loadClarity, 5000); }, { once: true });
+    window.addEventListener('load', function () { setTimeout(loadClarity, 8000); }, { once: true });
   }
 
   function navLinksEl() {

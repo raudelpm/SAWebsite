@@ -435,15 +435,6 @@ nav {
     overflow: hidden;
 }
 
-.hero-bg-container picture {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
-
 .hero-bg-image--lcp {
     display: block;
     width: 100%;
@@ -630,6 +621,19 @@ nav {
     flex-wrap: wrap;
     margin: 2rem auto 0;
     width: fit-content;
+}
+
+.hero .cta-buttons {
+    width: 100%;
+    margin: 0.5rem auto 0;
+    box-sizing: border-box;
+}
+
+@media (min-width: 769px) {
+    .hero .cta-buttons {
+        width: fit-content;
+        margin-top: 0.65rem;
+    }
 }
 
 .hero-fast-response {
@@ -1378,7 +1382,7 @@ nav {
 .home-welcome-photo-band {
     position: relative;
     padding: 2.5rem 0 3rem;
-    background: #e5eaee url('public/Photo%2029.jpeg') center / cover no-repeat;
+    background: #e5eaee url('public/Photo%2029-band.webp') center / cover no-repeat;
 }
 
 .home-welcome-photo-band::before {
