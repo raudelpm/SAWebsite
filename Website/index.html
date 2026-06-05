@@ -115,7 +115,8 @@
         .hero-overlay{position:absolute;inset:0;z-index:2;background:linear-gradient(135deg,rgba(30,60,114,.12) 0%,rgba(0,0,0,.06) 100%)}
         .hero-content{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;padding:1rem;max-width:900px;width:100%}
         .hero h1{font-size:2rem;font-weight:800;margin:0 0 1rem;text-shadow:2px 2px 4px rgba(0,0,0,.5)}
-        .hero-logo{display:block;max-width:220px;width:220px;height:auto;aspect-ratio:280/117;margin:0 auto .8rem}
+        .hero-logo{display:block;max-width:400px;width:100%;height:auto;margin:0 auto 1rem}
+        @media (max-width:768px){.hero-logo{max-width:220px}}
         .hero-subtitle,.hero-service-area,.cta-buttons,.hero-stars,.hero-fast-response{max-width:100%}
         .btn-lottie-icon{display:inline-flex;width:1.45rem;height:1.45rem;flex-shrink:0}
         .hero-bg-image--lcp{display:none}
@@ -169,7 +170,7 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 class="hero-title hero-title--wrap">Best Pool Cage &amp; Screen Repair in West Coast FL</h1>
-            <img src="public/Logo%20White%20No%20Background%20-mobile.webp" srcset="public/Logo%20White%20No%20Background%20-mobile.webp 280w, public/Logo%20White%20No%20Background%20.webp 400w" sizes="(max-width: 768px) 220px, 400px" alt="SCREEN ARMORS" class="hero-logo" width="280" height="117" fetchpriority="low" decoding="async">
+            <img src="public/Logo%20White%20No%20Background%20.webp" srcset="public/Logo%20White%20No%20Background%20-mobile.webp 280w, public/Logo%20White%20No%20Background%20.webp 1024w" sizes="(max-width: 768px) 220px, 400px" alt="SCREEN ARMORS" class="hero-logo" width="400" height="400" fetchpriority="low" decoding="async">
             <p class="hero-subtitle hero-subtitle--multiline">Custom builds, rescreening, repairs &amp; refurbishing for pool cages and lanais.</p>
             <p class="hero-service-area">Serving Sarasota, Manatee & Charlotte Counties</p>
             <div class="cta-buttons">
