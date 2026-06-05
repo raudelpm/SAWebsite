@@ -106,15 +106,7 @@
     <link rel="preload" href="public/Photo%201-mobile.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
     <link rel="preload" href="public/Photo%201.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
     <link rel="preload" href="index.css" as="style">
-    <style>
-        body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-        nav{position:fixed;top:0;left:0;right:0;z-index:1000}
-        .hero{min-height:70vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;color:#fff;text-align:center}
-        .hero-bg-image--lcp{display:none}
-        @media (max-width:768px){.hero-bg-image--lcp{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.85);z-index:0}}
-    </style>
-    <link rel="stylesheet" href="index.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="index.css"></noscript>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -146,10 +138,7 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-bg-container hero-bg-video">
-            <picture>
-                <source media="(max-width: 768px)" srcset="public/Photo%201-mobile.webp" type="image/webp">
-                <img src="public/Photo%201.webp" alt="" class="hero-bg-image hero-bg-image--lcp" width="1600" height="900" fetchpriority="high" decoding="async" aria-hidden="true">
-            </picture>
+            <img src="public/Photo%201-mobile.webp" srcset="public/Photo%201-mobile.webp 800w, public/Photo%201.webp 1600w" sizes="(max-width: 768px) 100vw, 0px" alt="" class="hero-bg-image--lcp" width="800" height="534" fetchpriority="high" decoding="async" aria-hidden="true">
             <video class="hero-bg-video-el" autoplay muted loop playsinline preload="none" poster="public/Photo%201.webp" disablepictureinpicture disableremoteplayback aria-label="Cinematic pool and screen enclosure scene">
                 <source data-hero-video-src="public/loopgood.mp4" type="video/mp4">
             </video>
@@ -158,7 +147,7 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 class="hero-title hero-title--wrap">Best Pool Cage &amp; Screen Repair in West Coast FL</h1>
-            <img src="public/Logo%20White%20No%20Background%20.webp" srcset="public/Logo%20White%20No%20Background%20-mobile.webp 280w, public/Logo%20White%20No%20Background%20.webp 400w" sizes="(max-width: 768px) 280px, 400px" alt="SCREEN ARMORS" class="hero-logo" width="400" height="167" fetchpriority="low" decoding="async">
+            <img src="public/Logo%20White%20No%20Background%20-mobile.webp" srcset="public/Logo%20White%20No%20Background%20-mobile.webp 280w, public/Logo%20White%20No%20Background%20.webp 400w" sizes="(max-width: 768px) 220px, 400px" alt="SCREEN ARMORS" class="hero-logo" width="280" height="117" fetchpriority="low" decoding="async">
             <p class="hero-subtitle hero-subtitle--multiline">Custom builds, rescreening, repairs &amp; refurbishing for pool cages and lanais.</p>
             <p class="hero-service-area">Serving Sarasota, Manatee & Charlotte Counties</p>
             <div class="cta-buttons">
@@ -640,14 +629,14 @@
 			const navEl = document.querySelector('nav');
 			if (!navEl) return;
 			const TOP_REVEAL_PX = 8;
-			function setSpacer() {
+			function syncNavHeight() {
 				const h = navEl.offsetHeight;
-				document.body.style.paddingTop = h + 'px';
-				document.documentElement.style.setProperty('--nav-height', h + 'px');
+				if (h > 0) {
+					document.documentElement.style.setProperty('--nav-height', h + 'px');
+				}
 			}
-			window.addEventListener('load', setSpacer);
-			window.addEventListener('resize', setSpacer);
-			setSpacer();
+			syncNavHeight();
+			window.addEventListener('resize', syncNavHeight);
 			window.addEventListener('scroll', function() {
 				const currentY = window.scrollY;
 				const navLinks = document.getElementById('navLinks');

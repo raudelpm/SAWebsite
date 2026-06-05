@@ -402,6 +402,8 @@ nav {
         -webkit-filter: brightness(0.85);
         z-index: 0;
         pointer-events: none;
+        animation: none;
+        transform: none;
     }
 
     .hero-bg-container.hero-bg-video .hero-bg-video-el {
@@ -490,6 +492,7 @@ nav {
     max-width: 400px;
     width: 100%;
     height: auto;
+    aspect-ratio: 400 / 167;
     margin-bottom: 1rem;
     display: block;
     margin-left: auto;
@@ -2188,6 +2191,9 @@ footer {
 
     .hero-logo {
         max-width: 220px;
+        width: 220px;
+        height: auto;
+        aspect-ratio: 280 / 117;
         margin-bottom: 0.8rem;
         margin-top: -0.5rem;
     }
