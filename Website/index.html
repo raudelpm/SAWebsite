@@ -103,10 +103,32 @@
       }
     }
     </script>
-    <link rel="preload" href="public/Photo%201-mobile.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
-    <link rel="preload" href="public/Photo%201.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
+    <link rel="preload" href="public/Photo%201-mobile.webp" as="image" type="image/webp" fetchpriority="high">
     <link rel="preload" href="index.css" as="style">
-    <link rel="stylesheet" href="index.css">
+    <style>
+        :root{--nav-height:72px}
+        *,*::before,*::after{box-sizing:border-box}
+        body{margin:0;font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#333}
+        nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 0}
+        .hero{position:relative;margin-top:calc(-1 * var(--nav-height));padding-top:var(--nav-height);min-height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden;text-align:center;color:#fff;background:#1a1a1a}
+        .hero-bg-container{position:absolute;inset:0;z-index:0;overflow:hidden}
+        .hero-overlay{position:absolute;inset:0;z-index:2;background:linear-gradient(135deg,rgba(30,60,114,.12) 0%,rgba(0,0,0,.06) 100%)}
+        .hero-content{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;padding:1rem;max-width:900px;width:100%}
+        .hero h1{font-size:2rem;font-weight:800;margin:0 0 1rem;text-shadow:2px 2px 4px rgba(0,0,0,.5)}
+        .hero-logo{display:block;max-width:220px;width:220px;height:auto;aspect-ratio:280/117;margin:0 auto .8rem}
+        .hero-subtitle,.hero-service-area,.cta-buttons,.hero-stars,.hero-fast-response{max-width:100%}
+        .btn-lottie-icon{display:inline-flex;width:1.45rem;height:1.45rem;flex-shrink:0}
+        .hero-bg-image--lcp{display:none}
+        .hero-bg-video-el{display:none}
+        @media (max-width:768px){
+            .hero-bg-image--lcp{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.85);z-index:0}
+        }
+        @media (min-width:769px){
+            .hero-bg-video-el{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:100svh;min-width:100%;min-height:100%;object-fit:cover;object-position:center;z-index:0}
+        }
+    </style>
+    <link rel="stylesheet" href="index.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="index.css"></noscript>
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -138,8 +160,8 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-bg-container hero-bg-video">
-            <img src="public/Photo%201-mobile.webp" srcset="public/Photo%201-mobile.webp 800w, public/Photo%201.webp 1600w" sizes="(max-width: 768px) 100vw, 0px" alt="" class="hero-bg-image--lcp" width="800" height="534" fetchpriority="high" decoding="async" aria-hidden="true">
-            <video class="hero-bg-video-el" autoplay muted loop playsinline preload="none" poster="public/Photo%201.webp" disablepictureinpicture disableremoteplayback aria-label="Cinematic pool and screen enclosure scene">
+            <img src="public/Photo%201-mobile.webp" alt="" class="hero-bg-image--lcp" width="640" height="427" fetchpriority="high" decoding="sync">
+            <video class="hero-bg-video-el" autoplay muted loop playsinline preload="none" data-poster-desktop="public/Photo%201.webp" disablepictureinpicture disableremoteplayback aria-hidden="true">
                 <source data-hero-video-src="public/loopgood.mp4" type="video/mp4">
             </video>
             <div class="screen-mesh-overlay"></div>
@@ -612,11 +634,14 @@
             var source = v.querySelector('source[data-hero-video-src]');
             if (reduceMotion || isMobile) {
                 v.removeAttribute('autoplay');
+                v.removeAttribute('poster');
                 v.pause();
                 if (source) source.removeAttribute('src');
                 v.load();
                 return;
             }
+            var desktopPoster = v.getAttribute('data-poster-desktop');
+            if (desktopPoster) v.setAttribute('poster', desktopPoster);
             if (source && !source.getAttribute('src')) {
                 source.setAttribute('src', source.getAttribute('data-hero-video-src'));
                 v.preload = 'metadata';
