@@ -1,6 +1,6 @@
 /* Global Styles */
 :root {
-	--nav-height: 80px;
+	--nav-height: 88px;
 	/* Brand red (matches Get Quote / primary CTAs) — before gradient tokens */
 	--color-brand-red: #b71c1c;
 	--color-brand-red-hover: #991b1b;
@@ -340,11 +340,11 @@ nav {
     line-height: 1;
 }
 
-/* Hero — extends under fixed transparent nav (body padding would otherwise show white behind nav) */
+/* Hero — background extends under fixed nav; content starts below nav */
 .hero {
     position: relative;
-    margin-top: calc(-1 * var(--nav-height));
-    padding-top: var(--nav-height);
+    margin-top: 0;
+    padding-top: calc(var(--nav-height) + 2.5rem);
     min-height: 100vh;
     min-height: 100dvh;
     width: 100%;
