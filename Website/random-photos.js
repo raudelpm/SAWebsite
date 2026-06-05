@@ -2,19 +2,19 @@
 // Runs on interior pages that have `.container .cta-buttons`.
 (function () {
   const PHOTO_POOL = [
-    "public/Photo%206.jpg",
-    "public/Photo%207.jpg",
-    "public/Photo%208.jpg",
-    "public/Photo%209.jpg",
-    "public/Photo%2010.jpg",
-    "public/Photo%2017.jpg",
-    "public/Photo%2018.jpg",
-    "public/Photo%2019.jpg",
-    "public/Photo%2023.jpeg",
-    "public/Photo%2028.jpeg",
-    "public/Photo%2046.jpeg",
-    "public/Photo%2052.jpeg",
-    "public/photopool.jpeg",
+    "public/Photo%206.webp",
+    "public/Photo%207.webp",
+    "public/Photo%208.webp",
+    "public/Photo%209.webp",
+    "public/Photo%2010.webp",
+    "public/Photo%2017.webp",
+    "public/Photo%2018.webp",
+    "public/Photo%2019.webp",
+    "public/Photo%2023.webp",
+    "public/Photo%2028.webp",
+    "public/Photo%2046.webp",
+    "public/Photo%2052.webp",
+    "public/photopool.webp",
   ];
 
   function pickUnique(arr, count) {
@@ -47,6 +47,8 @@
       const img = document.createElement("img");
       img.src = src;
       img.alt = "";
+      img.width = 400;
+      img.height = 400;
       img.loading = "lazy";
       img.decoding = "async";
 

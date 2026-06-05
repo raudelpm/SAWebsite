@@ -993,6 +993,16 @@ body.nav-menu-open::before {
     overflow: hidden;
 }
 
+@media (max-width: 768px) {
+    .hero-bg-container.hero-bg-video {
+        background: url('public/Photo%201.webp') center / cover no-repeat;
+    }
+
+    .hero-bg-container.hero-bg-video .hero-bg-video-el {
+        display: none;
+    }
+}
+
 .hero-bg-video .hero-bg-video-el {
     position: absolute;
     top: 50%;
