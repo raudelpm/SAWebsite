@@ -993,9 +993,23 @@ body.nav-menu-open::before {
     overflow: hidden;
 }
 
+.hero-bg-image--lcp {
+    display: none;
+}
+
 @media (max-width: 768px) {
-    .hero-bg-container.hero-bg-video {
-        background: url('public/Photo%201.webp') center / cover no-repeat;
+    .hero-bg-image--lcp {
+        display: block;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        filter: brightness(0.85);
+        -webkit-filter: brightness(0.85);
+        z-index: 0;
+        pointer-events: none;
     }
 
     .hero-bg-container.hero-bg-video .hero-bg-video-el {
@@ -3582,8 +3596,21 @@ body.nav-menu-open::before {
 .review-verified {
     width: 18px;
     height: 18px;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     vertical-align: middle;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #1a73e8;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.review-verified::before {
+    content: "✓";
 }
 
 .review-text {
