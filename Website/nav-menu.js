@@ -6,18 +6,24 @@
  * always register; nav + dropdown stay above at 1000.
  */
 (function () {
-  // Microsoft Clarity (global). Loaded async, safe to run on every page.
-  (function (c, l, a, r, i, t, y) {
-    if (c[a]) return;
-    c[a] = function () {
-      (c[a].q = c[a].q || []).push(arguments);
-    };
-    t = l.createElement(r);
-    t.async = 1;
-    t.src = 'https://www.clarity.ms/tag/' + i;
-    y = l.getElementsByTagName(r)[0];
-    if (y && y.parentNode) y.parentNode.insertBefore(t, y);
-  })(window, document, 'clarity', 'script', 'wifrjpxrbv');
+  function loadClarity() {
+    (function (c, l, a, r, i, t, y) {
+      if (c[a]) return;
+      c[a] = function () {
+        (c[a].q = c[a].q || []).push(arguments);
+      };
+      t = l.createElement(r);
+      t.async = 1;
+      t.src = 'https://www.clarity.ms/tag/' + i;
+      y = l.getElementsByTagName(r)[0];
+      if (y && y.parentNode) y.parentNode.insertBefore(t, y);
+    })(window, document, 'clarity', 'script', 'wifrjpxrbv');
+  }
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(loadClarity, { timeout: 8000 });
+  } else {
+    window.addEventListener('load', function () { setTimeout(loadClarity, 5000); }, { once: true });
+  }
 
   function navLinksEl() {
     return document.getElementById('navLinks');
