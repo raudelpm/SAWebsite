@@ -70,8 +70,7 @@ function buildConfirmationHtml(firstName) {
 }
 
 function buildRequestEmailHtml({
-  firstName,
-  lastName,
+  fullName,
   address,
   phone,
   email,
@@ -83,8 +82,7 @@ function buildRequestEmailHtml({
     <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; line-height: 1.45;">
       <h2 style="margin:0 0 12px;">New quote request</h2>
       <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-        <tr><td style="padding: 6px 0; width: 140px;"><strong>First name</strong></td><td style="padding: 6px 0;">${escapeHtml(firstName)}</td></tr>
-        <tr><td style="padding: 6px 0;"><strong>Last name</strong></td><td style="padding: 6px 0;">${escapeHtml(lastName)}</td></tr>
+        <tr><td style="padding: 6px 0; width: 140px;"><strong>Name</strong></td><td style="padding: 6px 0;">${escapeHtml(fullName)}</td></tr>
         ${
           address
             ? `<tr><td style="padding: 6px 0;"><strong>Address</strong></td><td style="padding: 6px 0;"><pre style="margin: 0; white-space: pre-wrap; font-family: inherit;">${escapeHtml(address)}</pre></td></tr>`
@@ -151,10 +149,12 @@ export default async function handler(req, res) {
     }
   }
 
+  const fullNameInput = getString(body?.fullName);
   const firstName = getString(body?.firstName);
   const lastName = getString(body?.lastName);
   const email = getString(body?.email);
   const phone = getString(body?.phone);
+  const addressSingle = getString(body?.address);
   const address1 = getString(body?.address1);
   const address2 = getString(body?.address2);
   const city = getString(body?.city);
@@ -171,13 +171,17 @@ export default async function handler(req, res) {
   const state = stateRaw ? stateRaw.toUpperCase() : "";
   const addressLines = [address1, address2].filter(Boolean);
   const cityStateZip = [city, [state, zip].filter(Boolean).join(" ")].filter(Boolean).join(", ");
-  const address = [addressLines.join("\n"), cityStateZip].filter(Boolean).join("\n");
+  const addressFromParts = [addressLines.join("\n"), cityStateZip].filter(Boolean).join("\n");
+  const address = addressSingle || addressFromParts;
 
-  if (!firstName || !lastName || !phone || !leadSource) {
+  const fullName =
+    fullNameInput ||
+    `${firstName}${lastName ? ` ${lastName}` : ""}`.trim();
+  const greetingName = firstName || fullNameInput.split(/\s+/)[0] || "";
+
+  if (!fullName || !phone || !leadSource) {
     return json(res, 400, { ok: false, error: "Missing required fields" });
   }
-
-  const fullName = `${firstName}${lastName ? ` ${lastName}` : ""}`.trim();
 
   if (isTestApiRequest(body)) {
     console.log("[api/request] Test API request — skipping Resend emails", {
@@ -198,8 +202,7 @@ export default async function handler(req, res) {
     ? `New quote request (Quick Screen Quote) from ${fullName || "Website"}`
     : `New quote request from ${fullName || "Website"}`;
   const html = buildRequestEmailHtml({
-    firstName,
-    lastName,
+    fullName,
     address,
     phone,
     email,
@@ -258,7 +261,7 @@ export default async function handler(req, res) {
         from: CONFIRMATION_FROM,
         to: email,
         subject: "We Received Your Request",
-        html: buildConfirmationHtml(firstName),
+        html: buildConfirmationHtml(greetingName),
       });
 
       if (confirmationResult.error) {

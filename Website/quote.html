@@ -25,8 +25,8 @@
     <title>Screen Armors | Free Quote for Screen Enclosures (Sarasota &amp; Bradenton)</title>
     <meta name="description" content="Request a free quote for screen enclosures, pool cages and lanais in Sarasota and Bradenton. Fast response during business hours.">
     <link rel="canonical" href="https://www.screenarmors.com/quote.html">
-    <link rel="preload" href="styles.css?v=quote-why-2" as="style">
-    <link rel="stylesheet" href="styles.css?v=quote-why-2">
+    <link rel="preload" href="styles.css?v=quote-trust-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=quote-trust-1">
     <!-- Analytics loads after page so form gets full bandwidth -->
 </head>
 <body>
@@ -118,14 +118,6 @@
         <div class="quote-form-section" id="quote-form">
             <div class="content-section">
                 <div class="quote-form-wrapper">
-                    <div class="quote-trust" aria-label="Trust and reviews">
-                        <div class="quote-trust__top"></div>
-                        <div class="quote-trust__chips" role="list" aria-label="Business highlights">
-                            <span class="quote-trust__chip" role="listitem">Licensed &amp; Insured</span>
-                            <span class="quote-trust__chip" role="listitem">Serving Sarasota, Manatee &amp; Charlotte</span>
-                            <span class="quote-trust__chip" role="listitem">Fast response during business hours</span>
-                        </div>
-                    </div>
                     <div class="quote-request-header">
                         <h2 class="quote-request-title">Request Your Free Estimate</h2>
                         <p class="quote-request-subtitle">Fill out the form and we’ll contact you with pricing and availability.</p>
@@ -138,33 +130,13 @@
                     </div>
                     <div id="quoteFormRoot" class="quote-request-form" role="group" aria-label="Quote request">
                         <div class="form-grid">
-                            <div class="form-field">
-                                <label for="rq_firstName">First name *</label>
-                                <input id="rq_firstName" name="firstName" type="text" autocomplete="given-name">
-                            </div>
-                            <div class="form-field">
-                                <label for="rq_lastName">Last name *</label>
-                                <input id="rq_lastName" name="lastName" type="text" autocomplete="family-name">
+                            <div class="form-field form-field--full">
+                                <label for="rq_fullName">Full name *</label>
+                                <input id="rq_fullName" name="fullName" type="text" autocomplete="name" placeholder="Your full name">
                             </div>
                             <div class="form-field form-field--full">
-                                <label for="rq_address1">Address 1</label>
-                                <input id="rq_address1" name="address1" type="text" autocomplete="address-line1" placeholder="Street address">
-                            </div>
-                            <div class="form-field form-field--full">
-                                <label for="rq_address2">Address 2</label>
-                                <input id="rq_address2" name="address2" type="text" autocomplete="address-line2" placeholder="Apt, suite, unit (optional)">
-                            </div>
-                            <div class="form-field">
-                                <label for="rq_city">City</label>
-                                <input id="rq_city" name="city" type="text" autocomplete="address-level2" placeholder="City">
-                            </div>
-                            <div class="form-field">
-                                <label for="rq_state">State</label>
-                                <input id="rq_state" name="state" type="text" autocomplete="address-level1" placeholder="Florida" autocapitalize="words">
-                            </div>
-                            <div class="form-field">
-                                <label for="rq_zip">Zip Code</label>
-                                <input id="rq_zip" name="zip" type="text" autocomplete="postal-code" inputmode="numeric" placeholder="ZIP">
+                                <label for="rq_address">Address</label>
+                                <input id="rq_address" name="address" type="text" autocomplete="street-address" placeholder="Street, city, ZIP">
                             </div>
                             <div class="form-field form-field--full">
                                 <label for="rq_phone">Phone *</label>
@@ -207,6 +179,13 @@
                         </div>
                         <div class="form-actions">
                             <button id="sendRequestBtn" type="button" class="btn btn-quote">Send request</button>
+                            <div class="quote-trust quote-trust--under-submit" aria-label="Trust and reviews">
+                                <div class="quote-trust__chips" role="list" aria-label="Business highlights">
+                                    <span class="quote-trust__chip" role="listitem">Licensed &amp; Insured</span>
+                                    <span class="quote-trust__chip" role="listitem">Serving Sarasota, Manatee &amp; Charlotte</span>
+                                    <span class="quote-trust__chip" role="listitem">Fast response during business hours</span>
+                                </div>
+                            </div>
                             <p class="form-status" id="rq_status" role="status" aria-live="polite"></p>
                             <div class="quote-trust__badges quote-trust__badges--under-submit" aria-label="Trust badges">
                                 <img class="quote-trust__badge quote-trust__badge--google" src="public/googlepng.webp" alt="Google Reviews" width="220" height="106" loading="lazy" decoding="async">
@@ -455,13 +434,8 @@
 
             function collectPayload() {
                 var payload = {
-                    firstName: fieldValue('rq_firstName'),
-                    lastName: fieldValue('rq_lastName'),
-                    address1: fieldValue('rq_address1'),
-                    address2: fieldValue('rq_address2'),
-                    city: fieldValue('rq_city'),
-                    state: fieldValue('rq_state'),
-                    zip: fieldValue('rq_zip'),
+                    fullName: fieldValue('rq_fullName'),
+                    address: fieldValue('rq_address'),
                     phone: fieldValue('rq_phone'),
                     email: fieldValue('rq_email'),
                     leadSource: fieldValue('rq_leadSource'),
@@ -480,8 +454,7 @@
             }
 
             function validatePayload(payload) {
-                if (!payload.firstName) return 'First name is required.';
-                if (!payload.lastName) return 'Last name is required.';
+                if (!payload.fullName) return 'Full name is required.';
                 if (digitsOnly(payload.phone).length < 10) {
                     return 'Phone number must have at least 10 digits.';
                 }

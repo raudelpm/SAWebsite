@@ -5120,6 +5120,15 @@ footer {
     background: linear-gradient(180deg, rgba(255, 215, 0, 0.08) 0%, rgba(0, 0, 0, 0.015) 100%);
 }
 
+.quote-trust--under-submit {
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.quote-trust--under-submit .quote-trust__chips {
+    margin-top: 0;
+}
+
 .quote-trust__top {
     display: flex;
     align-items: center;
@@ -5344,6 +5353,22 @@ footer {
     display: grid;
     gap: 0.75rem;
     justify-items: stretch;
+}
+
+.quote-request-form .form-actions #sendRequestBtn {
+    order: 1;
+}
+
+.quote-request-form .form-actions .quote-trust--under-submit {
+    order: 2;
+}
+
+.quote-request-form .form-actions .form-status {
+    order: 3;
+}
+
+.quote-request-form .form-actions .quote-trust__badges--under-submit {
+    order: 4;
 }
 
 .quote-request-form .form-help {
