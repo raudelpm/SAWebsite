@@ -397,51 +397,19 @@ nav {
 }
 
 .hero-bg-image--lcp {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .hero-bg-image--lcp {
-        display: block;
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        filter: brightness(0.85);
-        -webkit-filter: brightness(0.85);
-        z-index: 0;
-        pointer-events: none;
-        animation: none;
-        transform: none;
-    }
-
-    .hero-bg-container.hero-bg-video .hero-bg-video-el {
-        display: none;
-    }
-}
-
-.hero-bg-video .hero-bg-video-el {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     display: block;
-    width: 100vw;
-    height: 100vh;
-    width: 100svw;
-    height: 100svh;
-    min-width: 100%;
-    min-height: 100%;
-    max-width: none;
-    max-height: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     object-position: center;
     filter: brightness(0.85);
     -webkit-filter: brightness(0.85);
     z-index: 0;
     pointer-events: none;
+    animation: none;
+    transform: none;
 }
 
 @keyframes kenBurns {

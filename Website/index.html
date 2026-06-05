@@ -103,7 +103,7 @@
       }
     }
     </script>
-    <link rel="preload" href="public/Photo%201.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
+    <link rel="preload" href="public/Photo%201.webp" as="image" type="image/webp" fetchpriority="high">
     <link rel="preload" href="index.css" as="style">
     <style>
         :root{--nav-height:88px}
@@ -121,14 +121,7 @@
         @media (max-width:768px){.hero-logo{max-width:220px}}
         .hero-subtitle,.hero-service-area,.cta-buttons,.hero-stars,.hero-fast-response{max-width:100%}
         .btn-lottie-icon{display:inline-flex;width:1.45rem;height:1.45rem;flex-shrink:0}
-        .hero-bg-image--lcp{display:none}
-        .hero-bg-video-el{display:none}
-        @media (max-width:768px){
-            .hero-bg-image--lcp{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.85);z-index:0}
-        }
-        @media (min-width:769px){
-            .hero-bg-video-el{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:100svh;min-width:100%;min-height:100%;object-fit:cover;object-position:center;z-index:0}
-        }
+        .hero-bg-image--lcp{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.85);z-index:0;pointer-events:none}
     </style>
     <link rel="stylesheet" href="index.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="index.css"></noscript>
@@ -164,9 +157,6 @@
     <section class="hero">
         <div class="hero-bg-container hero-bg-video">
             <img src="public/Photo%201.webp" alt="" class="hero-bg-image--lcp" width="2000" height="1335" fetchpriority="high" decoding="async">
-            <video class="hero-bg-video-el" autoplay muted loop playsinline preload="none" data-poster-desktop="public/Photo%201.webp" disablepictureinpicture disableremoteplayback aria-hidden="true">
-                <source data-hero-video-src="public/loopgood.mp4" type="video/mp4">
-            </video>
             <div class="screen-mesh-overlay"></div>
         </div>
         <div class="hero-overlay"></div>
@@ -629,29 +619,6 @@
             const navLinks = document.getElementById('navLinks');
             navLinks.classList.toggle('active');
         }
-        (function() {
-            var v = document.querySelector('.hero-bg-video-el');
-            if (!v || !window.matchMedia) return;
-            var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            var isMobile = window.matchMedia('(max-width: 768px)').matches;
-            var source = v.querySelector('source[data-hero-video-src]');
-            if (reduceMotion || isMobile) {
-                v.removeAttribute('autoplay');
-                v.removeAttribute('poster');
-                v.pause();
-                if (source) source.removeAttribute('src');
-                v.load();
-                return;
-            }
-            var desktopPoster = v.getAttribute('data-poster-desktop');
-            if (desktopPoster) v.setAttribute('poster', desktopPoster);
-            if (source && !source.getAttribute('src')) {
-                source.setAttribute('src', source.getAttribute('data-hero-video-src'));
-                v.preload = 'metadata';
-                v.load();
-                v.play().catch(function() {});
-            }
-        })();
 		// Transparent header: offset body + hide when scrolling down, show when scrolling up
 		(function() {
 			const navEl = document.querySelector('nav');
