@@ -340,17 +340,17 @@ nav {
     line-height: 1;
 }
 
-/* Hero — background extends under fixed nav; content starts below nav */
+/* Hero — background extends under fixed nav; content starts just below nav */
 .hero {
     position: relative;
     margin-top: 0;
-    padding-top: calc(var(--nav-height) + 2.5rem);
+    padding-top: calc(var(--nav-height) + 0.75rem);
     min-height: 100vh;
     min-height: 100dvh;
     width: 100%;
     overflow: hidden;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     text-align: center;
     color: #fff;
