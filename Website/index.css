@@ -344,7 +344,7 @@ nav {
 .hero {
     position: relative;
     margin-top: 0;
-    padding-top: var(--nav-height);
+    padding-top: calc(var(--nav-height) + 0.15rem);
     min-height: 100vh;
     min-height: 100dvh;
     width: 100%;
@@ -359,12 +359,51 @@ nav {
 
 @media (min-width: 769px) {
     .hero-content {
-        padding: 0.25rem 2rem 2rem;
+        padding: 0 2rem 1.25rem;
     }
 
-    .hero h1 {
-        padding-top: 0;
-        margin-top: 0;
+    .hero h1,
+    .hero .hero-title--wrap {
+        padding: 0;
+        margin: 0 0 0.5rem;
+    }
+
+    .hero-logo {
+        max-width: 220px;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero .hero-subtitle {
+        font-size: clamp(0.85rem, 0.55rem + 0.9vw, 1.25rem);
+        margin-bottom: 0.4rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .hero .hero-subtitle.hero-subtitle--multiline {
+        line-height: 1.25;
+    }
+
+    .hero-service-area {
+        margin-top: 0.25rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .hero p {
+        margin-bottom: 0.75rem;
+    }
+
+    .cta-buttons {
+        margin-top: 0.65rem;
+    }
+
+    .hero-stars {
+        width: min(140px, 32vw);
+        margin-top: 0.65rem;
+    }
+
+    .hero-fast-response {
+        margin-top: 0.25rem;
     }
 }
 
@@ -468,10 +507,10 @@ nav {
 }
 
 .hero-logo {
-    max-width: 400px;
+    max-width: 220px;
     width: 100%;
     height: auto;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -1737,11 +1776,6 @@ nav {
 .reviews-carousel-track {
     display: flex;
     transition: transform 0.45s ease;
-    will-change: transform;
-}
-
-.reviews-carousel-track.reviews-carousel-track--marquee {
-    transition: none;
 }
 
 .reviews-carousel-slide {
@@ -2157,23 +2191,23 @@ footer {
 
     .hero {
         margin-top: 0;
-        padding-top: calc(var(--nav-height) + 1.5rem);
+        padding-top: calc(var(--nav-height) + 0.5rem);
         min-height: 100vh;
         min-height: 100dvh;
-        padding-bottom: 2rem;
+        padding-bottom: 1.5rem;
         align-items: flex-start;
         justify-content: flex-start;
     }
 
     .hero-content {
-        padding: 0.75rem 1rem 1rem;
+        padding: 0.5rem 1rem 0.75rem;
     }
 
     .hero-logo {
-        max-width: 220px;
+        max-width: 180px;
         width: 100%;
         height: auto;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0.4rem;
         margin-top: 0;
     }
 

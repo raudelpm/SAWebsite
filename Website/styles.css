@@ -4507,11 +4507,6 @@ body.nav-menu-open::before {
 .reviews-carousel-track {
     display: flex;
     transition: transform 0.45s ease;
-    will-change: transform;
-}
-
-.reviews-carousel-track.reviews-carousel-track--marquee {
-    transition: none;
 }
 
 .reviews-carousel-slide {

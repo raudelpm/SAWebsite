@@ -110,15 +110,20 @@
         *,*::before,*::after{box-sizing:border-box}
         body{margin:0;font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#333}
         nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 0}
-        .hero{position:relative;margin-top:0;padding-top:var(--nav-height);min-height:100dvh;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;text-align:center;color:#fff;background:#1a1a1a}
-        @media (max-width:768px){.hero{padding-top:calc(var(--nav-height) + 1.5rem);justify-content:flex-start}.hero-content{padding:0.75rem 1rem 1rem}}
-        @media (min-width:769px){.hero-content{padding:0.25rem 2rem 2rem}.hero h1{padding-top:0;margin-top:0}}
+        .nav-container{max-width:1600px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;gap:1.5rem}
+        .nav-links{display:flex;list-style:none;margin:0;padding:0;gap:1.5rem;flex-wrap:wrap}
+        .logo{margin-right:auto}
+        .menu-toggle{display:none;align-items:center;background:none;border:0;color:#fff;cursor:pointer}
+        @media (max-width:768px){.menu-toggle{display:inline-flex}.nav-links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column}.nav-links.active{display:flex}}
+        .hero{position:relative;margin-top:0;padding-top:calc(var(--nav-height) + .15rem);min-height:100dvh;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;text-align:center;color:#fff;background:#1a1a1a}
+        @media (max-width:768px){.hero{padding-top:calc(var(--nav-height) + .5rem);justify-content:flex-start}.hero-content{padding:0.5rem 1rem .75rem}.hero-logo{max-width:180px;margin-bottom:.4rem}.cta-buttons{margin-top:.5rem!important}}
+        @media (min-width:769px){.hero-content{padding:0 2rem 1.25rem}.hero h1{padding:0;margin:0 0 .5rem}.hero-logo{max-width:220px;margin-bottom:.5rem}.hero-subtitle{margin-bottom:.4rem!important}.hero-service-area{margin:.25rem 0 .5rem!important}.cta-buttons{margin-top:.65rem!important}}
         .hero-bg-container{position:absolute;inset:0;z-index:0;overflow:hidden}
         .hero-overlay{position:absolute;inset:0;z-index:2;background:linear-gradient(135deg,rgba(30,60,114,.12) 0%,rgba(0,0,0,.06) 100%)}
-        .hero-content{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;padding:0.25rem 2rem 2rem;max-width:900px;width:100%}
-        .hero h1{font-size:2rem;font-weight:800;margin:0 0 1rem;text-shadow:2px 2px 4px rgba(0,0,0,.5)}
-        .hero-logo{display:block;max-width:400px;width:100%;height:auto;margin:0 auto 1rem}
-        @media (max-width:768px){.hero-logo{max-width:220px}}
+        .hero-content{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;padding:0 2rem 1.25rem;max-width:900px;width:100%}
+        .hero h1{font-size:2rem;font-weight:800;margin:0 0 .5rem;text-shadow:2px 2px 4px rgba(0,0,0,.5)}
+        .hero-logo{display:block;max-width:220px;width:100%;height:auto;margin:0 auto .5rem}
+        @media (max-width:768px){.hero-logo{max-width:180px}}
         .hero-subtitle,.hero-service-area,.cta-buttons,.hero-stars,.hero-fast-response{max-width:100%}
         .btn-lottie-icon{display:inline-flex;width:1.45rem;height:1.45rem;flex-shrink:0}
         .hero-bg-image--lcp{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.85);z-index:0;pointer-events:none}
@@ -162,7 +167,7 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 class="hero-title hero-title--wrap">Best Pool Cage &amp; Screen Repair in West Coast FL</h1>
-            <img src="public/Logo%20White%20No%20Background%20.webp" srcset="public/Logo%20White%20No%20Background%20-mobile.webp 280w, public/Logo%20White%20No%20Background%20.webp 1024w" sizes="(max-width: 768px) 220px, 400px" alt="SCREEN ARMORS" class="hero-logo" width="400" height="400" fetchpriority="low" decoding="async">
+            <img src="public/Logo%20White%20No%20Background%20.webp" srcset="public/Logo%20White%20No%20Background%20-mobile.webp 280w, public/Logo%20White%20No%20Background%20.webp 1024w" sizes="(max-width: 768px) 180px, 220px" alt="SCREEN ARMORS" class="hero-logo" width="220" height="220" fetchpriority="low" decoding="async">
             <p class="hero-subtitle hero-subtitle--multiline">Custom builds, rescreening, repairs &amp; refurbishing for pool cages and lanais.</p>
             <p class="hero-service-area">Serving Sarasota, Manatee & Charlotte Counties</p>
             <div class="cta-buttons">
@@ -625,13 +630,17 @@
 			if (!navEl) return;
 			const TOP_REVEAL_PX = 8;
 			function syncNavHeight() {
-				const h = navEl.offsetHeight;
-				if (h > 0) {
-					document.documentElement.style.setProperty('--nav-height', h + 'px');
+				const bar = navEl.querySelector('.nav-container');
+				if (!bar) return;
+				const cs = getComputedStyle(navEl);
+				const h = bar.offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+				if (h > 0 && h < 160) {
+					document.documentElement.style.setProperty('--nav-height', Math.round(h) + 'px');
 				}
 			}
 			syncNavHeight();
 			window.addEventListener('resize', syncNavHeight);
+			window.addEventListener('load', syncNavHeight);
 			window.addEventListener('scroll', function() {
 				const currentY = window.scrollY;
 				const navLinks = document.getElementById('navLinks');
@@ -646,25 +655,18 @@
 			}, { passive: true });
 		})();
 
-        // Home reviews carousel — scroll horizontal continuo; flechas detienen auto y pasan a modo manual
+        // Home reviews carousel — estático; solo flechas
         (function() {
             const root = document.querySelector('[data-carousel]');
             if (!root) return;
-            const viewport = root.querySelector('[data-carousel-viewport]');
             const track = root.querySelector('[data-carousel-track]');
             const originals = Array.from(track.querySelectorAll('[data-carousel-slide]'));
             const prevBtn = root.querySelector('[data-carousel-prev]');
             const nextBtn = root.querySelector('[data-carousel-next]');
-            if (!viewport || !track || originals.length === 0) return;
+            if (!track || originals.length === 0) return;
 
             const originalCount = originals.length;
-            let manualMode = false;
             let index = 0;
-            let scrollPos = 0;
-            let loopWidth = 0;
-            let lastTs = 0;
-            let rafId = 0;
-            const SPEED_PX_PER_SEC = 24;
 
             function getVisibleCount() {
                 if (window.matchMedia('(max-width: 768px)').matches) return 1;
@@ -672,120 +674,33 @@
                 return 3;
             }
 
-            function measureLoop() {
-                loopWidth = track.scrollWidth / 2;
-                if (loopWidth < 1) loopWidth = 1;
-            }
-
-            function cloneForMarquee() {
-                originals.forEach(function(el) {
-                    track.appendChild(el.cloneNode(true));
-                });
-                track.classList.add('reviews-carousel-track--marquee');
-            }
-
-            function renderManual() {
+            function render() {
                 const visible = getVisibleCount();
                 const step = 100 / visible;
-                track.style.transition = 'transform 0.45s ease';
                 track.style.transform = 'translateX(' + (index * -step) + '%)';
             }
 
-            function goManual(delta) {
+            function go(delta) {
                 const visible = getVisibleCount();
                 const maxIndex = Math.max(0, originalCount - visible);
                 let next = index + delta;
                 if (next > maxIndex) next = 0;
                 else if (next < 0) next = maxIndex;
                 index = next;
-                renderManual();
+                render();
             }
 
-            function enterManualMode() {
-                if (manualMode) return;
-                measureLoop();
-                const lw = loopWidth;
-                manualMode = true;
-                cancelAnimationFrame(rafId);
-                rafId = 0;
-                while (track.children.length > originalCount) {
-                    track.removeChild(track.lastChild);
-                }
-                track.classList.remove('reviews-carousel-track--marquee');
-                const visible = getVisibleCount();
-                const slideW = viewport.clientWidth / visible;
-                const maxIndex = Math.max(0, originalCount - visible);
-                if (slideW > 0 && lw > 0) {
-                    let pos = scrollPos % lw;
-                    if (pos < 0) pos += lw;
-                    index = Math.min(maxIndex, Math.max(0, Math.floor(pos / slideW)));
-                } else {
-                    index = 0;
-                }
-                scrollPos = 0;
-            }
-
-            function tick(ts) {
-                if (manualMode) return;
-                if (lastTs === 0) lastTs = ts;
-                const dt = Math.min(48, ts - lastTs) / 1000;
-                lastTs = ts;
-                scrollPos += SPEED_PX_PER_SEC * dt;
-                if (scrollPos >= loopWidth) scrollPos -= loopWidth;
-                track.style.transform = 'translate3d(' + (-scrollPos) + 'px,0,0)';
-                rafId = requestAnimationFrame(tick);
-            }
-
-            function startMarquee() {
-                if (manualMode) return;
-                lastTs = 0;
-                measureLoop();
-                track.style.transition = 'none';
-                rafId = requestAnimationFrame(tick);
-            }
-
-            function onArrow(delta) {
-                if (!manualMode) enterManualMode();
-                goManual(delta);
-            }
-
-            prevBtn && prevBtn.addEventListener('click', function(e) { e.stopPropagation(); onArrow(-1); });
-            nextBtn && nextBtn.addEventListener('click', function(e) { e.stopPropagation(); onArrow(1); });
-
-            document.addEventListener('visibilitychange', function() {
-                if (manualMode) return;
-                if (document.hidden) {
-                    cancelAnimationFrame(rafId);
-                    rafId = 0;
-                } else {
-                    startMarquee();
-                }
-            });
+            prevBtn && prevBtn.addEventListener('click', function(e) { e.stopPropagation(); go(-1); });
+            nextBtn && nextBtn.addEventListener('click', function(e) { e.stopPropagation(); go(1); });
 
             window.addEventListener('resize', function() {
-                if (manualMode) {
-                    const visible = getVisibleCount();
-                    const maxIndex = Math.max(0, originalCount - visible);
-                    if (index > maxIndex) index = maxIndex;
-                    renderManual();
-                } else {
-                    measureLoop();
-                    if (scrollPos >= loopWidth) scrollPos %= loopWidth;
-                }
+                const visible = getVisibleCount();
+                const maxIndex = Math.max(0, originalCount - visible);
+                if (index > maxIndex) index = maxIndex;
+                render();
             });
 
-            var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            var isMobileCarousel = window.matchMedia('(max-width: 768px)').matches;
-            if (prefersReducedMotion || isMobileCarousel) {
-                manualMode = true;
-                renderManual();
-            } else {
-                cloneForMarquee();
-                requestAnimationFrame(function() {
-                    measureLoop();
-                    startMarquee();
-                });
-            }
+            render();
         })();
 
         // More photos modal (Completed Projects)
