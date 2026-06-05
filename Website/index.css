@@ -344,7 +344,7 @@ nav {
 .hero {
     position: relative;
     margin-top: 0;
-    padding-top: calc(var(--nav-height) + 0.75rem);
+    padding-top: var(--nav-height);
     min-height: 100vh;
     min-height: 100dvh;
     width: 100%;
@@ -355,6 +355,17 @@ nav {
     text-align: center;
     color: #fff;
 	background: #1a1a1a;
+}
+
+@media (min-width: 769px) {
+    .hero-content {
+        padding: 0.25rem 2rem 2rem;
+    }
+
+    .hero h1 {
+        padding-top: 0;
+        margin-top: 0;
+    }
 }
 
 .hero-bg-container {
