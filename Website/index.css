@@ -1,6 +1,6 @@
 /* Global Styles */
 :root {
-	--nav-height: 72px;
+	--nav-height: 80px;
 	/* Brand red (matches Get Quote / primary CTAs) — before gradient tokens */
 	--color-brand-red: #b71c1c;
 	--color-brand-red-hover: #991b1b;
@@ -2177,15 +2177,17 @@ footer {
     }
 
     .hero {
-        margin-top: calc(-1 * var(--nav-height));
-        padding-top: var(--nav-height);
+        margin-top: 0;
+        padding-top: calc(var(--nav-height) + 1.5rem);
         min-height: 100vh;
         min-height: 100dvh;
         padding-bottom: 2rem;
+        align-items: flex-start;
+        justify-content: flex-start;
     }
 
     .hero-content {
-        padding: 1rem 1rem;
+        padding: 0.75rem 1rem 1rem;
     }
 
     .hero-logo {
@@ -2193,13 +2195,13 @@ footer {
         width: 100%;
         height: auto;
         margin-bottom: 0.8rem;
-        margin-top: -0.5rem;
+        margin-top: 0;
     }
 
     .hero h1 {
         font-size: 2rem;
-        padding: 0.8rem 1.5rem;
-        margin-bottom: 1.5rem;
+        padding: 0.5rem 1rem 0;
+        margin: 0 0 1rem;
     }
 
     /* Show subtitle but hide description on mobile */
