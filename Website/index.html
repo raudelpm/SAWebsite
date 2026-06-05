@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preload" href="public/Photo%201-hero-mobile.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)" imagesizes="100vw">
+    <link rel="preload" href="public/Photo%201-mobile.webp" as="image" type="image/webp" fetchpriority="high" imagesizes="100vw">
     <link rel="preload" href="public/Photo%201.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" imagesizes="100vw">
     <link rel="icon" type="image/webp" href="public/Logo%20Black%20Yes%20Background.webp">
     <link rel="apple-touch-icon" href="public/Logo%20Black%20Yes%20Background.webp">
@@ -28,83 +28,6 @@
     <meta property="twitter:description" content="Screen enclosures, pool cages & lanai services in Sarasota and Bradenton. New builds, rescreening, repairs and refurbishing. Free estimate.">
     <meta property="twitter:image" content="https://www.screenarmors.com/public/meta.png">
     
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "SCREEN ARMORS",
-      "image": "https://www.screenarmors.com/public/meta.png",
-      "@id": "https://www.screenarmors.com",
-      "url": "https://www.screenarmors.com",
-      "telephone": "941-404-9699",
-      "email": "info@screenarmors.com",
-      "description": "Professional screen enclosure, pool cage, lanai, and aluminum specialists providing construction, screening, refurbishing, and painting services.",
-      "address": {
-        "@type": "PostalAddress",
-        "addressRegion": "FL"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "27.208122",
-        "longitude": "-82.2433506"
-      },
-      "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday"
-        ],
-        "opens": "08:00",
-        "closes": "18:00"
-      },
-      "sameAs": [
-        "https://www.facebook.com/profile.php?id=61579752359204&locale=es_LA",
-        "https://www.instagram.com/screen_armors/",
-        "https://www.yelp.com/biz/screen-armors-nokomis?osq=screen+armors",
-        "https://wa.me/19414049699"
-      ],
-      "priceRange": "$$",
-      "areaServed": {
-        "@type": "State",
-        "name": "Florida"
-      },
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Screen Enclosure Services",
-        "itemListElement": [
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Screen Enclosure Construction",
-              "description": "Professional construction of screen enclosures, pool cages, and lanais"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Screen Replacement",
-              "description": "Professional screen installation and replacement services"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Screen Enclosure Refurbishing and Painting",
-              "description": "Complete refurbishing, painting, and restoration of existing screen enclosures"
-            }
-          }
-        ]
-      }
-    }
-    </script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;</script>
     <style>
         :root{--nav-height:72px;--btn-radius:14px}
@@ -124,15 +47,17 @@
         .hero-bg-container{position:absolute;inset:0;z-index:0;overflow:hidden}
         .hero-overlay{position:absolute;inset:0;z-index:2;background:linear-gradient(135deg,rgba(30,60,114,.12) 0%,rgba(0,0,0,.06) 100%)}
         .hero-content{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;padding:0 2rem 1.25rem;max-width:900px;width:100%}
-        .hero h1{font-size:2rem;font-weight:800;margin:0 0 .5rem;text-shadow:2px 2px 4px rgba(0,0,0,.5)}
-        .hero-logo{display:block;max-width:220px;width:100%;height:auto;margin:0 auto .5rem}
+        .hero h1,.hero .hero-title--wrap{font-family:Helvetica,Arial,sans-serif;font-weight:800;padding:0;display:block;margin:0 0 .5rem;text-shadow:2px 2px 4px rgba(0,0,0,.5);letter-spacing:.01em;line-height:1.18;background:none}
+        .hero-logo{display:block;max-width:220px;width:100%;height:auto;margin:0 auto .5rem;filter:drop-shadow(0 0 10px rgba(0,0,0,.4)) drop-shadow(0 2px 6px rgba(0,0,0,.5))}
         @media (max-width:768px){.hero-logo{max-width:180px}}
         .hero-title--wrap{display:block;width:100%;max-width:min(36rem,92vw);white-space:normal;line-height:1.18;font-size:clamp(1.2rem,2.2vw + .75rem,2.35rem);letter-spacing:.01em}
         .hero-subtitle,.hero-service-area,.cta-buttons,.hero-stars,.hero-fast-response{max-width:100%}
-        .hero-subtitle{font-weight:700;line-height:1.35;margin-bottom:.4rem}
+        .hero-subtitle{font-weight:700;line-height:1.35;margin-bottom:.4rem;padding:.35rem .5rem;text-shadow:0 2px 10px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.55)}
         .hero .hero-subtitle.hero-subtitle--multiline{white-space:normal;text-align:center;max-width:min(38rem,100%);width:100%;line-height:1.35;box-sizing:border-box}
-        .hero p{margin-bottom:.75rem;font-size:1.1rem}
-        .hero-service-area{font-size:1rem;margin:.25rem 0 .5rem;opacity:.95}
+        .hero p{margin-bottom:.75rem;font-size:1.1rem;padding:.6rem 1rem;text-shadow:1px 1px 2px rgba(0,0,0,.5);display:inline-block;background:none}
+        .hero-service-area{font-size:1rem;margin:.25rem 0 .5rem;opacity:.95;font-weight:500;display:inline-block}
+        .hero-fast-response{text-align:center;max-width:28rem;margin:.35rem auto 0;padding:0 1rem;font-size:.47rem;line-height:1.3;color:rgba(255,255,255,.92)}
+        .screen-mesh-overlay{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.1}
         .cta-buttons{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:.65rem;width:100%}
         .btn{display:inline-flex;align-items:center;gap:.6rem;padding:.75rem 1.2rem;font-size:1.05rem;font-weight:600;text-decoration:none;border-radius:var(--btn-radius);justify-content:center}
         .btn-primary{background:linear-gradient(180deg,#22c55e 0%,#16a34a 45%,#15803d 100%);color:#fff;order:1}
@@ -141,8 +66,9 @@
         .btn-lottie-icon{display:inline-flex;width:1.45rem;height:1.45rem;flex-shrink:0}
         .hero-stars{display:block;width:min(118px,40vw);height:52px;margin:.75rem auto 0}
         .floating-quote-btn{position:fixed;z-index:10050;bottom:calc(.85rem + env(safe-area-inset-bottom,0px));right:calc(.5rem + env(safe-area-inset-right,0px));padding:.5rem .8rem;background:#b71c1c;color:#fff;text-decoration:none;font-weight:700;font-size:.72rem;border-radius:var(--btn-radius)}
-        @media (max-width:768px){.hero-subtitle{font-size:clamp(.68rem,.38rem + 2.4vw,1.55rem)}.cta-buttons{flex-direction:column;align-items:center}.btn,.hero-quick-repair-btn{width:75%;max-width:240px;box-sizing:border-box}.cta-buttons .hero-quick-repair-btn{max-width:280px}.btn-quote{order:1}.btn-primary{order:2}}
-        .hero-bg-image--lcp{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.85);z-index:0;pointer-events:none}
+        @media (max-width:768px){.hero h1,.hero .hero-title--wrap{font-size:clamp(1.2rem,2.2vw + .75rem,2.35rem);padding:0}.hero-subtitle{font-size:clamp(.68rem,.38rem + 2.4vw,1.55rem)}.hero p{font-size:1.1rem;margin-bottom:1rem}.cta-buttons{flex-direction:column;align-items:center;margin-top:.5rem!important}.btn,.hero-quick-repair-btn{width:75%;max-width:240px;box-sizing:border-box}.cta-buttons .hero-quick-repair-btn{max-width:280px}.btn-quote{order:1}.btn-primary{order:2}}
+        .hero-bg-container picture{position:absolute;inset:0;display:block;width:100%;height:100%;z-index:0}
+        .hero-bg-image--lcp{display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.85);pointer-events:none}
     </style>
     <link rel="stylesheet" href="index.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="index.css"></noscript>
@@ -177,7 +103,10 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-bg-container hero-bg-video">
-            <img src="public/Photo%201.webp" srcset="public/Photo%201-hero-mobile.webp 960w, public/Photo%201.webp 2000w" sizes="100vw" alt="" class="hero-bg-image--lcp" width="2000" height="1335" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 768px)" srcset="public/Photo%201-mobile.webp" type="image/webp">
+                <img src="public/Photo%201.webp" alt="" class="hero-bg-image--lcp" width="2000" height="1335" fetchpriority="high" decoding="async">
+            </picture>
             <div class="screen-mesh-overlay"></div>
         </div>
         <div class="hero-overlay"></div>
@@ -786,6 +715,9 @@
       }
     </script>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1" alt="" /></noscript>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"LocalBusiness","name":"SCREEN ARMORS","image":"https://www.screenarmors.com/public/meta.png","@id":"https://www.screenarmors.com","url":"https://www.screenarmors.com","telephone":"941-404-9699","email":"info@screenarmors.com","description":"Professional screen enclosure, pool cage, lanai, and aluminum specialists providing construction, screening, refurbishing, and painting services.","address":{"@type":"PostalAddress","addressRegion":"FL"},"geo":{"@type":"GeoCoordinates","latitude":"27.208122","longitude":"-82.2433506"},"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"08:00","closes":"18:00"},"sameAs":["https://www.facebook.com/profile.php?id=61579752359204&locale=es_LA","https://www.instagram.com/screen_armors/","https://www.yelp.com/biz/screen-armors-nokomis?osq=screen+armors","https://wa.me/19414049699"],"priceRange":"$$","areaServed":{"@type":"State","name":"Florida"},"hasOfferCatalog":{"@type":"OfferCatalog","name":"Screen Enclosure Services","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Screen Enclosure Construction","description":"Professional construction of screen enclosures, pool cages, and lanais"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Screen Replacement","description":"Professional screen installation and replacement services"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Screen Enclosure Refurbishing and Painting","description":"Complete refurbishing, painting, and restoration of existing screen enclosures"}}]}}
+    </script>
     <script src="random-photos.js" defer></script>
     <script src="nav-menu.js" defer></script>
     <script src="call-tracking.js" defer></script>
