@@ -63,7 +63,8 @@
         .btn-primary{background:linear-gradient(180deg,#22c55e 0%,#16a34a 45%,#15803d 100%);color:#fff;order:1}
         .btn-quote{background:linear-gradient(180deg,#e53935 0%,#b71c1c 48%,#8e161c 100%);color:#fff;order:2}
         .hero-quick-repair-btn{display:inline-flex;align-items:center;justify-content:center;padding:.7rem .75rem;font-size:clamp(.62rem,2.85vw,.82rem);font-weight:600;text-decoration:none;color:#fff;background:linear-gradient(180deg,#2563eb 0%,#1d4ed8 48%,#1e3a8a 100%);border-radius:var(--btn-radius);order:3;text-align:center;line-height:1.2}
-        .btn-lottie-icon{display:inline-flex;width:1.45rem;height:1.45rem;flex-shrink:0}
+        .btn-lottie-icon{display:inline-flex;width:1.45rem;height:1.45rem;flex-shrink:0;pointer-events:none}
+        .btn-lottie-icon svg{filter:brightness(0) invert(1)}
         .hero-stars{display:block;width:min(118px,40vw);height:52px;margin:.75rem auto 0}
         .floating-quote-btn{position:fixed;z-index:10050;bottom:calc(.85rem + env(safe-area-inset-bottom,0px));right:calc(.5rem + env(safe-area-inset-right,0px));padding:.5rem .8rem;background:#b71c1c;color:#fff;text-decoration:none;font-weight:700;font-size:.72rem;border-radius:var(--btn-radius)}
         @media (max-width:768px){.hero h1,.hero .hero-title--wrap{font-size:clamp(1.2rem,2.2vw + .75rem,2.35rem);padding:0;margin:0 0 1rem}.hero-subtitle{font-size:clamp(.68rem,.38rem + 2.4vw,1.55rem);padding:.45rem .35rem;margin-bottom:1rem}.hero-subtitle.hero-subtitle--multiline{padding-left:1rem;padding-right:1rem;line-height:1.4}.hero p{font-size:1.1rem;margin-bottom:1rem}.hero .cta-buttons{flex-direction:column;align-items:center;gap:.8rem;margin-top:1rem}.btn,.hero-quick-repair-btn{width:75%;max-width:240px;box-sizing:border-box;padding:.75rem 1.2rem;font-size:1.15rem}.hero .cta-buttons .hero-quick-repair-btn{max-width:280px}.btn-quote{order:1}.btn-primary{order:2}}
@@ -115,13 +116,13 @@
             <p class="hero-subtitle hero-subtitle--multiline">Custom builds, rescreening, repairs &amp; refurbishing for pool cages and lanais.</p>
             <p class="hero-service-area">Serving Sarasota, Manatee & Charlotte Counties</p>
             <div class="cta-buttons">
-                <a href="tel:941-404-9699" class="btn btn-primary">
-                    <span class="btn-lottie-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8c1.5 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.1 21 3 13.9 3 5c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg></span>
-                    Call (941) 404-9699
-                </a>
                 <a href="quote.html" class="btn btn-quote">
-                    <span class="btn-lottie-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M4 4h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-5l-4 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></span>
+                    <span class="btn-lottie-icon" data-lottie-src="public/system-regular-47-chat-hover-chat.json" aria-hidden="true"></span>
                     Get Quote
+                </a>
+                <a href="tel:941-404-9699" class="btn btn-primary">
+                    <span class="btn-lottie-icon" data-lottie-src="public/system-regular-58-call-phone-hover-phone-ring.json" aria-hidden="true"></span>
+                    Call (941) 404-9699
                 </a>
                 <a href="quick-screen-quote.html" class="hero-quick-repair-btn hero-quick-repair-btn--cta-row">Quick Screen Repair Request</a>
             </div>
@@ -728,6 +729,7 @@
     {"@context":"https://schema.org","@type":"LocalBusiness","name":"SCREEN ARMORS","image":"https://www.screenarmors.com/public/meta.png","@id":"https://www.screenarmors.com","url":"https://www.screenarmors.com","telephone":"941-404-9699","email":"info@screenarmors.com","description":"Professional screen enclosure, pool cage, lanai, and aluminum specialists providing construction, screening, refurbishing, and painting services.","address":{"@type":"PostalAddress","addressRegion":"FL"},"geo":{"@type":"GeoCoordinates","latitude":"27.208122","longitude":"-82.2433506"},"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"08:00","closes":"18:00"},"sameAs":["https://www.facebook.com/profile.php?id=61579752359204&locale=es_LA","https://www.instagram.com/screen_armors/","https://www.yelp.com/biz/screen-armors-nokomis?osq=screen+armors","https://wa.me/19414049699"],"priceRange":"$$","areaServed":{"@type":"State","name":"Florida"},"hasOfferCatalog":{"@type":"OfferCatalog","name":"Screen Enclosure Services","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Screen Enclosure Construction","description":"Professional construction of screen enclosures, pool cages, and lanais"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Screen Replacement","description":"Professional screen installation and replacement services"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Screen Enclosure Refurbishing and Painting","description":"Complete refurbishing, painting, and restoration of existing screen enclosures"}}]}}
     </script>
     <script src="random-photos.js" defer></script>
+    <script src="cta-lottie-icons.js" defer></script>
     <script src="nav-menu.js" defer></script>
     <script src="call-tracking.js" defer></script>
 </body>
