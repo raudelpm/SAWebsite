@@ -19,9 +19,11 @@
     });
   }
 
+  var DESKTOP_MQ = window.matchMedia("(min-width: 769px)");
+
   function initCtaLottieIcons() {
     var icons = document.querySelectorAll("[data-lottie-src]");
-    if (!icons.length) return;
+    if (!icons.length || !DESKTOP_MQ.matches) return;
 
     var reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -32,6 +34,8 @@
         icons.forEach(function (el) {
           var src = el.getAttribute("data-lottie-src");
           if (!src) return;
+
+          el.innerHTML = "";
 
           var anim = lottie.loadAnimation({
             container: el,
