@@ -1,6 +1,43 @@
 {
   "posts": [
     {
+      "id": "remove-screens-before-hurricane",
+      "title": "Should You Remove Pool Cage Screens Before a Hurricane?",
+      "url": "blog/should-you-remove-pool-cage-screens-before-a-hurricane.html",
+      "date": "2026-06-19",
+      "image": "public/hurricane.png",
+      "excerpt": "For major hurricanes, some Florida homeowners remove or cut screen panels to reduce wind pressure on pool cages. Learn when it may help, what to consider, and how to prepare before storm season.",
+      "tags": [
+        "pool cage",
+        "hurricane",
+        "storm prep",
+        "screen removal",
+        "hurricane cables",
+        "florida",
+        "screening",
+        "maintenance"
+      ]
+    },
+    {
+      "id": "pool-cage-corrosion-florida",
+      "title": "What Causes Pool Cage Corrosion in Florida?",
+      "url": "blog/what-causes-pool-cage-corrosion-in-florida.html",
+      "date": "2026-06-19",
+      "image": "public/image (11).jpg",
+      "excerpt": "Salt air, humidity, rusting screws, pool chemicals, damaged coatings, and poor drainage all accelerate pool cage corrosion in Florida. Learn the main causes and how to prevent costly structural damage.",
+      "tags": [
+        "pool cage",
+        "corrosion",
+        "rust",
+        "salt air",
+        "humidity",
+        "stainless steel screws",
+        "maintenance",
+        "florida",
+        "restoration"
+      ]
+    },
+    {
       "id": "cheap-pool-cage-repairs-florida",
       "title": "Why Cheap Pool Cage Repairs in Florida Often Cost More Long-Term",
       "url": "blog/why-cheap-pool-cage-repairs-cost-more-florida.html",
