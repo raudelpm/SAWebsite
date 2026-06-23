@@ -997,26 +997,6 @@ body.nav-menu-open::before {
     display: none;
 }
 
-@media (max-width: 768px) {
-    .hero-bg-image--lcp {
-        display: block;
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        filter: brightness(0.85);
-        -webkit-filter: brightness(0.85);
-        z-index: 0;
-        pointer-events: none;
-    }
-
-    .hero-bg-container.hero-bg-video .hero-bg-video-el {
-        display: none;
-    }
-}
-
 .hero-bg-video .hero-bg-video-el {
     position: absolute;
     top: 50%;
