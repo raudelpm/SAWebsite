@@ -108,8 +108,8 @@
                 <source media="(max-width: 768px)" srcset="public/Photo%201-hero-mobile.webp" type="image/webp">
                 <img src="public/Photo%201.webp" alt="" class="hero-bg-image--lcp" width="2000" height="1335" decoding="async" fetchpriority="high">
             </picture>
-            <video class="hero-bg-video-el" autoplay muted loop playsinline preload="none" data-poster-desktop="public/Photo%201.webp" disablepictureinpicture disableremoteplayback aria-hidden="true">
-                <source data-hero-video-src="public/loopgood.mp4" type="video/mp4">
+            <video class="hero-bg-video-el" autoplay muted loop playsinline preload="metadata" poster="public/Photo%201.webp" disablepictureinpicture disableremoteplayback aria-hidden="true">
+                <source src="public/loopgood.mp4" type="video/mp4">
             </video>
             <div class="screen-mesh-overlay"></div>
         </div>
@@ -591,24 +591,24 @@
         (function() {
             var v = document.querySelector('.hero-bg-video-el');
             if (!v || !window.matchMedia) return;
-            var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            var source = v.querySelector('source[data-hero-video-src]');
-            if (reduceMotion) {
-                v.removeAttribute('autoplay');
-                v.removeAttribute('poster');
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                 v.pause();
-                if (source) source.removeAttribute('src');
-                v.load();
+                v.style.display = 'none';
+                var img = document.querySelector('.hero-bg-image--lcp');
+                if (img) {
+                    img.style.display = 'block';
+                    img.style.position = 'absolute';
+                    img.style.inset = '0';
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.objectPosition = 'center';
+                    img.style.filter = 'brightness(0.85)';
+                    img.style.zIndex = '0';
+                }
                 return;
             }
-            var desktopPoster = v.getAttribute('data-poster-desktop');
-            if (desktopPoster) v.setAttribute('poster', desktopPoster);
-            if (source && !source.getAttribute('src')) {
-                source.setAttribute('src', source.getAttribute('data-hero-video-src'));
-                v.preload = 'metadata';
-                v.load();
-                v.play().catch(function() {});
-            }
+            v.play().catch(function() {});
         })();
 		// Compact header on scroll (fixed --nav-height in CSS avoids layout shift on load)
 		(function() {
