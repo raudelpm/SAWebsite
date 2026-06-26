@@ -3921,6 +3921,47 @@ body.nav-menu-open::before {
 	}
 }
 
+/* about.html — Our Story + branded van */
+.about-story__grid {
+	display: grid;
+	gap: clamp(1.5rem, 3vw, 2.25rem);
+	align-items: center;
+}
+
+@media (min-width: 860px) {
+	.about-story__grid {
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+		gap: 2rem 2.5rem;
+	}
+}
+
+.about-story__figure {
+	margin: 0;
+	border-radius: 14px;
+	overflow: hidden;
+	box-shadow: 0 16px 40px rgba(20, 35, 65, 0.12);
+	border: 1px solid rgba(30, 45, 75, 0.1);
+}
+
+.about-story__figure img {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+}
+
+.about-story__caption {
+	margin: 0;
+	padding: 0.65rem 0.9rem;
+	font-size: 0.82rem;
+	font-weight: 600;
+	text-align: center;
+	color: #555;
+	background: #f6f8fb;
+	border-top: 1px solid rgba(30, 45, 75, 0.08);
+}
+
 /* Content Sections */
 .content-section {
     background: #fff;
