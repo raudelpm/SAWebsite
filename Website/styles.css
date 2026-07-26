@@ -6111,6 +6111,43 @@ footer {
     font-weight: 600;
 }
 
+.rq-form-toast {
+    position: fixed;
+    top: calc(var(--nav-height, 72px) + 0.75rem);
+    left: 50%;
+    z-index: 10060;
+    max-width: min(92vw, 340px);
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    background: #1f1f1f;
+    color: #fff;
+    border: 1px solid rgba(229, 57, 53, 0.65);
+    box-shadow:
+        0 2px 0 rgba(255, 255, 255, 0.08) inset,
+        0 8px 28px rgba(0, 0, 0, 0.38);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: center;
+    transform: translateX(-50%) translateY(-8px) scale(0.96);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s;
+    pointer-events: none;
+}
+
+.rq-form-toast.is-visible {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rq-form-toast {
+        transition: none;
+    }
+}
+
 /* Hide honeypot visually (but keep for bots) */
 .quote-request-form .form-field--hp {
     position: absolute !important;

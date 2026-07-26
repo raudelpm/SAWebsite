@@ -25,8 +25,8 @@
     <title>Screen Armors | Free Quote for Screen Enclosures (Sarasota &amp; Bradenton)</title>
     <meta name="description" content="Request a free quote for screen enclosures, pool cages and lanais in Sarasota and Bradenton. Fast response during business hours.">
     <link rel="canonical" href="https://www.screenarmors.com/quote.html">
-    <link rel="preload" href="styles.css?v=quote-trust-1" as="style">
-    <link rel="stylesheet" href="styles.css?v=quote-trust-1">
+    <link rel="preload" href="styles.css?v=quote-toast-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=quote-toast-1">
     <!-- Analytics loads after page so form gets full bandwidth -->
 </head>
 <body>
@@ -199,6 +199,8 @@
         </div>
     </div>
 
+    <div id="rq_formToast" class="rq-form-toast" role="alert" aria-live="assertive" hidden></div>
+
     <!-- Why choose — full-width band, inverted gradient (red → black) meets footer (black → red) -->
     <section class="quote-why-band" aria-labelledby="quote-why-heading">
         <div class="quote-why-band-inner">
@@ -320,6 +322,8 @@
             var QUOTE_STORAGE_KEY = 'screenArmorsQuickQuote';
             var quickQuoteEmailBlock = null;
             var statusEl = document.getElementById('rq_status');
+            var toastEl = document.getElementById('rq_formToast');
+            var toastTimer = null;
             var sendRequestBtn = document.getElementById('sendRequestBtn');
             var quickBanner = document.getElementById('rqQuickQuoteBanner');
             var quickBannerTotal = document.getElementById('rqQuickQuoteBannerTotal');
@@ -423,6 +427,41 @@
                 statusEl.style.color = isError ? '#ffb4b4' : '#b7ffd8';
             }
 
+            function hideFormToast() {
+                if (!toastEl) return;
+                toastEl.classList.remove('is-visible');
+                window.setTimeout(function() {
+                    if (!toastEl.classList.contains('is-visible')) {
+                        toastEl.hidden = true;
+                        toastEl.textContent = '';
+                    }
+                }, 280);
+            }
+
+            function showFormToast(msg) {
+                if (!toastEl || !msg) return;
+                clearTimeout(toastTimer);
+                toastEl.textContent = msg;
+                toastEl.hidden = false;
+                requestAnimationFrame(function() {
+                    toastEl.classList.add('is-visible');
+                });
+                toastTimer = window.setTimeout(hideFormToast, 5000);
+            }
+
+            function focusFirstInvalidField(payload) {
+                var fieldId = null;
+                if (!payload.fullName) fieldId = 'rq_fullName';
+                else if (digitsOnly(payload.phone).length < 10) fieldId = 'rq_phone';
+                else if (!payload.leadSource) fieldId = 'rq_leadSource';
+                else if (!isValidEmail(payload.email)) fieldId = 'rq_email';
+                if (!fieldId) return;
+                var el = document.getElementById(fieldId);
+                if (!el) return;
+                el.focus({ preventScroll: true });
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
             function digitsOnly(s) {
                 return String(s || '').replace(/[^\d]/g, '');
             }
@@ -472,10 +511,12 @@
                 }
 
                 setStatus('', false);
+                hideFormToast();
                 var payload = collectPayload();
                 var validationError = validatePayload(payload);
                 if (validationError) {
-                    setStatus(validationError, true);
+                    showFormToast(validationError);
+                    focusFirstInvalidField(payload);
                     return;
                 }
 
