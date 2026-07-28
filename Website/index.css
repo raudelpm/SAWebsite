@@ -245,6 +245,11 @@ nav {
     transform: translateY(-1px);
 }
 
+/* TEMP: hide Quick Screen Repair CTA (low usage) — remove this block to restore */
+.hero-quick-repair-btn {
+	display: none !important;
+}
+
 /* Quick Screen Repair / calculator — nav (tool page) or home hero CTA */
 
 .hero-quick-repair-btn {
@@ -693,6 +698,32 @@ nav {
     height: auto;
     margin: 1.05rem auto 0;
     filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.55));
+}
+
+.hero-google-reviews {
+    display: block;
+    margin: 0.2rem auto 0;
+    padding: 0 0.75rem;
+    text-align: center;
+    font-size: clamp(0.78rem, 0.7rem + 0.35vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+    background: none;
+}
+
+.hero-google-reviews a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    transition: border-color 0.2s ease;
+}
+
+.hero-google-reviews a:hover,
+.hero-google-reviews a:focus-visible {
+    border-bottom-color: rgba(255, 255, 255, 0.85);
 }
 
 .btn-lottie-icon {

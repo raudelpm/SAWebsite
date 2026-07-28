@@ -268,6 +268,12 @@ body.nav-menu-open::before {
     transform: translateY(-1px);
 }
 
+/* TEMP: hide Quick Screen Repair CTA (low usage) — remove this block to restore */
+.nav-quick-screen-quote-btn,
+.hero-quick-repair-btn {
+	display: none !important;
+}
+
 /* Quick Screen Repair / calculator — nav (tool page) or home hero CTA */
 .nav-quick-screen-quote-btn,
 .hero-quick-repair-btn {
@@ -1228,33 +1234,62 @@ body.nav-menu-open::before {
 	}
 }
 
-/* Screening LP mobile: red waves/CTA stack above hero — push CTA down + reserve space for tagline */
+/* Screening / service LP mobile: keep title clear of fixed nav + no white seam under waves */
 @media (max-width: 768px) {
-	/* Less negative overlap than generic .hero + .hero-cta-after so the red block sits lower */
+	/* Inline height:34vh + large padding-bottom was crushing title under the header */
+	.hero.hero--repair-landing {
+		height: auto !important;
+		min-height: clamp(340px, 56svh, 480px) !important;
+		box-sizing: border-box;
+		/* Keep title/tagline fully below the fixed nav (nav is z-index 1000) */
+		padding-top: calc(var(--nav-height) + 3.25rem);
+		justify-content: flex-end;
+		align-items: center;
+	}
+
+	.hero.hero--repair-landing .hero-content {
+		/* Extra safety so title never paints under the fixed header */
+		position: relative;
+		z-index: 3;
+		padding-top: 0.5rem;
+	}
+
+	/* Overlap enough that transparent wave tops sit on the hero photo */
 	.hero.hero--repair-landing + .hero-cta-after.hero-cta-after--repair-lp {
-		margin-top: clamp(-28px, -5vw, -10px);
+		margin-top: clamp(-96px, -22vw, -72px);
 	}
 
 	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) {
-		box-sizing: border-box;
-		padding-bottom: clamp(7.5rem, 30vw, 11.5rem);
+		padding-bottom: clamp(3.75rem, 14vw, 5.5rem);
 	}
 
 	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) .hero-content {
-		padding-bottom: 0.75rem;
+		padding-top: 0.5rem;
+		padding-bottom: 0.35rem;
+		width: 100%;
+	}
+
+	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) .hero h1,
+	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) .hero h2.hero-content__visual-title {
+		margin-bottom: 0.45rem;
+		padding-top: 0.25rem;
+		padding-bottom: 0.25rem;
+		font-size: clamp(1.45rem, 5.6vw, 1.85rem);
 	}
 
 	.hero.hero--repair-landing:has(+ .hero-cta-after.hero-cta-after--repair-lp) .hero p {
 		margin-bottom: 0;
+		font-size: clamp(0.95rem, 3.4vw, 1.1rem);
+		padding: 0.35rem 0.75rem;
 	}
 
-	/* Shorter wave = less vertical intrusion over the photo on narrow screens */
 	.hero.hero--repair-landing + .hero-cta-after.hero-cta-after--repair-lp .hero-cta-after__waves {
-		height: clamp(48px, 11vw, 72px);
+		height: clamp(56px, 13vw, 80px);
 	}
 
 	.hero.hero--repair-landing + .hero-cta-after.hero-cta-after--repair-lp .hero-cta-after__svg {
-		min-height: 48px;
+		min-height: 56px;
+		display: block;
 	}
 }
 
@@ -1321,6 +1356,32 @@ body.nav-menu-open::before {
     height: auto;
     margin: 1.05rem auto 0;
     filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.55));
+}
+
+.hero-google-reviews {
+    display: block;
+    margin: 0.2rem auto 0;
+    padding: 0 0.75rem;
+    text-align: center;
+    font-size: clamp(0.78rem, 0.7rem + 0.35vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+    background: none;
+}
+
+.hero-google-reviews a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    transition: border-color 0.2s ease;
+}
+
+.hero-google-reviews a:hover,
+.hero-google-reviews a:focus-visible {
+    border-bottom-color: rgba(255, 255, 255, 0.85);
 }
 
 .btn-lottie-icon {
@@ -4162,18 +4223,32 @@ body.nav-menu-open::before {
 .hero:has(+ .hero-cta-after) .hero-bg-container,
 .hero:has(+ .hero-cta-after) .hero-overlay,
 .hero:has(+ .hero-cta-after) .screen-mesh-overlay {
-	bottom: clamp(-120px, -19vw, -70px);
+	bottom: clamp(-140px, -22vw, -80px);
 }
 
 .hero:has(+ .hero-cta-after) {
 	position: relative;
 	z-index: 1;
+	/* Allow extended bg to paint under transparent wave tops (overflow:hidden was causing a white seam) */
+	overflow: visible;
+}
+
+.hero:has(+ .hero-cta-after) .hero-bg-container {
+	overflow: hidden;
+}
+
+/* Slight overscan so the photo always covers under transparent wave tops */
+.hero:has(+ .hero-cta-after) .hero-bg-image {
+	animation: none;
+	transform: scale(1.08);
+	transform-origin: center center;
 }
 
 .hero-cta-after {
 	position: relative;
 	z-index: 5;
 	width: 100%;
+	background: transparent;
 }
 
 /* Remove white gap between red CTA band and next section (e.g. map strip on Reviews) */
@@ -4188,18 +4263,23 @@ body.nav-menu-open::before {
 	z-index: 6;
 }
 
-.hero-cta-after__stack {
-	width: 100%;
-	position: relative;
-	/* Nudge up to cover subpixel gap between hero and waves */
-	margin-top: -3px;
-}
-
 .hero-cta-after__waves {
 	position: relative;
+	z-index: 3;
 	height: clamp(72px, 14vw, 118px);
 	overflow: hidden;
 	pointer-events: none;
+	/* Must stay transparent — any fill here shows as a brown band between photo and waves */
+	background: transparent;
+	line-height: 0;
+	font-size: 0;
+}
+
+.hero-cta-after__stack {
+	width: 100%;
+	position: relative;
+	/* Slight nudge to kill subpixel seam; stay transparent so photo shows through */
+	margin-top: -4px;
 	background: transparent;
 }
 
@@ -4494,11 +4574,11 @@ body.nav-menu-open::before {
 /* service-screening.html: compact red band on small screens */
 @media (max-width: 640px) {
 	.hero-cta-after--repair-lp .hero-cta-after__waves {
-		height: clamp(36px, 9vw, 48px);
+		height: clamp(48px, 12vw, 60px);
 	}
 
 	.hero-cta-after--repair-lp .hero-cta-after__svg {
-		min-height: 36px;
+		min-height: 48px;
 	}
 
 	.hero-cta-after--repair-lp .hero-cta-after__band {
