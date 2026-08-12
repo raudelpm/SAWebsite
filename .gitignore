@@ -9,6 +9,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Secrets / local env (never commit)
+.env
+.env.*
+!.env.local.example
+
 # Local artifacts accidentally dropped in public/
 Website/public/20x20.html
 Website/public/20x20_files/

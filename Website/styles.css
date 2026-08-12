@@ -7213,6 +7213,183 @@ body.page-blog-post .nav-compact {
     scroll-margin-top: calc(var(--nav-height, 72px) + 1rem);
 }
 
+/* Blog: discreet admin entry (not a CTA) */
+.blog-admin-access {
+    margin: 2.5rem 0 0;
+    text-align: center;
+}
+.blog-admin-access a {
+    color: rgba(0, 0, 0, 0.35);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    text-transform: lowercase;
+}
+.blog-admin-access a:hover,
+.blog-admin-access a:focus-visible {
+    color: rgba(0, 0, 0, 0.55);
+    text-decoration: underline;
+}
+
+/* Admin porch calculator */
+.page-admin-porch {
+    background:
+        radial-gradient(1200px 500px at 10% -10%, rgba(183, 28, 28, 0.08), transparent 55%),
+        linear-gradient(180deg, #f7f7f8 0%, #ececef 100%);
+    min-height: 100vh;
+}
+.admin-porch-main {
+    max-width: 820px;
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
+}
+.admin-porch-boot {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.55);
+    margin: 3rem 0;
+}
+.admin-porch-card {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.08);
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    margin-bottom: 1.25rem;
+}
+.admin-porch-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+.admin-porch-eyebrow {
+    margin: 0 0 0.35rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.45);
+}
+.admin-porch-title {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 1.1rem + 1.2vw, 1.9rem);
+    letter-spacing: var(--title-tracking);
+    line-height: var(--title-line-tight);
+}
+.admin-porch-lead {
+    margin: 0 0 1.25rem;
+    color: rgba(0, 0, 0, 0.62);
+    line-height: 1.55;
+}
+.admin-porch-user {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
+}
+.admin-porch-user span {
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.55);
+}
+.admin-porch-form .form-field {
+    margin-bottom: 0.85rem;
+}
+.admin-porch-form label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+.admin-porch-form input,
+.admin-porch-form select {
+    width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
+    font: inherit;
+    background: #fff;
+}
+.admin-porch-form input:focus,
+.admin-porch-form select:focus {
+    outline: 2px solid rgba(183, 28, 28, 0.35);
+    outline-offset: 1px;
+}
+.admin-porch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+}
+.admin-porch-fieldset {
+    margin: 0;
+    padding: 0.85rem 0.9rem 0.35rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+.admin-porch-fieldset legend {
+    padding: 0 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.admin-porch-inline {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+}
+.admin-porch-hint {
+    margin: 0.35rem 0 0;
+    font-size: 0.78rem;
+    color: rgba(0, 0, 0, 0.5);
+    line-height: 1.4;
+}
+.admin-porch-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+.admin-porch-results-title {
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+}
+.admin-porch-dl {
+    display: grid;
+    grid-template-columns: minmax(8rem, 38%) 1fr;
+    gap: 0.55rem 1rem;
+    margin: 0;
+}
+.admin-porch-dl dt {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 0.88rem;
+}
+.admin-porch-dl dd {
+    margin: 0;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+.admin-porch-dl dt.is-strong,
+.admin-porch-dl dd.is-strong {
+    color: #111;
+    font-weight: 800;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 0.55rem;
+    margin-top: 0.15rem;
+}
+@media (max-width: 640px) {
+    .admin-porch-grid {
+        grid-template-columns: 1fr;
+    }
+    .admin-porch-dl {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+    }
+    .admin-porch-dl dd {
+        margin-bottom: 0.55rem;
+    }
+}
+
 @media (max-width: 768px) {
     .floating-quote-btn {
         padding: 0.5rem 0.8rem;

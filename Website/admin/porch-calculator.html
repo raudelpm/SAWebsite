@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/jpeg" href="../public/Logo Black Yes Background.JPG">
+    <title>Admin | Porch Enclosure Estimate | SCREEN ARMORS</title>
+    <link rel="preload" href="../styles.css" as="style">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="page-admin-porch">
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <img src="../public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+                <span class="logo-wordmark">SCREEN ARMORS</span>
+            </a>
+            <button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navLinks">
+                <span class="menu-toggle-icon" aria-hidden="true">☰</span>
+                <span class="menu-toggle-label">Menu</span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../blog.html">Blog</a></li>
+                <li><a href="../index.html">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container admin-porch-main">
+        <section id="adminLoginPanel" class="admin-porch-card" hidden>
+            <h1 class="admin-porch-title">Admin Access</h1>
+            <p class="admin-porch-lead">Sign in to open the Quick Enclosure Estimate tool.</p>
+            <form id="adminLoginForm" class="admin-porch-form" autocomplete="on">
+                <div class="form-field">
+                    <label for="adminUsername">Username</label>
+                    <input id="adminUsername" name="username" type="text" autocomplete="username" required>
+                </div>
+                <div class="form-field">
+                    <label for="adminPassword">Password</label>
+                    <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+                </div>
+                <p id="adminLoginStatus" class="form-status" role="status" aria-live="polite"></p>
+                <button type="submit" class="btn btn-quote" id="adminLoginBtn">Sign in</button>
+            </form>
+        </section>
+
+        <section id="adminToolPanel" class="admin-porch-tool" hidden>
+            <div class="admin-porch-toolbar">
+                <div>
+                    <p class="admin-porch-eyebrow">Internal tool</p>
+                    <h1 class="admin-porch-title">Front / Back Porch Calculator</h1>
+                    <p class="admin-porch-lead">Aluminum enclosure estimate — width &amp; height drive material sticks, not sqft alone.</p>
+                </div>
+                <div class="admin-porch-user">
+                    <span id="adminUserLabel"></span>
+                    <button type="button" class="btn btn-secondary" id="adminLogoutBtn">Log out</button>
+                </div>
+            </div>
+
+            <form id="porchCalcForm" class="admin-porch-card admin-porch-form" novalidate>
+                <div class="admin-porch-grid">
+                    <fieldset class="admin-porch-fieldset">
+                        <legend>Width</legend>
+                        <div class="admin-porch-inline">
+                            <div class="form-field">
+                                <label for="porchWidthFt">Feet</label>
+                                <input id="porchWidthFt" name="widthFt" type="number" min="0" step="1" inputmode="numeric" value="12">
+                            </div>
+                            <div class="form-field">
+                                <label for="porchWidthIn">Inches</label>
+                                <input id="porchWidthIn" name="widthIn" type="number" min="0" max="11.999" step="0.01" inputmode="decimal" value="10">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="admin-porch-fieldset">
+                        <legend>Height</legend>
+                        <div class="admin-porch-inline">
+                            <div class="form-field">
+                                <label for="porchHeightFt">Feet</label>
+                                <input id="porchHeightFt" name="heightFt" type="number" min="0" step="1" inputmode="numeric" value="8">
+                            </div>
+                            <div class="form-field">
+                                <label for="porchHeightIn">Inches</label>
+                                <input id="porchHeightIn" name="heightIn" type="number" min="0" max="11.999" step="0.01" inputmode="decimal" value="5">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-field">
+                        <label for="porchDoors">Doors</label>
+                        <input id="porchDoors" name="doors" type="number" min="0" step="1" value="1">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="porchKickPlate">Kick Plate</label>
+                        <select id="porchKickPlate" name="kickPlate">
+                            <option value="no" selected>No</option>
+                            <option value="yes">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field" id="porchKickPlateHeightWrap" hidden>
+                        <label for="porchKickPlateHeight">Kick plate height (inches, optional note)</label>
+                        <input id="porchKickPlateHeight" name="kickPlateHeightIn" type="number" min="0" step="1" placeholder="e.g. 16">
+                    </div>
+
+                    <div class="form-field" id="porchKickPlateLfWrap" hidden>
+                        <label for="porchKickPlateLf">Kick plate linear feet</label>
+                        <input id="porchKickPlateLf" name="kickPlateLf" type="number" min="0" step="0.01" placeholder="Defaults to full width">
+                        <p class="admin-porch-hint">Leave blank to use full opening width. Override if kick plate skips the door or is sectional.</p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="porchChairRail">Chair Rail (2x2 mid horizontal)</label>
+                        <select id="porchChairRail" name="chairRail">
+                            <option value="no" selected>No</option>
+                            <option value="yes">Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-porch-actions">
+                    <button type="submit" class="btn btn-quote">Calculate</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                </div>
+            </form>
+
+            <div id="porchResults" class="admin-porch-card admin-porch-results" hidden aria-live="polite">
+                <h2 class="admin-porch-results-title">Estimate breakdown</h2>
+                <dl class="admin-porch-dl" id="porchResultsBody"></dl>
+            </div>
+        </section>
+
+        <p id="adminBootStatus" class="admin-porch-boot" role="status">Checking access…</p>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-bottom">&copy; SCREEN ARMORS — internal estimate tool</div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+        (function() {
+            const navEl = document.querySelector('nav');
+            if (!navEl) return;
+            const TOP_REVEAL_PX = 8;
+            function setSpacer() {
+                const h = navEl.offsetHeight;
+                document.body.style.paddingTop = h + 'px';
+                document.documentElement.style.setProperty('--nav-height', h + 'px');
+            }
+            window.addEventListener('load', setSpacer);
+            window.addEventListener('resize', setSpacer);
+            setSpacer();
+            window.addEventListener('scroll', function() {
+                const currentY = window.scrollY;
+                const navLinks = document.getElementById('navLinks');
+                const menuOpen = navLinks && navLinks.classList.contains('active');
+                if (menuOpen) return;
+                if (currentY <= TOP_REVEAL_PX) navEl.classList.remove('nav-compact');
+                else navEl.classList.add('nav-compact');
+            }, { passive: true });
+        })();
+    </script>
+    <script src="../nav-menu.js"></script>
+    <script src="porch-calculator.js"></script>
+</body>
+</html>
