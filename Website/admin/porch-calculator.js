@@ -11,7 +11,8 @@
   var PRICE_SCREWS = 100;
   var PRICE_OVERHEAD = 200;
   var MARKUP_DIVISOR = 0.7;
-  var WORKER_RATE = 0.25;
+  // Calibrated so Final Price already includes worker pay (e.g. $1,060 materials → $200 labor → $1,800 price).
+  var WORKER_RATE = 0.1886792453;
   var DOOR_WIDTH_FT = 3; // 36"
   var DOOR_OPENING_HEIGHT_FT = 80 / 12; // 80"
   var DOOR_HEADER_FT = 3; // 36" header above door opening
@@ -1094,10 +1095,10 @@
       PRICE_OVERHEAD +
       screenCost;
 
-    // Pricing order: Material → Base (÷ 0.70) → Worker Pay (25% of Base) → Final = Base + Worker
-    var basePrice = materialCost / MARKUP_DIVISOR;
-    var workerPay = basePrice * WORKER_RATE;
-    var calculatedPrice = basePrice + workerPay;
+    // Worker pay is included inside the final price: (Material + Worker) / 0.70
+    var workerPay = materialCost * WORKER_RATE;
+    var costPlusLabor = materialCost + workerPay;
+    var calculatedPrice = costPlusLabor / MARKUP_DIVISOR;
 
     return {
       sections: sectionResults,
@@ -1121,8 +1122,8 @@
       overhead: PRICE_OVERHEAD,
       screenCost: screenCost,
       materialCost: materialCost,
-      basePrice: basePrice,
       workerPay: workerPay,
+      costPlusLabor: costPlusLabor,
       calculatedPrice: calculatedPrice,
       hasOversizedCuts: pack1x2.exceedsStock || pack2x2.exceedsStock,
     };
@@ -1338,9 +1339,9 @@
     trow("Overhead", money(r.overhead));
     trow("Screen cost", money(r.screenCost || 0));
     trow("Material Cost", money(r.materialCost), true);
-    trow("Base Price (Material Cost ÷ 0.70)", money(r.basePrice), true);
-    trow("Worker Pay (25% of Base Price)", money(r.workerPay), true);
-    trow("Calculated Price", money(r.calculatedPrice), true);
+    trow("Worker Pay", money(r.workerPay), true);
+    trow("Cost + Labor", money(r.costPlusLabor), true);
+    trow("Calculated Price (÷ 0.70)", money(r.calculatedPrice), true);
     total.appendChild(tdl);
     resultsBody.appendChild(total);
 
@@ -1459,8 +1460,8 @@
         overhead: totals.overhead,
         screenCost: totals.screenCost,
         materialCost: totals.materialCost,
-        basePrice: totals.basePrice,
         workerPay: totals.workerPay,
+        costPlusLabor: totals.costPlusLabor,
         calculatedPrice: totals.calculatedPrice,
         hasOversizedCuts: totals.hasOversizedCuts,
         sections: totals.sections,
