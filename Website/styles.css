@@ -7495,6 +7495,107 @@ body.page-blog-post .nav-compact {
     background: rgba(183, 28, 28, 0.08);
     border: 1px solid rgba(183, 28, 28, 0.22);
 }
+.admin-porch-layout-panel {
+    margin-top: 1.25rem;
+}
+.admin-porch-layout-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem 1rem;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+.admin-porch-layout-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+.admin-porch-layout-sheet {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    background: #fff;
+    padding: clamp(0.9rem, 2vw, 1.25rem);
+}
+.admin-porch-layout-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.admin-porch-layout-meta span {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.5);
+}
+.admin-porch-layout-meta strong {
+    font-size: 0.95rem;
+}
+.admin-porch-layout-drawings {
+    display: grid;
+    gap: 1.15rem;
+}
+.admin-porch-drawing-card {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 0.85rem;
+    background: #fbfcfd;
+}
+.admin-porch-drawing-card h3 {
+    margin: 0 0 0.2rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+}
+.admin-porch-drawing-card__dims {
+    margin: 0 0 0.65rem;
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 0.88rem;
+}
+.admin-porch-section-svg {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    display: block;
+    background: #fff;
+}
+.admin-porch-svg-label {
+    font-size: 12px;
+    font-weight: 700;
+    fill: #1a1a1a;
+}
+.admin-porch-svg-label-sm {
+    font-size: 10px;
+    font-weight: 600;
+    fill: #2a2a2a;
+}
+.admin-porch-svg-dim {
+    font-size: 12px;
+    font-weight: 700;
+    fill: #222;
+}
+@media print {
+    body.page-admin-porch nav,
+    body.page-admin-porch footer,
+    body.page-admin-porch .admin-porch-saved,
+    body.page-admin-porch .admin-porch-toolbar,
+    body.page-admin-porch #porchCalcForm,
+    body.page-admin-porch #porchResults,
+    body.page-admin-porch .admin-porch-layout-actions,
+    body.page-admin-porch .floating-quote-btn {
+        display: none !important;
+    }
+    body.page-admin-porch .admin-porch-layout {
+        grid-template-columns: 1fr;
+    }
+    body.page-admin-porch .admin-porch-layout-panel {
+        box-shadow: none;
+        border: 0;
+    }
+}
 .form-status.is-error {
     color: #b71c1c;
 }

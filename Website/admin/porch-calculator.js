@@ -40,8 +40,18 @@
   var savedList = document.getElementById("porchSavedList");
   var savedEmpty = document.getElementById("porchSavedEmpty");
   var storageModeEl = document.getElementById("porchStorageMode");
+  var layoutPanel = document.getElementById("porchLayoutPanel");
+  var layoutHeader = document.getElementById("porchLayoutHeader");
+  var layoutDrawings = document.getElementById("porchLayoutDrawings");
+  var layoutSheet = document.getElementById("porchLayoutSheet");
+  var printLayoutBtn = document.getElementById("porchPrintLayoutBtn");
+  var downloadLayoutBtn = document.getElementById("porchDownloadLayoutBtn");
 
   var lastTotals = null;
+  var layoutTimer = null;
+  var DOOR_WIDTH_FT = 3;
+  var KICK_PLATE_HEIGHT_FT = 16 / 12;
+  var CHAIR_RAIL_HEIGHT_FT = 36 / 12;
 
   if (!loginPanel || !toolPanel || !calcForm || !sectionsEl || !sectionTemplate) return;
 
@@ -66,6 +76,35 @@
 
   function roundLf(n) {
     return Math.round(Number(n) * 1000) / 1000;
+  }
+
+  function formatFtInParts(ft, inches) {
+    var f = Math.max(0, Math.floor(Number(ft) || 0));
+    var inch = Number(inches) || 0;
+    if (inch < 0) inch = 0;
+    if (inch >= 12) {
+      f += Math.floor(inch / 12);
+      inch = inch % 12;
+    }
+    inch = Math.round(inch * 100) / 100;
+    if (inch === 0) return f + "'";
+    var inchStr = Number.isInteger(inch) ? String(inch) : String(inch);
+    return f + "' " + inchStr + '"';
+  }
+
+  function formatFtInDecimal(totalFeet) {
+    var totalIn = Math.round((Number(totalFeet) || 0) * 12 * 100) / 100;
+    var f = Math.floor(totalIn / 12);
+    var inch = Math.round((totalIn - f * 12) * 100) / 100;
+    return formatFtInParts(f, inch);
+  }
+
+  function escapeXml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
   /**
@@ -131,6 +170,535 @@
     };
   }
 
+  function buildSectionSvg(section, index) {
+    var widthFt = roundLf(toFeet(section.widthFt, section.widthIn));
+    var heightFt = roundLf(toFeet(section.heightFt, section.heightIn));
+    if (widthFt <= 0 || heightFt <= 0) {
+      return (
+        '<div class="admin-porch-drawing-card">' +
+        "<h3>SECTION " +
+        (index + 1) +
+        "</h3>" +
+        '<p class="admin-porch-hint">Enter width and height to preview this section.</p>' +
+        "</div>"
+      );
+    }
+
+    var dimLabel = formatFtInParts(section.widthFt, section.widthIn) + " W × " + formatFtInParts(section.heightFt, section.heightIn) + " H";
+    var padL = 78;
+    var padR = 28;
+    var padT = 54;
+    var padB = 36;
+    var maxDrawW = 420;
+    var maxDrawH = 320;
+    var scale = Math.min(maxDrawW / widthFt, maxDrawH / heightFt);
+    var drawW = widthFt * scale;
+    var drawH = heightFt * scale;
+    var x0 = padL;
+    var y0 = padT;
+    var x1 = x0 + drawW;
+    var y1 = y0 + drawH;
+    var vbW = padL + drawW + padR;
+    var vbH = padT + drawH + padB;
+    var stroke = 2.4;
+    var stroke2 = 3.2;
+
+    function sx(ft) {
+      return x0 + ft * scale;
+    }
+    function syFromTop(ftFromTop) {
+      return y0 + ftFromTop * scale;
+    }
+    function syFromBottom(ftFromBottom) {
+      return y1 - ftFromBottom * scale;
+    }
+
+    var parts = [];
+    parts.push(
+      '<svg class="admin-porch-section-svg" viewBox="0 0 ' +
+        vbW +
+        " " +
+        vbH +
+        '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Section ' +
+        (index + 1) +
+        ' shop drawing">'
+    );
+    parts.push(
+      '<defs><pattern id="kickHatch' +
+        index +
+        '" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
+        '<line x1="0" y1="0" x2="0" y2="8" stroke="#9aa3ad" stroke-width="1.2"/>' +
+        "</pattern></defs>"
+    );
+
+    // Screen fill
+    parts.push(
+      '<rect x="' +
+        x0 +
+        '" y="' +
+        y0 +
+        '" width="' +
+        drawW +
+        '" height="' +
+        drawH +
+        '" fill="#f4f7fa" stroke="none"/>'
+    );
+
+    // Kick plate
+    if (section.kickPlate) {
+      var kickH = Math.min(KICK_PLATE_HEIGHT_FT, heightFt * 0.35);
+      var kickTopY = syFromBottom(kickH);
+      parts.push(
+        '<rect x="' +
+          x0 +
+          '" y="' +
+          kickTopY +
+          '" width="' +
+          drawW +
+          '" height="' +
+          kickH * scale +
+          '" fill="url(#kickHatch' +
+          index +
+          ')" stroke="none"/>'
+      );
+      parts.push(
+        '<line x1="' +
+          x0 +
+          '" y1="' +
+          kickTopY +
+          '" x2="' +
+          x1 +
+          '" y2="' +
+          kickTopY +
+          '" stroke="#1a1a1a" stroke-width="' +
+          stroke2 +
+          '"/>'
+      );
+      parts.push(
+        '<text x="' +
+          (x0 + drawW / 2) +
+          '" y="' +
+          (kickTopY + (kickH * scale) / 2 + 4) +
+          '" text-anchor="middle" class="admin-porch-svg-label">KICK PLATE</text>'
+      );
+      parts.push(
+        '<text x="' +
+          (x0 + 8) +
+          '" y="' +
+          (kickTopY - 6) +
+          '" class="admin-porch-svg-label-sm">2x2</text>'
+      );
+    }
+
+    // Chair rail
+    if (section.chairRail) {
+      var railFromBottom = Math.min(CHAIR_RAIL_HEIGHT_FT, heightFt * 0.55);
+      if (section.kickPlate) {
+        railFromBottom = Math.max(railFromBottom, KICK_PLATE_HEIGHT_FT + 0.75);
+      }
+      railFromBottom = Math.min(railFromBottom, heightFt - 0.5);
+      var railY = syFromBottom(railFromBottom);
+      parts.push(
+        '<line x1="' +
+          x0 +
+          '" y1="' +
+          railY +
+          '" x2="' +
+          x1 +
+          '" y2="' +
+          railY +
+          '" stroke="#1a1a1a" stroke-width="' +
+          stroke2 +
+          '"/>'
+      );
+      parts.push(
+        '<text x="' +
+          (x0 + drawW / 2) +
+          '" y="' +
+          (railY - 8) +
+          '" text-anchor="middle" class="admin-porch-svg-label-sm">CHAIR RAIL — 2x2</text>'
+      );
+    }
+
+    // Door
+    if (section.door) {
+      var doorW = Math.min(DOOR_WIDTH_FT, Math.max(1.5, widthFt - 0.75));
+      var doorLeft = Math.min(0.5, Math.max(0.25, (widthFt - doorW) * 0.15));
+      if (doorLeft + doorW > widthFt - 0.25) doorLeft = Math.max(0.2, widthFt - doorW - 0.25);
+      var dx0 = sx(doorLeft);
+      var dx1 = sx(doorLeft + doorW);
+      var headerFromTop = 0.35;
+      var headerY = syFromTop(headerFromTop);
+      var doorBottom = section.kickPlate
+        ? syFromBottom(Math.min(KICK_PLATE_HEIGHT_FT, heightFt * 0.35))
+        : y1;
+      parts.push(
+        '<line x1="' +
+          dx0 +
+          '" y1="' +
+          headerY +
+          '" x2="' +
+          dx0 +
+          '" y2="' +
+          doorBottom +
+          '" stroke="#1a1a1a" stroke-width="' +
+          stroke2 +
+          '"/>'
+      );
+      parts.push(
+        '<line x1="' +
+          dx1 +
+          '" y1="' +
+          headerY +
+          '" x2="' +
+          dx1 +
+          '" y2="' +
+          doorBottom +
+          '" stroke="#1a1a1a" stroke-width="' +
+          stroke2 +
+          '"/>'
+      );
+      parts.push(
+        '<line x1="' +
+          dx0 +
+          '" y1="' +
+          headerY +
+          '" x2="' +
+          dx1 +
+          '" y2="' +
+          headerY +
+          '" stroke="#1a1a1a" stroke-width="' +
+          stroke2 +
+          '"/>'
+      );
+      // Door leaf hint
+      parts.push(
+        '<rect x="' +
+          (dx0 + 4) +
+          '" y="' +
+          (headerY + 4) +
+          '" width="' +
+          Math.max(8, dx1 - dx0 - 8) +
+          '" height="' +
+          Math.max(8, doorBottom - headerY - 8) +
+          '" fill="none" stroke="#5b6770" stroke-width="1.2" stroke-dasharray="4 3"/>'
+      );
+      parts.push(
+        '<text x="' +
+          ((dx0 + dx1) / 2) +
+          '" y="' +
+          ((headerY + doorBottom) / 2 - 4) +
+          '" text-anchor="middle" class="admin-porch-svg-label">DOOR</text>'
+      );
+      parts.push(
+        '<text x="' +
+          ((dx0 + dx1) / 2) +
+          '" y="' +
+          ((headerY + doorBottom) / 2 + 12) +
+          '" text-anchor="middle" class="admin-porch-svg-label-sm">36"</text>'
+      );
+    }
+
+    // 1x2 perimeter (draw last so it sits on top)
+    parts.push(
+      '<rect x="' +
+        x0 +
+        '" y="' +
+        y0 +
+        '" width="' +
+        drawW +
+        '" height="' +
+        drawH +
+        '" fill="none" stroke="#111" stroke-width="' +
+        stroke +
+        '"/>'
+    );
+
+    // Width dimension (top)
+    var dimY = 22;
+    parts.push(
+      '<line x1="' +
+        x0 +
+        '" y1="' +
+        dimY +
+        '" x2="' +
+        x1 +
+        '" y2="' +
+        dimY +
+        '" stroke="#333" stroke-width="1.2"/>'
+    );
+    parts.push(
+      '<polyline points="' +
+        x0 +
+        "," +
+        (dimY + 5) +
+        " " +
+        x0 +
+        "," +
+        (dimY - 5) +
+        " " +
+        (x0 + 8) +
+        "," +
+        dimY +
+        '" fill="#333"/>'
+    );
+    parts.push(
+      '<polyline points="' +
+        x1 +
+        "," +
+        (dimY + 5) +
+        " " +
+        x1 +
+        "," +
+        (dimY - 5) +
+        " " +
+        (x1 - 8) +
+        "," +
+        dimY +
+        '" fill="#333"/>'
+    );
+    parts.push(
+      '<text x="' +
+        (x0 + drawW / 2) +
+        '" y="' +
+        (dimY - 8) +
+        '" text-anchor="middle" class="admin-porch-svg-dim">' +
+        escapeXml(formatFtInParts(section.widthFt, section.widthIn)) +
+        "</text>"
+    );
+
+    // Height dimension (left)
+    var dimX = 34;
+    parts.push(
+      '<line x1="' +
+        dimX +
+        '" y1="' +
+        y0 +
+        '" x2="' +
+        dimX +
+        '" y2="' +
+        y1 +
+        '" stroke="#333" stroke-width="1.2"/>'
+    );
+    parts.push(
+      '<polyline points="' +
+        (dimX - 5) +
+        "," +
+        y0 +
+        " " +
+        (dimX + 5) +
+        "," +
+        y0 +
+        " " +
+        dimX +
+        "," +
+        (y0 + 8) +
+        '" fill="#333"/>'
+    );
+    parts.push(
+      '<polyline points="' +
+        (dimX - 5) +
+        "," +
+        y1 +
+        " " +
+        (dimX + 5) +
+        "," +
+        y1 +
+        " " +
+        dimX +
+        "," +
+        (y1 - 8) +
+        '" fill="#333"/>'
+    );
+    parts.push(
+      '<text x="' +
+        (dimX - 12) +
+        '" y="' +
+        (y0 + drawH / 2) +
+        '" text-anchor="middle" transform="rotate(-90 ' +
+        (dimX - 12) +
+        " " +
+        (y0 + drawH / 2) +
+        ')" class="admin-porch-svg-dim">' +
+        escapeXml(formatFtInParts(section.heightFt, section.heightIn)) +
+        "</text>"
+    );
+
+    parts.push("</svg>");
+
+    return (
+      '<article class="admin-porch-drawing-card">' +
+      "<h3>SECTION " +
+      (index + 1) +
+      "</h3>" +
+      '<p class="admin-porch-drawing-card__dims">' +
+      escapeXml(dimLabel) +
+      "</p>" +
+      parts.join("") +
+      "</article>"
+    );
+  }
+
+  function getLayoutMeta() {
+    var id = estimateIdInput && estimateIdInput.value ? estimateIdInput.value : "";
+    var title = titleInput && titleInput.value.trim() ? titleInput.value.trim() : "Untitled estimate";
+    var projectType =
+      projectTypeInput && projectTypeInput.value === "back" ? "Back porch" : "Front porch";
+    var today = new Date();
+    var dateStr = today.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+    return {
+      customerName: title,
+      projectType: projectType,
+      estimateNumber: id || "Unsaved",
+      date: dateStr,
+    };
+  }
+
+  function refreshLayout() {
+    if (!layoutDrawings || !layoutHeader) return;
+    var meta = getLayoutMeta();
+    layoutHeader.innerHTML =
+      '<div class="admin-porch-layout-meta">' +
+      "<div><span>Customer Name</span><strong>" +
+      escapeXml(meta.customerName) +
+      "</strong></div>" +
+      "<div><span>Project Type</span><strong>" +
+      escapeXml(meta.projectType) +
+      "</strong></div>" +
+      "<div><span>Estimate Number</span><strong>" +
+      escapeXml(meta.estimateNumber) +
+      "</strong></div>" +
+      "<div><span>Date</span><strong>" +
+      escapeXml(meta.date) +
+      "</strong></div>" +
+      "</div>";
+
+    var sections = readSections();
+    if (!sections.length) {
+      layoutDrawings.innerHTML = '<p class="admin-porch-hint">Add a section to generate the shop drawing.</p>';
+      return;
+    }
+    layoutDrawings.innerHTML = sections
+      .map(function (s, i) {
+        return buildSectionSvg(s, i);
+      })
+      .join("");
+  }
+
+  function scheduleLayoutRefresh() {
+    if (layoutTimer) clearTimeout(layoutTimer);
+    layoutTimer = setTimeout(refreshLayout, 120);
+  }
+
+  function printLayout() {
+    refreshLayout();
+    var sheet = layoutSheet;
+    if (!sheet) return;
+    var win = window.open("", "_blank", "noopener,noreferrer,width=980,height=720");
+    if (!win) {
+      window.print();
+      return;
+    }
+    win.document.write(
+      "<!DOCTYPE html><html><head><title>Project Layout</title>" +
+        "<style>" +
+        "body{font-family:Segoe UI,Arial,sans-serif;margin:24px;color:#111;background:#fff;}" +
+        ".admin-porch-layout-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #ddd;}" +
+        ".admin-porch-layout-meta span{display:block;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.04em;}" +
+        ".admin-porch-layout-meta strong{font-size:14px;}" +
+        ".admin-porch-layout-drawings{display:grid;gap:22px;}" +
+        ".admin-porch-drawing-card{break-inside:avoid;page-break-inside:avoid;border:1px solid #ddd;padding:12px;border-radius:8px;}" +
+        ".admin-porch-drawing-card h3{margin:0 0 4px;font-size:15px;letter-spacing:.04em;}" +
+        ".admin-porch-drawing-card__dims{margin:0 0 10px;color:#444;font-size:13px;}" +
+        ".admin-porch-section-svg{width:100%;max-width:520px;height:auto;display:block;}" +
+        ".admin-porch-svg-label,.admin-porch-svg-label-sm,.admin-porch-svg-dim{font-family:Segoe UI,Arial,sans-serif;fill:#222;}" +
+        ".admin-porch-svg-label{font-size:12px;font-weight:700;}" +
+        ".admin-porch-svg-label-sm{font-size:10px;font-weight:600;}" +
+        ".admin-porch-svg-dim{font-size:12px;font-weight:700;}" +
+        "</style></head><body>" +
+        sheet.innerHTML +
+        "</body></html>"
+    );
+    win.document.close();
+    win.focus();
+    setTimeout(function () {
+      win.print();
+    }, 250);
+  }
+
+  function downloadLayout() {
+    refreshLayout();
+    if (!layoutSheet) return;
+    var meta = getLayoutMeta();
+    var drawings = Array.prototype.slice.call(
+      layoutDrawings.querySelectorAll(".admin-porch-drawing-card")
+    );
+    var blocks = drawings
+      .map(function (card, i) {
+        var title = card.querySelector("h3");
+        var dims = card.querySelector(".admin-porch-drawing-card__dims");
+        var svg = card.querySelector("svg");
+        return (
+          '<g transform="translate(40,' +
+          (110 + i * 420) +
+          ')">' +
+          '<text x="0" y="0" font-size="18" font-weight="700" font-family="Segoe UI, Arial, sans-serif">' +
+          escapeXml(title ? title.textContent : "SECTION " + (i + 1)) +
+          "</text>" +
+          '<text x="0" y="22" font-size="13" fill="#444" font-family="Segoe UI, Arial, sans-serif">' +
+          escapeXml(dims ? dims.textContent : "") +
+          "</text>" +
+          '<g transform="translate(0,36)">' +
+          (svg ? svg.outerHTML.replace(/class="[^"]*"/g, "") : "") +
+          "</g></g>"
+        );
+      })
+      .join("");
+
+    var height = Math.max(700, 140 + drawings.length * 420);
+    var svgDoc =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="' +
+      height +
+      '" viewBox="0 0 900 ' +
+      height +
+      '">' +
+      '<rect width="100%" height="100%" fill="#ffffff"/>' +
+      '<text x="40" y="36" font-size="22" font-weight="800" font-family="Segoe UI, Arial, sans-serif">PROJECT LAYOUT</text>' +
+      '<text x="40" y="60" font-size="13" font-family="Segoe UI, Arial, sans-serif">Customer: ' +
+      escapeXml(meta.customerName) +
+      "</text>" +
+      '<text x="40" y="78" font-size="13" font-family="Segoe UI, Arial, sans-serif">Project: ' +
+      escapeXml(meta.projectType) +
+      " · Estimate: " +
+      escapeXml(meta.estimateNumber) +
+      " · Date: " +
+      escapeXml(meta.date) +
+      "</text>" +
+      blocks +
+      "</svg>";
+
+    var blob = new Blob([svgDoc], { type: "image/svg+xml;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var safeName = (meta.customerName || "porch-layout")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    a.href = url;
+    a.download = (safeName || "porch-layout") + "-layout.svg";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 1000);
+  }
+
   function showLogin() {
     if (bootStatus) bootStatus.hidden = true;
     loginPanel.hidden = false;
@@ -154,6 +722,7 @@
         chairRail: false,
       });
     }
+    refreshLayout();
     refreshSavedList();
   }
 
@@ -209,6 +778,7 @@
       sectionsEl.appendChild(node);
     }
     renumberSections();
+    scheduleLayoutRefresh();
     return node;
   }
 
@@ -592,6 +1162,7 @@
     resultsBody.innerHTML = "";
     setSaveStatus("");
     syncDeleteVisibility();
+    refreshLayout();
   }
 
   function loadEstimateIntoForm(estimate) {
@@ -620,6 +1191,7 @@
     // without changing the saved Screen Cost value itself.
     lastTotals = calculateProject(readSections(), readScreenCost());
     renderResults(lastTotals);
+    refreshLayout();
     setSaveStatus("Loaded “" + (estimate.title || estimate.id) + "”");
     syncDeleteVisibility();
   }
@@ -779,6 +1351,7 @@
       setSaveStatus("Saved “" + data.estimate.title + "”");
       syncDeleteVisibility();
       refreshSavedList();
+      refreshLayout();
     } catch (err) {
       setSaveStatus("Network error while saving.", true);
     } finally {
@@ -821,10 +1394,16 @@
       if (sectionsEl.querySelectorAll("[data-section]").length <= 1) return;
       card.remove();
       renumberSections();
+      scheduleLayoutRefresh();
     } else if (action === "duplicate") {
       addSection(readSectionCard(card), card);
     }
   });
+
+  sectionsEl.addEventListener("input", scheduleLayoutRefresh);
+  sectionsEl.addEventListener("change", scheduleLayoutRefresh);
+  if (titleInput) titleInput.addEventListener("input", scheduleLayoutRefresh);
+  if (projectTypeInput) projectTypeInput.addEventListener("change", scheduleLayoutRefresh);
 
   if (addSectionBtn) {
     addSectionBtn.addEventListener("click", function () {
@@ -857,8 +1436,12 @@
     }
     lastTotals = calculateProject(sections, readScreenCost());
     renderResults(lastTotals);
+    refreshLayout();
     setSaveStatus("");
   });
+
+  if (printLayoutBtn) printLayoutBtn.addEventListener("click", printLayout);
+  if (downloadLayoutBtn) downloadLayoutBtn.addEventListener("click", downloadLayout);
 
   async function checkSession() {
     try {

@@ -109,6 +109,23 @@
                         <h2 class="admin-porch-results-title">Estimate breakdown</h2>
                         <div id="porchResultsBody"></div>
                     </div>
+
+                    <section id="porchLayoutPanel" class="admin-porch-card admin-porch-layout-panel" aria-label="Project layout drawings">
+                        <div class="admin-porch-layout-toolbar">
+                            <div>
+                                <h2 class="admin-porch-results-title">Project Layout</h2>
+                                <p class="admin-porch-hint">Shop-drawing preview generated from section dimensions and options. Updates live as you edit.</p>
+                            </div>
+                            <div class="admin-porch-layout-actions">
+                                <button type="button" class="btn btn-secondary" id="porchPrintLayoutBtn">Print Layout</button>
+                                <button type="button" class="btn btn-secondary" id="porchDownloadLayoutBtn">Download Layout</button>
+                            </div>
+                        </div>
+                        <div id="porchLayoutSheet" class="admin-porch-layout-sheet">
+                            <header class="admin-porch-layout-sheet__header" id="porchLayoutHeader"></header>
+                            <div id="porchLayoutDrawings" class="admin-porch-layout-drawings"></div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </section>
