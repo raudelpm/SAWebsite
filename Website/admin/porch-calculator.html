@@ -50,7 +50,7 @@
                 <div>
                     <p class="admin-porch-eyebrow">Internal tool</p>
                     <h1 class="admin-porch-title">Front / Back Porch Calculator</h1>
-                    <p class="admin-porch-lead">Aluminum enclosure estimate — width &amp; height drive material sticks, not sqft alone.</p>
+                    <p class="admin-porch-lead">Multiple framed sections per project. Sticks are rounded only after all linear feet are combined.</p>
                 </div>
                 <div class="admin-porch-user">
                     <span id="adminUserLabel"></span>
@@ -58,83 +58,124 @@
                 </div>
             </div>
 
-            <form id="porchCalcForm" class="admin-porch-card admin-porch-form" novalidate>
-                <div class="admin-porch-grid">
-                    <fieldset class="admin-porch-fieldset">
-                        <legend>Width</legend>
-                        <div class="admin-porch-inline">
+            <div class="admin-porch-layout">
+                <aside class="admin-porch-card admin-porch-saved" aria-label="Saved estimates">
+                    <div class="admin-porch-saved-head">
+                        <h2>Saved estimates</h2>
+                        <button type="button" class="btn btn-secondary" id="porchNewEstimateBtn">New</button>
+                    </div>
+                    <p id="porchStorageMode" class="admin-porch-hint"></p>
+                    <ul id="porchSavedList" class="admin-porch-saved-list"></ul>
+                    <p id="porchSavedEmpty" class="admin-porch-hint">No saved estimates yet.</p>
+                </aside>
+
+                <div class="admin-porch-workspace">
+                    <form id="porchCalcForm" class="admin-porch-card admin-porch-form" novalidate>
+                        <div class="admin-porch-meta-grid">
                             <div class="form-field">
-                                <label for="porchWidthFt">Feet</label>
-                                <input id="porchWidthFt" name="widthFt" type="number" min="0" step="1" inputmode="numeric" value="12">
+                                <label for="porchEstimateTitle">Estimate name</label>
+                                <input id="porchEstimateTitle" name="title" type="text" maxlength="160" placeholder="e.g. Smith front porch">
                             </div>
                             <div class="form-field">
-                                <label for="porchWidthIn">Inches</label>
-                                <input id="porchWidthIn" name="widthIn" type="number" min="0" max="11.999" step="0.01" inputmode="decimal" value="10">
+                                <label for="porchProjectType">Project</label>
+                                <select id="porchProjectType" name="projectType">
+                                    <option value="front" selected>Front porch</option>
+                                    <option value="back">Back porch</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label for="porchScreenCost">Screen Cost ($)</label>
+                                <input id="porchScreenCost" name="screenCost" type="number" min="0" step="0.01" inputmode="decimal" value="0" placeholder="0.00">
+                            </div>
+                            <div class="form-field form-field--full">
+                                <label for="porchNotes">Notes</label>
+                                <input id="porchNotes" name="notes" type="text" maxlength="2000" placeholder="Optional notes">
                             </div>
                         </div>
-                    </fieldset>
 
-                    <fieldset class="admin-porch-fieldset">
-                        <legend>Height</legend>
-                        <div class="admin-porch-inline">
-                            <div class="form-field">
-                                <label for="porchHeightFt">Feet</label>
-                                <input id="porchHeightFt" name="heightFt" type="number" min="0" step="1" inputmode="numeric" value="8">
-                            </div>
-                            <div class="form-field">
-                                <label for="porchHeightIn">Inches</label>
-                                <input id="porchHeightIn" name="heightIn" type="number" min="0" max="11.999" step="0.01" inputmode="decimal" value="5">
-                            </div>
+                        <div id="porchSections" class="admin-porch-sections" aria-live="polite"></div>
+
+                        <div class="admin-porch-actions">
+                            <button type="button" class="btn btn-secondary" id="porchAddSectionBtn">+ Add Section</button>
+                            <button type="submit" class="btn btn-quote">Calculate</button>
+                            <button type="button" class="btn btn-quote" id="porchSaveBtn">Save estimate</button>
+                            <button type="button" class="btn btn-secondary" id="porchDeleteBtn" hidden>Delete</button>
                         </div>
-                    </fieldset>
+                        <p id="porchSaveStatus" class="form-status" role="status" aria-live="polite"></p>
+                        <input type="hidden" id="porchEstimateId" value="">
+                    </form>
 
-                    <div class="form-field">
-                        <label for="porchDoors">Doors</label>
-                        <input id="porchDoors" name="doors" type="number" min="0" step="1" value="1">
-                    </div>
-
-                    <div class="form-field">
-                        <label for="porchKickPlate">Kick Plate</label>
-                        <select id="porchKickPlate" name="kickPlate">
-                            <option value="no" selected>No</option>
-                            <option value="yes">Yes</option>
-                        </select>
-                    </div>
-
-                    <div class="form-field" id="porchKickPlateHeightWrap" hidden>
-                        <label for="porchKickPlateHeight">Kick plate height (inches, optional note)</label>
-                        <input id="porchKickPlateHeight" name="kickPlateHeightIn" type="number" min="0" step="1" placeholder="e.g. 16">
-                    </div>
-
-                    <div class="form-field" id="porchKickPlateLfWrap" hidden>
-                        <label for="porchKickPlateLf">Kick plate linear feet</label>
-                        <input id="porchKickPlateLf" name="kickPlateLf" type="number" min="0" step="0.01" placeholder="Defaults to full width">
-                        <p class="admin-porch-hint">Leave blank to use full opening width. Override if kick plate skips the door or is sectional.</p>
-                    </div>
-
-                    <div class="form-field">
-                        <label for="porchChairRail">Chair Rail (2x2 mid horizontal)</label>
-                        <select id="porchChairRail" name="chairRail">
-                            <option value="no" selected>No</option>
-                            <option value="yes">Yes</option>
-                        </select>
+                    <div id="porchResults" class="admin-porch-card admin-porch-results" hidden aria-live="polite">
+                        <h2 class="admin-porch-results-title">Estimate breakdown</h2>
+                        <div id="porchResultsBody"></div>
                     </div>
                 </div>
-
-                <div class="admin-porch-actions">
-                    <button type="submit" class="btn btn-quote">Calculate</button>
-                    <button type="reset" class="btn btn-secondary">Reset</button>
-                </div>
-            </form>
-
-            <div id="porchResults" class="admin-porch-card admin-porch-results" hidden aria-live="polite">
-                <h2 class="admin-porch-results-title">Estimate breakdown</h2>
-                <dl class="admin-porch-dl" id="porchResultsBody"></dl>
             </div>
         </section>
 
         <p id="adminBootStatus" class="admin-porch-boot" role="status">Checking access…</p>
     </main>
+
+    <template id="porchSectionTemplate">
+        <article class="admin-porch-section" data-section>
+            <div class="admin-porch-section-head">
+                <h3 class="admin-porch-section-title">Section</h3>
+                <div class="admin-porch-section-actions">
+                    <button type="button" class="btn btn-secondary" data-action="duplicate">Duplicate</button>
+                    <button type="button" class="btn btn-secondary" data-action="delete">Delete</button>
+                </div>
+            </div>
+            <div class="admin-porch-grid">
+                <fieldset class="admin-porch-fieldset">
+                    <legend>Width</legend>
+                    <div class="admin-porch-inline">
+                        <div class="form-field">
+                            <label>Feet</label>
+                            <input data-field="widthFt" type="number" min="0" step="1" inputmode="numeric" value="12">
+                        </div>
+                        <div class="form-field">
+                            <label>Inches</label>
+                            <input data-field="widthIn" type="number" min="0" max="11.999" step="0.01" inputmode="decimal" value="0">
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="admin-porch-fieldset">
+                    <legend>Height</legend>
+                    <div class="admin-porch-inline">
+                        <div class="form-field">
+                            <label>Feet</label>
+                            <input data-field="heightFt" type="number" min="0" step="1" inputmode="numeric" value="8">
+                        </div>
+                        <div class="form-field">
+                            <label>Inches</label>
+                            <input data-field="heightIn" type="number" min="0" max="11.999" step="0.01" inputmode="decimal" value="0">
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="form-field">
+                    <label>Door</label>
+                    <select data-field="door">
+                        <option value="no" selected>No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Kick Plate</label>
+                    <select data-field="kickPlate">
+                        <option value="no" selected>No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Chair Rail</label>
+                    <select data-field="chairRail">
+                        <option value="no" selected>No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+        </article>
+    </template>
 
     <footer>
         <div class="footer-content">

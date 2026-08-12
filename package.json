@@ -10,7 +10,7 @@
     "dev:api": "npx vercel dev --listen 3000"
   },
   "dependencies": {
+    "@vercel/blob": "^2.8.0",
     "resend": "^6.0.1"
   }
 }
-
