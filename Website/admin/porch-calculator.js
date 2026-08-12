@@ -793,6 +793,21 @@
       .replace(/\)/g, "\\)");
   }
 
+  /** Helvetica Type1 PDFs need ASCII-only text strings. */
+  function toPdfAscii(s) {
+    return String(s || "")
+      .replace(/[\u2018\u2019\u2032]/g, "'")
+      .replace(/[\u201C\u201D\u2033]/g, '"')
+      .replace(/[\u2013\u2014\u2212\u00AD]/g, "-")
+      .replace(/[\u00A0\u202F\u2009\u200A\u2007]/g, " ")
+      .replace(/[^\x20-\x7E]/g, "");
+  }
+
+  function stickLabel(count) {
+    var n = Number(count) || 0;
+    return n === 1 ? "1 stick" : n + " sticks";
+  }
+
   function buildMaterialListData() {
     var sections = readSections();
     var err = validateSections(sections);
@@ -815,68 +830,87 @@
   }
 
   /**
-   * Minimal text PDF (no cut plans / prices) for purchasing/staging materials.
+   * ASCII-only material order/pickup PDF (no cut plans / prices).
    */
   function createMaterialListPdfBlob(data) {
-    var lines = [
-      { text: "SCREEN ARMORS", size: 20 },
-      { text: "MATERIAL LIST", size: 16 },
-      { text: "", size: 12 },
-      { text: "Estimate Name: " + data.estimateName, size: 12 },
-      { text: "Project: " + data.projectType, size: 12 },
-      { text: "Date: " + data.date, size: 12 },
-      { text: "", size: 12 },
-      { text: "MATERIALS", size: 14 },
-      { text: "", size: 12 },
+    var leftX = 50;
+    var qtyX = 380;
+    var tableRight = 562;
+    var rowH = 22;
+
+    var rows = [
+      { material: "1x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks1x2) },
+      { material: "2x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks2x2) },
+      { material: "Screen Door", quantity: String(data.doors) },
+      { material: "Z-Bar", quantity: String(data.zBar) },
       {
-        text: "1x2 Aluminum — " + data.sticks1x2 + " sticks (24 ft)",
-        size: 12,
+        material: "Kick Plate",
+        quantity: num(data.kickPlateLf, 2) + " LF",
       },
       {
-        text: "2x2 Aluminum — " + data.sticks2x2 + " sticks (24 ft)",
-        size: 12,
+        material: "Kick Plate Molding",
+        quantity: num(data.kickMoldingLf, 2) + " LF",
       },
-      { text: "Screen Door — Qty: " + data.doors, size: 12 },
-      { text: "Z-Bar — Qty: " + data.zBar, size: 12 },
-      {
-        text:
-          "Kick Plate — " +
-          num(data.kickPlateLf, 2) +
-          " Linear Feet",
-        size: 12,
-      },
-      {
-        text:
-          "Kick Plate Molding — " +
-          num(data.kickMoldingLf, 2) +
-          " Linear Feet",
-        size: 12,
-      },
-      { text: "Screen — Verify manually", size: 12 },
-      { text: "Screws & Misc — 1 project set", size: 12 },
+      { material: "Screen", quantity: "Verify manually" },
+      { material: "Screws & Misc", quantity: "1 project set" },
     ];
 
-    var content = ["BT", "/F1 12 Tf", "50 760 Td"];
-    var first = true;
-    lines.forEach(function (line) {
-      if (!first) content.push("0 -20 Td");
-      first = false;
-      content.push("/F1 " + line.size + " Tf");
-      content.push("(" + escapePdfText(line.text) + ") Tj");
-    });
-    content.push("ET");
-    var stream = content.join("\n");
+    var ops = [];
 
+    function drawLine(x1, y1, x2, y2, width) {
+      ops.push((width || 1) + " w");
+      ops.push(x1 + " " + y1 + " m " + x2 + " " + y2 + " l S");
+    }
+
+    function drawText(x, y, size, text, bold) {
+      ops.push("BT");
+      ops.push((bold ? "/F2 " : "/F1 ") + size + " Tf");
+      ops.push("1 0 0 1 " + x + " " + y + " Tm");
+      ops.push("(" + escapePdfText(toPdfAscii(text)) + ") Tj");
+      ops.push("ET");
+    }
+
+    drawText(leftX, 760, 22, "SCREEN ARMORS", true);
+    drawText(leftX, 736, 14, "MATERIAL LIST", true);
+    drawLine(leftX, 728, tableRight, 728, 1.5);
+
+    drawText(leftX, 708, 11, "Estimate: " + data.estimateName, false);
+    drawText(leftX, 690, 11, "Project: " + data.projectType, false);
+    drawText(leftX, 672, 11, "Date: " + data.date, false);
+
+    var y = 642;
+    drawLine(leftX, y + 14, tableRight, y + 14, 1);
+    drawText(leftX, y, 11, "MATERIAL", true);
+    drawText(qtyX, y, 11, "QUANTITY", true);
+    drawLine(leftX, y - 8, tableRight, y - 8, 1);
+
+    y -= 28;
+    rows.forEach(function (row, index) {
+      drawText(leftX, y, 11, row.material, false);
+      drawText(qtyX, y, 11, row.quantity, false);
+      if (index < rows.length - 1) {
+        drawLine(leftX, y - 8, tableRight, y - 8, 0.4);
+      }
+      y -= rowH;
+    });
+    drawLine(leftX, y + rowH - 8, tableRight, y + rowH - 8, 1);
+
+    var stream = ops.join("\n");
     var objects = [];
     objects.push("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
     objects.push("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
     objects.push(
-      "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n"
+      "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >>\nendobj\n"
     );
     objects.push(
       "4 0 obj\n<< /Length " + stream.length + " >>\nstream\n" + stream + "\nendstream\nendobj\n"
     );
-    objects.push("5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n");
+    objects.push(
+      "5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n"
+    );
+    objects.push(
+      "6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>\nendobj\n"
+    );
 
     var pdf = "%PDF-1.4\n";
     var offsets = [0];
