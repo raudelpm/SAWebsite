@@ -52,6 +52,7 @@
   var DOOR_WIDTH_FT = 3;
   var KICK_PLATE_HEIGHT_FT = 16 / 12;
   var CHAIR_RAIL_HEIGHT_FT = 36 / 12;
+  var MIN_KICK_SEGMENT_FT = 0.05;
 
   if (!loginPanel || !toolPanel || !calcForm || !sectionsEl || !sectionTemplate) return;
 
@@ -105,6 +106,96 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  function getDoorWidthFt(section) {
+    var custom = Number(section && section.doorWidthFt);
+    if (Number.isFinite(custom) && custom > 0) return roundLf(custom);
+    return DOOR_WIDTH_FT;
+  }
+
+  /**
+   * Door openings in feet from the section left edge.
+   * Kick plate never continues through these openings.
+   */
+  function getDoorOpenings(section, widthFt) {
+    var w = roundLf(widthFt);
+    if (w <= 0) return [];
+    var openings = [];
+
+    if (Array.isArray(section.doors) && section.doors.length) {
+      section.doors.forEach(function (d) {
+        var doorW = Math.min(
+          w,
+          roundLf(
+            Number(d && d.widthFt) > 0 ? d.widthFt : getDoorWidthFt(section)
+          )
+        );
+        var left = Number(d && d.leftFt);
+        if (!Number.isFinite(left) || left < 0) left = 0;
+        if (left + doorW > w) left = Math.max(0, w - doorW);
+        openings.push({
+          left: roundLf(left),
+          width: doorW,
+          right: roundLf(left + doorW),
+        });
+      });
+    } else if (section.door) {
+      var doorW = Math.min(w, getDoorWidthFt(section));
+      var left = 0;
+      var pos = section.doorPosition || "left";
+      if (pos === "center" || pos === "middle") {
+        left = Math.max(0, (w - doorW) / 2);
+      } else if (pos === "right") {
+        left = Math.max(0, w - doorW);
+      }
+      openings.push({
+        left: roundLf(left),
+        width: doorW,
+        right: roundLf(left + doorW),
+      });
+    }
+
+    openings.sort(function (a, b) {
+      return a.left - b.left;
+    });
+    return openings;
+  }
+
+  /**
+   * Continuous kick-plate / kick-plate-2x2 wall segments, excluding door openings.
+   */
+  function getKickPlateSegments(widthFt, openings) {
+    var w = roundLf(widthFt);
+    if (w <= 0) return [];
+    var sorted = (openings || []).slice().sort(function (a, b) {
+      return a.left - b.left;
+    });
+    var segments = [];
+    var cursor = 0;
+    sorted.forEach(function (op) {
+      var left = Math.max(0, Math.min(w, Number(op.left) || 0));
+      var right = Math.max(
+        left,
+        Math.min(w, op.right != null ? Number(op.right) : left + (Number(op.width) || 0))
+      );
+      if (left - cursor >= MIN_KICK_SEGMENT_FT) {
+        segments.push({
+          start: roundLf(cursor),
+          end: roundLf(left),
+          length: roundLf(left - cursor),
+        });
+      }
+      cursor = Math.max(cursor, right);
+    });
+    if (w - cursor >= MIN_KICK_SEGMENT_FT) {
+      segments.push({
+        start: roundLf(cursor),
+        end: roundLf(w),
+        length: roundLf(w - cursor),
+      });
+    }
+    return segments;
   }
 
   /**
@@ -244,49 +335,61 @@
         '" fill="#f4f7fa" stroke="none"/>'
     );
 
-    // Kick plate
-    if (section.kickPlate) {
+    // Kick plate — never continues under door openings; each wall run is its own segment.
+    var doorOpenings = getDoorOpenings(section, widthFt);
+    var kickSegments = section.kickPlate
+      ? getKickPlateSegments(widthFt, doorOpenings)
+      : [];
+    if (section.kickPlate && kickSegments.length) {
       var kickH = Math.min(KICK_PLATE_HEIGHT_FT, heightFt * 0.35);
       var kickTopY = syFromBottom(kickH);
-      parts.push(
-        '<rect x="' +
-          x0 +
-          '" y="' +
-          kickTopY +
-          '" width="' +
-          drawW +
-          '" height="' +
-          kickH * scale +
-          '" fill="url(#kickHatch' +
-          index +
-          ')" stroke="none"/>'
-      );
-      parts.push(
-        '<line x1="' +
-          x0 +
-          '" y1="' +
-          kickTopY +
-          '" x2="' +
-          x1 +
-          '" y2="' +
-          kickTopY +
-          '" stroke="#1a1a1a" stroke-width="' +
-          stroke2 +
-          '"/>'
-      );
+      var largest = kickSegments[0];
+      kickSegments.forEach(function (seg) {
+        if (seg.length > largest.length) largest = seg;
+        var segX = sx(seg.start);
+        var segW = Math.max(1, seg.length * scale);
+        parts.push(
+          '<rect x="' +
+            segX +
+            '" y="' +
+            kickTopY +
+            '" width="' +
+            segW +
+            '" height="' +
+            kickH * scale +
+            '" fill="url(#kickHatch' +
+            index +
+            ')" stroke="none"/>'
+        );
+        parts.push(
+          '<line x1="' +
+            segX +
+            '" y1="' +
+            kickTopY +
+            '" x2="' +
+            (segX + segW) +
+            '" y2="' +
+            kickTopY +
+            '" stroke="#1a1a1a" stroke-width="' +
+            stroke2 +
+            '"/>'
+        );
+        if (seg.length >= 2) {
+          parts.push(
+            '<text x="' +
+              (segX + 6) +
+              '" y="' +
+              (kickTopY - 6) +
+              '" class="admin-porch-svg-label-sm">2x2</text>'
+          );
+        }
+      });
       parts.push(
         '<text x="' +
-          (x0 + drawW / 2) +
+          (sx(largest.start) + (largest.length * scale) / 2) +
           '" y="' +
           (kickTopY + (kickH * scale) / 2 + 4) +
           '" text-anchor="middle" class="admin-porch-svg-label">KICK PLATE</text>'
-      );
-      parts.push(
-        '<text x="' +
-          (x0 + 8) +
-          '" y="' +
-          (kickTopY - 6) +
-          '" class="admin-porch-svg-label-sm">2x2</text>'
       );
     }
 
@@ -320,83 +423,81 @@
       );
     }
 
-    // Door
-    if (section.door) {
-      var doorW = Math.min(DOOR_WIDTH_FT, Math.max(1.5, widthFt - 0.75));
-      var doorLeft = Math.min(0.5, Math.max(0.25, (widthFt - doorW) * 0.15));
-      if (doorLeft + doorW > widthFt - 0.25) doorLeft = Math.max(0.2, widthFt - doorW - 0.25);
-      var dx0 = sx(doorLeft);
-      var dx1 = sx(doorLeft + doorW);
-      var headerFromTop = 0.35;
-      var headerY = syFromTop(headerFromTop);
-      var doorBottom = section.kickPlate
-        ? syFromBottom(Math.min(KICK_PLATE_HEIGHT_FT, heightFt * 0.35))
-        : y1;
-      parts.push(
-        '<line x1="' +
-          dx0 +
-          '" y1="' +
-          headerY +
-          '" x2="' +
-          dx0 +
-          '" y2="' +
-          doorBottom +
-          '" stroke="#1a1a1a" stroke-width="' +
-          stroke2 +
-          '"/>'
-      );
-      parts.push(
-        '<line x1="' +
-          dx1 +
-          '" y1="' +
-          headerY +
-          '" x2="' +
-          dx1 +
-          '" y2="' +
-          doorBottom +
-          '" stroke="#1a1a1a" stroke-width="' +
-          stroke2 +
-          '"/>'
-      );
-      parts.push(
-        '<line x1="' +
-          dx0 +
-          '" y1="' +
-          headerY +
-          '" x2="' +
-          dx1 +
-          '" y2="' +
-          headerY +
-          '" stroke="#1a1a1a" stroke-width="' +
-          stroke2 +
-          '"/>'
-      );
-      // Door leaf hint
-      parts.push(
-        '<rect x="' +
-          (dx0 + 4) +
-          '" y="' +
-          (headerY + 4) +
-          '" width="' +
-          Math.max(8, dx1 - dx0 - 8) +
-          '" height="' +
-          Math.max(8, doorBottom - headerY - 8) +
-          '" fill="none" stroke="#5b6770" stroke-width="1.2" stroke-dasharray="4 3"/>'
-      );
-      parts.push(
-        '<text x="' +
-          ((dx0 + dx1) / 2) +
-          '" y="' +
-          ((headerY + doorBottom) / 2 - 4) +
-          '" text-anchor="middle" class="admin-porch-svg-label">DOOR</text>'
-      );
-      parts.push(
-        '<text x="' +
-          ((dx0 + dx1) / 2) +
-          '" y="' +
-          ((headerY + doorBottom) / 2 + 12) +
-          '" text-anchor="middle" class="admin-porch-svg-label-sm">36"</text>'
-      );
+    // Door — verticals run to the floor; kick plate stops at door framing.
+    if (doorOpenings.length) {
+      doorOpenings.forEach(function (op) {
+        var dx0 = sx(op.left);
+        var dx1 = sx(op.right);
+        var headerFromTop = 0.35;
+        var headerY = syFromTop(headerFromTop);
+        var doorBottom = y1;
+        parts.push(
+          '<line x1="' +
+            dx0 +
+            '" y1="' +
+            headerY +
+            '" x2="' +
+            dx0 +
+            '" y2="' +
+            doorBottom +
+            '" stroke="#1a1a1a" stroke-width="' +
+            stroke2 +
+            '"/>'
+        );
+        parts.push(
+          '<line x1="' +
+            dx1 +
+            '" y1="' +
+            headerY +
+            '" x2="' +
+            dx1 +
+            '" y2="' +
+            doorBottom +
+            '" stroke="#1a1a1a" stroke-width="' +
+            stroke2 +
+            '"/>'
+        );
+        parts.push(
+          '<line x1="' +
+            dx0 +
+            '" y1="' +
+            headerY +
+            '" x2="' +
+            dx1 +
+            '" y2="' +
+            headerY +
+            '" stroke="#1a1a1a" stroke-width="' +
+            stroke2 +
+            '"/>'
+        );
+        parts.push(
+          '<rect x="' +
+            (dx0 + 4) +
+            '" y="' +
+            (headerY + 4) +
+            '" width="' +
+            Math.max(8, dx1 - dx0 - 8) +
+            '" height="' +
+            Math.max(8, doorBottom - headerY - 8) +
+            '" fill="none" stroke="#5b6770" stroke-width="1.2" stroke-dasharray="4 3"/>'
+        );
+        parts.push(
+          '<text x="' +
+            ((dx0 + dx1) / 2) +
+            '" y="' +
+            ((headerY + doorBottom) / 2 - 4) +
+            '" text-anchor="middle" class="admin-porch-svg-label">DOOR</text>'
+        );
+        parts.push(
+          '<text x="' +
+            ((dx0 + dx1) / 2) +
+            '" y="' +
+            ((headerY + doorBottom) / 2 + 12) +
+            '" text-anchor="middle" class="admin-porch-svg-label-sm">' +
+            escapeXml(formatFtInDecimal(op.width)) +
+            "</text>"
+        );
+      });
     }
 
     // 1x2 perimeter (draw last so it sits on top)
@@ -828,6 +929,7 @@
       var section2x2Cuts = [];
       var door2x2Cuts = [];
       var kick2x2Cuts = [];
+      var kickSegments = [];
       var chair2x2Cuts = [];
 
       if (s.door) {
@@ -835,8 +937,18 @@
         doorCount += 1;
       }
       if (s.kickPlate) {
-        kick2x2Cuts = [width];
-        kickPlateLf += width;
+        // Kick plate never runs under doors — each wall run is a separate continuous cut.
+        var openings = getDoorOpenings(s, width);
+        kickSegments = getKickPlateSegments(width, openings);
+        kick2x2Cuts = kickSegments.map(function (seg) {
+          return seg.length;
+        });
+        var sectionKickLf = roundLf(
+          kickSegments.reduce(function (sum, seg) {
+            return sum + seg.length;
+          }, 0)
+        );
+        kickPlateLf += sectionKickLf;
       }
       if (s.chairRail) {
         chair2x2Cuts = [width];
@@ -879,6 +991,8 @@
         chairRail: s.chairRail,
         cuts1x2: section1x2Cuts,
         cuts2x2: section2x2Cuts,
+        kick2x2Cuts: kick2x2Cuts,
+        kickPlateSegments: kickSegments,
         track1x2Lf: track1x2Lf,
         door2x2Lf: door2x2Lf,
         kick2x2Lf: kick2x2Lf,
@@ -1057,7 +1171,19 @@
       add("Area", num(s.areaSqft, 1) + " sqft");
       add("1x2 cuts", formatCutList(s.cuts1x2) + " (" + num(s.track1x2Lf, 1) + " LF)");
       if (s.door) add("Door 2x2 cuts", formatCutList([s.height, s.height, DOOR_HEADER_FT]));
-      if (s.kickPlate) add("Kick plate 2x2 cut", formatCutList([s.width]));
+      if (s.kickPlate) {
+        add(
+          "Kick plate LF",
+          num(s.kick2x2Lf, 2) +
+            " LF (excludes door openings)"
+        );
+        add(
+          "Kick plate 2x2 cuts",
+          s.kick2x2Cuts && s.kick2x2Cuts.length
+            ? formatCutList(s.kick2x2Cuts)
+            : "none"
+        );
+      }
       if (s.chairRail) add("Chair rail 2x2 cut", formatCutList([s.width]));
       if (!s.door && !s.kickPlate && !s.chairRail) add("2x2 cuts", "none");
       block.appendChild(dl);
