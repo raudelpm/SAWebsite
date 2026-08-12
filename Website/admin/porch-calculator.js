@@ -12,7 +12,12 @@
   var PRICE_OVERHEAD = 200;
   var MARKUP_DIVISOR = 0.7;
   var WORKER_RATE = 0.25;
-  var DOOR_HEADER_FT = 3;
+  var DOOR_WIDTH_FT = 3; // 36"
+  var DOOR_OPENING_HEIGHT_FT = 80 / 12; // 80"
+  var DOOR_HEADER_FT = 3; // 36" header above door opening
+  var KICK_PLATE_HEIGHT_FT = 16 / 12;
+  var CHAIR_RAIL_HEIGHT_FT = 36 / 12;
+  var MIN_KICK_SEGMENT_FT = 0.05;
 
   var bootStatus = document.getElementById("adminBootStatus");
   var loginPanel = document.getElementById("adminLoginPanel");
@@ -49,10 +54,6 @@
 
   var lastTotals = null;
   var layoutTimer = null;
-  var DOOR_WIDTH_FT = 3;
-  var KICK_PLATE_HEIGHT_FT = 16 / 12;
-  var CHAIR_RAIL_HEIGHT_FT = 36 / 12;
-  var MIN_KICK_SEGMENT_FT = 0.05;
 
   if (!loginPanel || !toolPanel || !calcForm || !sectionsEl || !sectionTemplate) return;
 
@@ -108,6 +109,15 @@
       .replace(/"/g, "&quot;");
   }
 
+  function normalizeDoorPosition(pos) {
+    var p = String(pos || "")
+      .trim()
+      .toLowerCase();
+    if (p === "middle") return "center";
+    if (p === "left" || p === "center" || p === "right") return p;
+    return "";
+  }
+
   function getDoorWidthFt(section) {
     var custom = Number(section && section.doorWidthFt);
     if (Number.isFinite(custom) && custom > 0) return roundLf(custom);
@@ -116,7 +126,7 @@
 
   /**
    * Door openings in feet from the section left edge.
-   * Kick plate never continues through these openings.
+   * Requires an explicit doorPosition when Door = Yes.
    */
   function getDoorOpenings(section, widthFt) {
     var w = roundLf(widthFt);
@@ -127,9 +137,7 @@
       section.doors.forEach(function (d) {
         var doorW = Math.min(
           w,
-          roundLf(
-            Number(d && d.widthFt) > 0 ? d.widthFt : getDoorWidthFt(section)
-          )
+          roundLf(Number(d && d.widthFt) > 0 ? d.widthFt : getDoorWidthFt(section))
         );
         var left = Number(d && d.leftFt);
         if (!Number.isFinite(left) || left < 0) left = 0;
@@ -141,14 +149,12 @@
         });
       });
     } else if (section.door) {
+      var pos = normalizeDoorPosition(section.doorPosition);
+      if (!pos) return [];
       var doorW = Math.min(w, getDoorWidthFt(section));
       var left = 0;
-      var pos = section.doorPosition || "left";
-      if (pos === "center" || pos === "middle") {
-        left = Math.max(0, (w - doorW) / 2);
-      } else if (pos === "right") {
-        left = Math.max(0, w - doorW);
-      }
+      if (pos === "center") left = Math.max(0, (w - doorW) / 2);
+      else if (pos === "right") left = Math.max(0, w - doorW);
       openings.push({
         left: roundLf(left),
         width: doorW,
@@ -271,6 +277,16 @@
         (index + 1) +
         "</h3>" +
         '<p class="admin-porch-hint">Enter width and height to preview this section.</p>' +
+        "</div>"
+      );
+    }
+    if (section.door && !normalizeDoorPosition(section.doorPosition)) {
+      return (
+        '<div class="admin-porch-drawing-card">' +
+        "<h3>SECTION " +
+        (index + 1) +
+        "</h3>" +
+        '<p class="admin-porch-hint">Select Door Position (Left / Center / Right) to preview the door layout.</p>' +
         "</div>"
       );
     }
@@ -423,23 +439,23 @@
       );
     }
 
-    // Door — verticals run to the floor; kick plate stops at door framing.
+    // Door — verticals floor-to-top; opening is 36" × 80"; header at 80" AFF.
     if (doorOpenings.length) {
       doorOpenings.forEach(function (op) {
         var dx0 = sx(op.left);
         var dx1 = sx(op.right);
-        var headerFromTop = 0.35;
-        var headerY = syFromTop(headerFromTop);
-        var doorBottom = y1;
+        var openingH = Math.min(DOOR_OPENING_HEIGHT_FT, Math.max(1, heightFt - 0.05));
+        var headerY = syFromBottom(openingH);
+        // Full-height vertical 2x2 framing members
         parts.push(
           '<line x1="' +
             dx0 +
             '" y1="' +
-            headerY +
+            y0 +
             '" x2="' +
             dx0 +
             '" y2="' +
-            doorBottom +
+            y1 +
             '" stroke="#1a1a1a" stroke-width="' +
             stroke2 +
             '"/>'
@@ -448,15 +464,16 @@
           '<line x1="' +
             dx1 +
             '" y1="' +
-            headerY +
+            y0 +
             '" x2="' +
             dx1 +
             '" y2="' +
-            doorBottom +
+            y1 +
             '" stroke="#1a1a1a" stroke-width="' +
             stroke2 +
             '"/>'
         );
+        // 36" header at top of 80" door opening
         parts.push(
           '<line x1="' +
             dx0 +
@@ -470,6 +487,7 @@
             stroke2 +
             '"/>'
         );
+        // Door leaf (opening only — not to the top of the section)
         parts.push(
           '<rect x="' +
             (dx0 + 4) +
@@ -478,25 +496,32 @@
             '" width="' +
             Math.max(8, dx1 - dx0 - 8) +
             '" height="' +
-            Math.max(8, doorBottom - headerY - 8) +
+            Math.max(8, y1 - headerY - 8) +
             '" fill="none" stroke="#5b6770" stroke-width="1.2" stroke-dasharray="4 3"/>'
         );
         parts.push(
           '<text x="' +
             ((dx0 + dx1) / 2) +
             '" y="' +
-            ((headerY + doorBottom) / 2 - 4) +
+            ((headerY + y1) / 2 - 6) +
             '" text-anchor="middle" class="admin-porch-svg-label">DOOR</text>'
         );
         parts.push(
           '<text x="' +
             ((dx0 + dx1) / 2) +
             '" y="' +
-            ((headerY + doorBottom) / 2 + 12) +
-            '" text-anchor="middle" class="admin-porch-svg-label-sm">' +
-            escapeXml(formatFtInDecimal(op.width)) +
-            "</text>"
+            ((headerY + y1) / 2 + 10) +
+            '" text-anchor="middle" class="admin-porch-svg-label-sm">36" × 80"</text>'
         );
+        if (headerY - y0 > 18) {
+          parts.push(
+            '<text x="' +
+              ((dx0 + dx1) / 2) +
+              '" y="' +
+              ((y0 + headerY) / 2 + 4) +
+              '" text-anchor="middle" class="admin-porch-svg-label-sm">ABOVE DOOR</text>'
+          );
+        }
       });
     }
 
@@ -804,7 +829,6 @@
     if (bootStatus) bootStatus.hidden = true;
     loginPanel.hidden = false;
     toolPanel.hidden = true;
-    if (resultsEl) resultsEl.hidden = true;
   }
 
   function showTool(username) {
@@ -819,6 +843,7 @@
         heightFt: 8,
         heightIn: 5,
         door: true,
+        doorPosition: "left",
         kickPlate: false,
         chairRail: false,
       });
@@ -845,13 +870,33 @@
       heightFt: d.heightFt != null ? d.heightFt : 8,
       heightIn: d.heightIn != null ? d.heightIn : 0,
       door: d.door ? "yes" : "no",
+      doorPosition: normalizeDoorPosition(d.doorPosition) || "",
       kickPlate: d.kickPlate ? "yes" : "no",
       chairRail: d.chairRail ? "yes" : "no",
     };
     Object.keys(map).forEach(function (key) {
       var el = card.querySelector('[data-field="' + key + '"]');
-      if (el) el.value = map[key];
+      if (!el) return;
+      if (key === "doorPosition") {
+        if (map[key]) el.value = map[key];
+        else el.selectedIndex = 0;
+      } else {
+        el.value = map[key];
+      }
     });
+    syncDoorPositionVisibility(card);
+  }
+
+  function syncDoorPositionVisibility(card) {
+    var doorEl = card.querySelector('[data-field="door"]');
+    var wrap = card.querySelector("[data-door-position-wrap]");
+    var posEl = card.querySelector('[data-field="doorPosition"]');
+    if (!wrap || !doorEl) return;
+    var on = doorEl.value === "yes";
+    wrap.hidden = !on;
+    if (!on && posEl) {
+      posEl.selectedIndex = 0;
+    }
   }
 
   function readSectionCard(card) {
@@ -859,12 +904,14 @@
       var el = card.querySelector('[data-field="' + field + '"]');
       return el ? el.value : "";
     }
+    var doorOn = val("door") === "yes";
     return {
       widthFt: Number(val("widthFt")) || 0,
       widthIn: Number(val("widthIn")) || 0,
       heightFt: Number(val("heightFt")) || 0,
       heightIn: Number(val("heightIn")) || 0,
-      door: val("door") === "yes",
+      door: doorOn,
+      doorPosition: doorOn ? normalizeDoorPosition(val("doorPosition")) : "",
       kickPlate: val("kickPlate") === "yes",
       chairRail: val("chairRail") === "yes",
     };
@@ -987,6 +1034,7 @@
         height: height,
         areaSqft: areaSqft,
         door: s.door,
+        doorPosition: normalizeDoorPosition(s.doorPosition) || "",
         kickPlate: s.kickPlate,
         chairRail: s.chairRail,
         cuts1x2: section1x2Cuts,
@@ -1170,7 +1218,14 @@
       add("Opening", num(s.width, 2) + " ft W × " + num(s.height, 2) + " ft H");
       add("Area", num(s.areaSqft, 1) + " sqft");
       add("1x2 cuts", formatCutList(s.cuts1x2) + " (" + num(s.track1x2Lf, 1) + " LF)");
-      if (s.door) add("Door 2x2 cuts", formatCutList([s.height, s.height, DOOR_HEADER_FT]));
+      if (s.door) {
+        add(
+          "Door",
+          "36\" × 80\" · Position: " +
+            (normalizeDoorPosition(s.doorPosition) || "—")
+        );
+        add("Door 2x2 cuts", formatCutList([s.height, s.height, DOOR_HEADER_FT]));
+      }
       if (s.kickPlate) {
         add(
           "Kick plate LF",
@@ -1254,7 +1309,20 @@
     resultsBody.appendChild(total);
 
     resultsEl.hidden = false;
-    resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    resultsEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function validateSections(sections) {
+    for (var i = 0; i < sections.length; i++) {
+      var s = sections[i];
+      if (toFeet(s.widthFt, s.widthIn) <= 0 || toFeet(s.heightFt, s.heightIn) <= 0) {
+        return "Section " + (i + 1) + ": enter a valid width and height.";
+      }
+      if (s.door && !normalizeDoorPosition(s.doorPosition)) {
+        return "Section " + (i + 1) + ": select Door Position (Left / Center / Right).";
+      }
+    }
+    return "";
   }
 
   function setSaveStatus(msg, isError) {
@@ -1280,12 +1348,13 @@
       heightFt: 8,
       heightIn: 5,
       door: true,
+      doorPosition: "left",
       kickPlate: false,
       chairRail: false,
     });
     lastTotals = null;
-    resultsEl.hidden = true;
-    resultsBody.innerHTML = "";
+    resultsBody.innerHTML =
+      '<p class="admin-porch-hint">Click Calculate to see pricing and cut plans.</p>';
     setSaveStatus("");
     syncDeleteVisibility();
     refreshLayout();
@@ -1442,11 +1511,9 @@
 
   async function saveEstimate() {
     var payload = buildPayload();
-    var invalid = payload.sections.some(function (s) {
-      return toFeet(s.widthFt, s.widthIn) <= 0 || toFeet(s.heightFt, s.heightIn) <= 0;
-    });
-    if (invalid) {
-      setSaveStatus("Each section needs a valid width and height.", true);
+    var err = validateSections(payload.sections);
+    if (err) {
+      setSaveStatus(err, true);
       return;
     }
     renderResults(lastTotals);
@@ -1526,8 +1593,16 @@
     }
   });
 
+  sectionsEl.addEventListener("change", function (e) {
+    var target = e.target;
+    if (!target || !target.getAttribute) return;
+    if (target.getAttribute("data-field") === "door") {
+      var card = target.closest("[data-section]");
+      if (card) syncDoorPositionVisibility(card);
+    }
+    scheduleLayoutRefresh();
+  });
   sectionsEl.addEventListener("input", scheduleLayoutRefresh);
-  sectionsEl.addEventListener("change", scheduleLayoutRefresh);
   if (titleInput) titleInput.addEventListener("input", scheduleLayoutRefresh);
   if (projectTypeInput) projectTypeInput.addEventListener("change", scheduleLayoutRefresh);
 
@@ -1552,12 +1627,12 @@
   calcForm.addEventListener("submit", function (e) {
     e.preventDefault();
     var sections = readSections();
-    var invalid = sections.some(function (s) {
-      return toFeet(s.widthFt, s.widthIn) <= 0 || toFeet(s.heightFt, s.heightIn) <= 0;
-    });
-    if (!sections.length || invalid) {
-      resultsBody.innerHTML = "<p class=\"admin-porch-hint\">Enter valid width and height for every section.</p>";
-      resultsEl.hidden = false;
+    var err = validateSections(sections);
+    if (!sections.length || err) {
+      resultsBody.innerHTML =
+        '<p class="admin-porch-hint">' +
+        escapeXml(err || "Enter valid width and height for every section.") +
+        "</p>";
       return;
     }
     lastTotals = calculateProject(sections, readScreenCost());

@@ -104,17 +104,21 @@
                         <p id="porchSaveStatus" class="form-status" role="status" aria-live="polite"></p>
                         <input type="hidden" id="porchEstimateId" value="">
                     </form>
+                </div>
 
-                    <div id="porchResults" class="admin-porch-card admin-porch-results" hidden aria-live="polite">
+                <aside class="admin-porch-aside-right" aria-label="Breakdown and layout">
+                    <div id="porchResults" class="admin-porch-card admin-porch-results" aria-live="polite">
                         <h2 class="admin-porch-results-title">Estimate breakdown</h2>
-                        <div id="porchResultsBody"></div>
+                        <div id="porchResultsBody">
+                            <p class="admin-porch-hint">Click Calculate to see pricing and cut plans.</p>
+                        </div>
                     </div>
 
                     <section id="porchLayoutPanel" class="admin-porch-card admin-porch-layout-panel" aria-label="Project layout drawings">
                         <div class="admin-porch-layout-toolbar">
                             <div>
                                 <h2 class="admin-porch-results-title">Project Layout</h2>
-                                <p class="admin-porch-hint">Shop-drawing preview generated from section dimensions and options. Updates live as you edit.</p>
+                                <p class="admin-porch-hint">Shop-drawing preview from section dimensions. Updates live as you edit.</p>
                             </div>
                             <div class="admin-porch-layout-actions">
                                 <button type="button" class="btn btn-secondary" id="porchPrintLayoutBtn">Print Layout</button>
@@ -126,7 +130,7 @@
                             <div id="porchLayoutDrawings" class="admin-porch-layout-drawings"></div>
                         </div>
                     </section>
-                </div>
+                </aside>
             </div>
         </section>
 
@@ -174,6 +178,15 @@
                     <select data-field="door">
                         <option value="no" selected>No</option>
                         <option value="yes">Yes</option>
+                    </select>
+                </div>
+                <div class="form-field" data-door-position-wrap hidden>
+                    <label>Door Position</label>
+                    <select data-field="doorPosition">
+                        <option value="" selected disabled>Select…</option>
+                        <option value="left">Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
                     </select>
                 </div>
                 <div class="form-field">

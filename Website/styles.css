@@ -7239,9 +7239,100 @@ body.page-blog-post .nav-compact {
     min-height: 100vh;
 }
 .admin-porch-main {
-    max-width: 820px;
-    padding-top: 1.5rem;
+    max-width: min(1560px, calc(100% - 2rem));
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 1.25rem;
     padding-bottom: 3rem;
+}
+.admin-porch-layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) minmax(320px, 0.95fr);
+    gap: 1rem;
+    align-items: start;
+}
+.admin-porch-aside-right {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    position: sticky;
+    top: calc(var(--nav-height, 72px) + 0.75rem);
+    max-height: calc(100vh - var(--nav-height, 72px) - 1.5rem);
+    overflow: auto;
+}
+.admin-porch-saved {
+    position: sticky;
+    top: calc(var(--nav-height, 72px) + 0.75rem);
+    max-height: calc(100vh - var(--nav-height, 72px) - 1.5rem);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.admin-porch-saved-list {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    overflow: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+}
+.admin-porch-sections {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+.admin-porch-section-svg {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    display: block;
+    background: #fff;
+}
+@media (max-width: 1199px) {
+    .admin-porch-layout {
+        grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
+    }
+    .admin-porch-aside-right {
+        grid-column: 1 / -1;
+        position: static;
+        max-height: none;
+        overflow: visible;
+    }
+    .admin-porch-saved {
+        position: static;
+        max-height: none;
+    }
+    .admin-porch-saved-list {
+        max-height: 280px;
+    }
+}
+@media (max-width: 900px) {
+    .admin-porch-layout {
+        grid-template-columns: 1fr;
+    }
+    .admin-porch-sections {
+        grid-template-columns: 1fr;
+    }
+    .admin-porch-meta-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .admin-porch-grid,
+    .admin-porch-meta-grid {
+        grid-template-columns: 1fr;
+    }
+    .admin-porch-dl {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+    }
+    .admin-porch-dl dd {
+        margin-bottom: 0.55rem;
+    }
 }
 .admin-porch-boot {
     text-align: center;
@@ -7349,12 +7440,6 @@ body.page-blog-post .nav-compact {
     gap: 0.75rem;
     margin-top: 0.5rem;
 }
-.admin-porch-layout {
-    display: grid;
-    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-    gap: 1rem;
-    align-items: start;
-}
 .admin-porch-saved-head {
     display: flex;
     align-items: center;
@@ -7365,15 +7450,6 @@ body.page-blog-post .nav-compact {
 .admin-porch-saved-head h2 {
     margin: 0;
     font-size: 1rem;
-}
-.admin-porch-saved-list {
-    list-style: none;
-    margin: 0.75rem 0 0;
-    padding: 0;
-    display: grid;
-    gap: 0.5rem;
-    max-height: 70vh;
-    overflow: auto;
 }
 .admin-porch-saved-item {
     width: 100%;
@@ -7409,10 +7485,6 @@ body.page-blog-post .nav-compact {
 }
 .admin-porch-meta-grid .form-field--full {
     grid-column: 1 / -1;
-}
-.admin-porch-sections {
-    display: grid;
-    gap: 1rem;
 }
 .admin-porch-section {
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -7555,13 +7627,6 @@ body.page-blog-post .nav-compact {
     color: rgba(0, 0, 0, 0.55);
     font-size: 0.88rem;
 }
-.admin-porch-section-svg {
-    width: 100%;
-    max-width: 560px;
-    height: auto;
-    display: block;
-    background: #fff;
-}
 .admin-porch-svg-label {
     font-size: 12px;
     font-weight: 700;
@@ -7627,26 +7692,12 @@ body.page-blog-post .nav-compact {
     padding-top: 0.55rem;
     margin-top: 0.15rem;
 }
-@media (max-width: 900px) {
-    .admin-porch-layout {
-        grid-template-columns: 1fr;
-    }
-    .admin-porch-saved-list {
-        max-height: 240px;
-    }
+.admin-porch-aside-right .admin-porch-card,
+.admin-porch-saved.admin-porch-card {
+    margin-bottom: 0;
 }
-@media (max-width: 640px) {
-    .admin-porch-grid,
-    .admin-porch-meta-grid {
-        grid-template-columns: 1fr;
-    }
-    .admin-porch-dl {
-        grid-template-columns: 1fr;
-        gap: 0.15rem;
-    }
-    .admin-porch-dl dd {
-        margin-bottom: 0.55rem;
-    }
+.admin-porch-results {
+    margin-bottom: 0;
 }
 
 @media (max-width: 768px) {

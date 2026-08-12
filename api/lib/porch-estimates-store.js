@@ -17,12 +17,21 @@ function newId() {
 
 function normalizeSection(raw) {
   const s = raw && typeof raw === "object" ? raw : {};
+  const door = Boolean(s.door);
+  let doorPosition = String(s.doorPosition || "")
+    .trim()
+    .toLowerCase();
+  if (doorPosition === "middle") doorPosition = "center";
+  if (doorPosition !== "left" && doorPosition !== "center" && doorPosition !== "right") {
+    doorPosition = "";
+  }
   return {
     widthFt: Math.max(0, Number(s.widthFt) || 0),
     widthIn: Math.max(0, Number(s.widthIn) || 0),
     heightFt: Math.max(0, Number(s.heightFt) || 0),
     heightIn: Math.max(0, Number(s.heightIn) || 0),
-    door: Boolean(s.door),
+    door,
+    doorPosition: door ? doorPosition : "",
     kickPlate: Boolean(s.kickPlate),
     chairRail: Boolean(s.chairRail),
   };
@@ -39,6 +48,15 @@ export function normalizeEstimateInput(body, { existing, username } = {}) {
 
   if (!sections.length) {
     return { ok: false, error: "Add at least one section with width and height." };
+  }
+
+  for (let i = 0; i < sections.length; i++) {
+    if (sections[i].door && !sections[i].doorPosition) {
+      return {
+        ok: false,
+        error: `Section ${i + 1}: select Door Position (Left / Center / Right).`,
+      };
+    }
   }
 
   const title =
