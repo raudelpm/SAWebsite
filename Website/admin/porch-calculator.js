@@ -1094,10 +1094,10 @@
       PRICE_OVERHEAD +
       screenCost;
 
-    // Labor is added BEFORE markup: (Material + Worker Pay) / 0.70
-    var workerPay = materialCost * WORKER_RATE;
-    var costPlusLabor = materialCost + workerPay;
-    var calculatedPrice = costPlusLabor / MARKUP_DIVISOR;
+    // Pricing order: Material → Base (÷ 0.70) → Worker Pay (25% of Base) → Final = Base + Worker
+    var basePrice = materialCost / MARKUP_DIVISOR;
+    var workerPay = basePrice * WORKER_RATE;
+    var calculatedPrice = basePrice + workerPay;
 
     return {
       sections: sectionResults,
@@ -1121,8 +1121,8 @@
       overhead: PRICE_OVERHEAD,
       screenCost: screenCost,
       materialCost: materialCost,
+      basePrice: basePrice,
       workerPay: workerPay,
-      costPlusLabor: costPlusLabor,
       calculatedPrice: calculatedPrice,
       hasOversizedCuts: pack1x2.exceedsStock || pack2x2.exceedsStock,
     };
@@ -1337,10 +1337,10 @@
     trow("Screws & misc", money(r.screws));
     trow("Overhead", money(r.overhead));
     trow("Screen cost", money(r.screenCost || 0));
-    trow("Material cost", money(r.materialCost), true);
-    trow("Worker pay (25%)", money(r.workerPay), true);
-    trow("Cost + labor", money(r.costPlusLabor), true);
-    trow("Calculated price (÷ 0.70)", money(r.calculatedPrice), true);
+    trow("Material Cost", money(r.materialCost), true);
+    trow("Base Price (Material Cost ÷ 0.70)", money(r.basePrice), true);
+    trow("Worker Pay (25% of Base Price)", money(r.workerPay), true);
+    trow("Calculated Price", money(r.calculatedPrice), true);
     total.appendChild(tdl);
     resultsBody.appendChild(total);
 
@@ -1459,8 +1459,8 @@
         overhead: totals.overhead,
         screenCost: totals.screenCost,
         materialCost: totals.materialCost,
+        basePrice: totals.basePrice,
         workerPay: totals.workerPay,
-        costPlusLabor: totals.costPlusLabor,
         calculatedPrice: totals.calculatedPrice,
         hasOversizedCuts: totals.hasOversizedCuts,
         sections: totals.sections,
