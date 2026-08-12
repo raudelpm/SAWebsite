@@ -11,8 +11,9 @@
   var PRICE_SCREWS = 100;
   var PRICE_OVERHEAD = 200;
   var MARKUP_DIVISOR = 0.7;
-  // Calibrated so Final Price already includes worker pay (e.g. $1,060 materials → $200 labor → $1,800 price).
-  var WORKER_RATE = 0.1886792453;
+  // Calibrated so $860 materials → $400 total labor (2×$200) → $1,800 final (labor included).
+  // Total Worker Pay = Material Cost × (20/43)
+  var WORKER_RATE = 20 / 43;
   var DOOR_WIDTH_FT = 3; // 36"
   var DOOR_OPENING_HEIGHT_FT = 80 / 12; // 80"
   var DOOR_HEADER_FT = 3; // 36" header above door opening
@@ -1095,8 +1096,10 @@
       PRICE_OVERHEAD +
       screenCost;
 
-    // Worker pay is included inside the final price: (Material + Worker) / 0.70
+    // Worker pay is included inside the final price: (Material + Total Worker Pay) / 0.70
+    // Total covers 2 workers (e.g. $1,800 final → $200 each / $400 total).
     var workerPay = materialCost * WORKER_RATE;
+    var payPerWorker = workerPay / 2;
     var costPlusLabor = materialCost + workerPay;
     var calculatedPrice = costPlusLabor / MARKUP_DIVISOR;
 
@@ -1123,6 +1126,7 @@
       screenCost: screenCost,
       materialCost: materialCost,
       workerPay: workerPay,
+      payPerWorker: payPerWorker,
       costPlusLabor: costPlusLabor,
       calculatedPrice: calculatedPrice,
       hasOversizedCuts: pack1x2.exceedsStock || pack2x2.exceedsStock,
@@ -1339,7 +1343,8 @@
     trow("Overhead", money(r.overhead));
     trow("Screen cost", money(r.screenCost || 0));
     trow("Material Cost", money(r.materialCost), true);
-    trow("Worker Pay", money(r.workerPay), true);
+    trow("Worker Pay — Total (2 workers)", money(r.workerPay), true);
+    trow("Pay Per Worker", money(r.payPerWorker), true);
     trow("Cost + Labor", money(r.costPlusLabor), true);
     trow("Calculated Price (÷ 0.70)", money(r.calculatedPrice), true);
     total.appendChild(tdl);
@@ -1461,6 +1466,7 @@
         screenCost: totals.screenCost,
         materialCost: totals.materialCost,
         workerPay: totals.workerPay,
+        payPerWorker: totals.payPerWorker,
         costPlusLabor: totals.costPlusLabor,
         calculatedPrice: totals.calculatedPrice,
         hasOversizedCuts: totals.hasOversizedCuts,
