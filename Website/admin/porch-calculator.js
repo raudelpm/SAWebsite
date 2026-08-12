@@ -53,6 +53,7 @@
   var layoutSheet = document.getElementById("porchLayoutSheet");
   var printLayoutBtn = document.getElementById("porchPrintLayoutBtn");
   var downloadLayoutBtn = document.getElementById("porchDownloadLayoutBtn");
+  var downloadMaterialBtn = document.getElementById("porchDownloadMaterialBtn");
 
   var lastTotals = null;
   var layoutTimer = null;
@@ -689,7 +690,7 @@
     var id = estimateIdInput && estimateIdInput.value ? estimateIdInput.value : "";
     var title = titleInput && titleInput.value.trim() ? titleInput.value.trim() : "Untitled estimate";
     var projectType =
-      projectTypeInput && projectTypeInput.value === "back" ? "Back porch" : "Front porch";
+      projectTypeInput && projectTypeInput.value === "back" ? "Back Porch" : "Front Porch";
     var today = new Date();
     var dateStr = today.toLocaleDateString("en-US", {
       year: "numeric",
@@ -776,6 +777,155 @@
     }, 250);
   }
 
+  function slugifyFilename(name) {
+    return String(name || "estimate")
+      .trim()
+      .replace(/['"]/g, "")
+      .replace(/[^a-zA-Z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .replace(/-{2,}/g, "-") || "estimate";
+  }
+
+  function escapePdfText(s) {
+    return String(s)
+      .replace(/\\/g, "\\\\")
+      .replace(/\(/g, "\\(")
+      .replace(/\)/g, "\\)");
+  }
+
+  function buildMaterialListData() {
+    var sections = readSections();
+    var err = validateSections(sections);
+    if (err) return { ok: false, error: err };
+    var totals = calculateProject(sections, readScreenCost());
+    lastTotals = totals;
+    var meta = getLayoutMeta();
+    return {
+      ok: true,
+      estimateName: meta.customerName || "Untitled estimate",
+      projectType: meta.projectType,
+      date: meta.date,
+      sticks1x2: totals.track1x2Sticks || 0,
+      sticks2x2: totals.track2x2Sticks || 0,
+      doors: totals.doorCount || 0,
+      zBar: totals.doorCount || 0,
+      kickPlateLf: totals.kickPlateLf || 0,
+      kickMoldingLf: totals.kickPlateLf || 0,
+    };
+  }
+
+  /**
+   * Minimal text PDF (no cut plans / prices) for purchasing/staging materials.
+   */
+  function createMaterialListPdfBlob(data) {
+    var lines = [
+      { text: "SCREEN ARMORS", size: 20 },
+      { text: "MATERIAL LIST", size: 16 },
+      { text: "", size: 12 },
+      { text: "Estimate Name: " + data.estimateName, size: 12 },
+      { text: "Project: " + data.projectType, size: 12 },
+      { text: "Date: " + data.date, size: 12 },
+      { text: "", size: 12 },
+      { text: "MATERIALS", size: 14 },
+      { text: "", size: 12 },
+      {
+        text: "1x2 Aluminum — " + data.sticks1x2 + " sticks (24 ft)",
+        size: 12,
+      },
+      {
+        text: "2x2 Aluminum — " + data.sticks2x2 + " sticks (24 ft)",
+        size: 12,
+      },
+      { text: "Screen Door — Qty: " + data.doors, size: 12 },
+      { text: "Z-Bar — Qty: " + data.zBar, size: 12 },
+      {
+        text:
+          "Kick Plate — " +
+          num(data.kickPlateLf, 2) +
+          " Linear Feet",
+        size: 12,
+      },
+      {
+        text:
+          "Kick Plate Molding — " +
+          num(data.kickMoldingLf, 2) +
+          " Linear Feet",
+        size: 12,
+      },
+      { text: "Screen — Verify manually", size: 12 },
+      { text: "Screws & Misc — 1 project set", size: 12 },
+    ];
+
+    var content = ["BT", "/F1 12 Tf", "50 760 Td"];
+    var first = true;
+    lines.forEach(function (line) {
+      if (!first) content.push("0 -20 Td");
+      first = false;
+      content.push("/F1 " + line.size + " Tf");
+      content.push("(" + escapePdfText(line.text) + ") Tj");
+    });
+    content.push("ET");
+    var stream = content.join("\n");
+
+    var objects = [];
+    objects.push("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+    objects.push("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+    objects.push(
+      "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n"
+    );
+    objects.push(
+      "4 0 obj\n<< /Length " + stream.length + " >>\nstream\n" + stream + "\nendstream\nendobj\n"
+    );
+    objects.push("5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n");
+
+    var pdf = "%PDF-1.4\n";
+    var offsets = [0];
+    objects.forEach(function (obj) {
+      offsets.push(pdf.length);
+      pdf += obj;
+    });
+    var xrefPos = pdf.length;
+    pdf += "xref\n0 " + (objects.length + 1) + "\n";
+    pdf += "0000000000 65535 f \n";
+    for (var i = 1; i < offsets.length; i++) {
+      pdf += String(offsets[i]).padStart(10, "0") + " 00000 n \n";
+    }
+    pdf +=
+      "trailer\n<< /Size " +
+      (objects.length + 1) +
+      " /Root 1 0 R >>\nstartxref\n" +
+      xrefPos +
+      "\n%%EOF";
+
+    return new Blob([pdf], { type: "application/pdf" });
+  }
+
+  function downloadMaterialList() {
+    var data = buildMaterialListData();
+    if (!data.ok) {
+      setSaveStatus(data.error || "Fix section inputs before downloading the material list.", true);
+      return;
+    }
+    try {
+      var blob = createMaterialListPdfBlob(data);
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = slugifyFilename(data.estimateName) + "-Material-List.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () {
+        URL.revokeObjectURL(url);
+      }, 1000);
+      setSaveStatus("Material list downloaded.");
+      // Refresh breakdown with the same totals used for stick counts.
+      renderResults(lastTotals);
+    } catch (err) {
+      setSaveStatus("Could not create the material list PDF.", true);
+    }
+  }
+
   function downloadLayout() {
     refreshLayout();
     if (!layoutSheet) return;
@@ -831,12 +981,9 @@
     var blob = new Blob([svgDoc], { type: "image/svg+xml;charset=utf-8" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
-    var safeName = (meta.customerName || "porch-layout")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
+    var safeName = slugifyFilename(meta.customerName || "porch-layout");
     a.href = url;
-    a.download = (safeName || "porch-layout") + "-layout.svg";
+    a.download = safeName + "-layout.svg";
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1686,6 +1833,7 @@
 
   if (printLayoutBtn) printLayoutBtn.addEventListener("click", printLayout);
   if (downloadLayoutBtn) downloadLayoutBtn.addEventListener("click", downloadLayout);
+  if (downloadMaterialBtn) downloadMaterialBtn.addEventListener("click", downloadMaterialList);
 
   async function checkSession() {
     try {
