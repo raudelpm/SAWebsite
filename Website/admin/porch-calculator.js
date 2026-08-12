@@ -169,9 +169,10 @@
   }
 
   /**
-   * Continuous kick-plate / kick-plate-2x2 wall segments, excluding door openings.
+   * Continuous horizontal wall runs (kick plate / chair rail), excluding door openings.
+   * Each returned segment is one continuous 2x2 cut — never spliced across a door.
    */
-  function getKickPlateSegments(widthFt, openings) {
+  function getHorizontalSegmentsExcludingDoors(widthFt, openings) {
     var w = roundLf(widthFt);
     if (w <= 0) return [];
     var sorted = (openings || []).slice().sort(function (a, b) {
@@ -202,6 +203,14 @@
       });
     }
     return segments;
+  }
+
+  function getKickPlateSegments(widthFt, openings) {
+    return getHorizontalSegmentsExcludingDoors(widthFt, openings);
+  }
+
+  function getChairRailSegments(widthFt, openings) {
+    return getHorizontalSegmentsExcludingDoors(widthFt, openings);
   }
 
   /**
@@ -409,7 +418,7 @@
       );
     }
 
-    // Chair rail
+    // Chair rail — never continues through door openings; each wall run is its own segment.
     if (section.chairRail) {
       var railFromBottom = Math.min(CHAIR_RAIL_HEIGHT_FT, heightFt * 0.55);
       if (section.kickPlate) {
@@ -417,26 +426,35 @@
       }
       railFromBottom = Math.min(railFromBottom, heightFt - 0.5);
       var railY = syFromBottom(railFromBottom);
-      parts.push(
-        '<line x1="' +
-          x0 +
-          '" y1="' +
-          railY +
-          '" x2="' +
-          x1 +
-          '" y2="' +
-          railY +
-          '" stroke="#1a1a1a" stroke-width="' +
-          stroke2 +
-          '"/>'
-      );
-      parts.push(
-        '<text x="' +
-          (x0 + drawW / 2) +
-          '" y="' +
-          (railY - 8) +
-          '" text-anchor="middle" class="admin-porch-svg-label-sm">CHAIR RAIL — 2x2</text>'
-      );
+      var chairSegments = getChairRailSegments(widthFt, doorOpenings);
+      var largestChair = chairSegments[0] || null;
+      chairSegments.forEach(function (seg) {
+        if (seg.length > largestChair.length) largestChair = seg;
+        var segX = sx(seg.start);
+        var segW = Math.max(1, seg.length * scale);
+        parts.push(
+          '<line x1="' +
+            segX +
+            '" y1="' +
+            railY +
+            '" x2="' +
+            (segX + segW) +
+            '" y2="' +
+            railY +
+            '" stroke="#1a1a1a" stroke-width="' +
+            stroke2 +
+            '"/>'
+        );
+      });
+      if (largestChair && largestChair.length >= 1.5) {
+        parts.push(
+          '<text x="' +
+            (sx(largestChair.start) + (largestChair.length * scale) / 2) +
+            '" y="' +
+            (railY - 8) +
+            '" text-anchor="middle" class="admin-porch-svg-label-sm">CHAIR RAIL — 2x2</text>'
+        );
+      }
     }
 
     // Door — verticals floor-to-top; opening is 36" × 80"; header at 80" AFF.
@@ -978,14 +996,15 @@
       var kick2x2Cuts = [];
       var kickSegments = [];
       var chair2x2Cuts = [];
+      var chairSegments = [];
 
       if (s.door) {
         door2x2Cuts = [height, height, DOOR_HEADER_FT];
         doorCount += 1;
       }
+      var openings = s.door || s.kickPlate || s.chairRail ? getDoorOpenings(s, width) : [];
       if (s.kickPlate) {
         // Kick plate never runs under doors — each wall run is a separate continuous cut.
-        var openings = getDoorOpenings(s, width);
         kickSegments = getKickPlateSegments(width, openings);
         kick2x2Cuts = kickSegments.map(function (seg) {
           return seg.length;
@@ -998,7 +1017,11 @@
         kickPlateLf += sectionKickLf;
       }
       if (s.chairRail) {
-        chair2x2Cuts = [width];
+        // Chair rail never runs through doors — each wall run is a separate continuous cut.
+        chairSegments = getChairRailSegments(width, openings);
+        chair2x2Cuts = chairSegments.map(function (seg) {
+          return seg.length;
+        });
       }
 
       section2x2Cuts = door2x2Cuts.concat(kick2x2Cuts, chair2x2Cuts);
@@ -1041,6 +1064,8 @@
         cuts2x2: section2x2Cuts,
         kick2x2Cuts: kick2x2Cuts,
         kickPlateSegments: kickSegments,
+        chair2x2Cuts: chair2x2Cuts,
+        chairRailSegments: chairSegments,
         track1x2Lf: track1x2Lf,
         door2x2Lf: door2x2Lf,
         kick2x2Lf: kick2x2Lf,
@@ -1239,7 +1264,18 @@
             : "none"
         );
       }
-      if (s.chairRail) add("Chair rail 2x2 cut", formatCutList([s.width]));
+      if (s.chairRail) {
+        add(
+          "Chair rail LF",
+          num(s.chair2x2Lf, 2) + " LF (excludes door openings)"
+        );
+        add(
+          "Chair rail 2x2 cuts",
+          s.chair2x2Cuts && s.chair2x2Cuts.length
+            ? formatCutList(s.chair2x2Cuts)
+            : "none"
+        );
+      }
       if (!s.door && !s.kickPlate && !s.chairRail) add("2x2 cuts", "none");
       block.appendChild(dl);
       resultsBody.appendChild(block);
