@@ -7543,9 +7543,6 @@ body.page-blog-post .nav-compact {
     margin-bottom: 0;
     min-width: 0;
 }
-.admin-porch-frame-span {
-    grid-column: 1 / -1;
-}
 .admin-porch-form .admin-porch-frame-grid select {
     padding: 0.5rem 0.65rem;
 }

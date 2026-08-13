@@ -142,17 +142,6 @@
     return MEMBER_DEFAULT;
   }
 
-  function memberRank(size) {
-    if (size === "2x2") return 3;
-    if (size === "1x2") return 2;
-    if (size === "1x1") return 1;
-    return 0;
-  }
-
-  function largerMember(a, b) {
-    return memberRank(a) >= memberRank(b) ? a : b;
-  }
-
   var MEMBER_FLEX = "1x1/2";
 
   function memberStrokeWidth(size) {
@@ -179,7 +168,6 @@
       base += " · T " + formatMemberShort(normalizeMember(section.topMember));
     }
     base += " · B " + formatMemberShort(normalizeMember(section.bottomMember));
-    if (isSharePostWithNext(section)) base += " · shared post with next";
     return base;
   }
 
@@ -315,11 +303,6 @@
     );
   }
 
-  function isSharePostWithNext(section) {
-    var v = section && section.sharePostWithNext;
-    return v === true || v === "yes" || v === "true";
-  }
-
   function isArchSection(section) {
     var v = section && section.openingShape;
     return v === "arch" || v === true;
@@ -380,8 +363,7 @@
 
   /**
    * Frame/post cuts per section. Each opening is an independent concrete frame
-   * with its own left and right posts. A vertical post is shared with the next
-   * opening only when sharePostWithNext is explicitly enabled.
+   * with its own left and right posts. Adjacent sections never share members.
    */
   function getSectionFrameCuts(sectionsInput) {
     var n = (sectionsInput || []).length;
@@ -401,8 +383,6 @@
         cutsFlex: [],
         archRiseFt: 0,
         flexLf: 0,
-        sharedLeftWith: 0,
-        sharedRightWith: 0,
       });
     }
 
@@ -437,26 +417,8 @@
 
       if (!isArch) addCut(i, top, width);
       addCut(i, bottom, width);
-
-      var prevShares = i > 0 && isSharePostWithNext(sectionsInput[i - 1]);
-      var shareWithNext = isSharePostWithNext(s) && i < n - 1;
-
-      if (prevShares) {
-        out[i].sharedLeftWith = i;
-      } else {
-        addCut(i, left, straightH);
-      }
-
-      if (shareWithNext) {
-        var nextWidth = roundLf(
-          toFeet(sectionsInput[i + 1].widthFt, sectionsInput[i + 1].widthIn)
-        );
-        var nextLeft = getEffectiveLeftMember(sectionsInput[i + 1], nextWidth);
-        out[i].sharedRightWith = i + 2;
-        addCut(i, largerMember(right, nextLeft), straightH);
-      } else {
-        addCut(i, right, straightH);
-      }
+      addCut(i, left, straightH);
+      addCut(i, right, straightH);
     }
     return out;
   }
@@ -619,7 +581,7 @@
     };
   }
 
-  function buildSectionSvg(section, index, allSections) {
+  function buildSectionSvg(section, index) {
     var widthFt = roundLf(toFeet(section.widthFt, section.widthIn));
     var straightH = getStraightHeightFt(section);
     var isArch = isArchSection(section);
@@ -669,9 +631,6 @@
         " center"
       : formatFtInParts(section.widthFt, section.widthIn) + " W × " + formatFtInParts(section.heightFt, section.heightIn) + " H";
     var memberSummary = formatMemberSummary(section);
-    var allList = allSections || [];
-    var prevShares = index > 0 && isSharePostWithNext(allList[index - 1]);
-    var sharesNext = isSharePostWithNext(section) && index < allList.length - 1;
     var leftMember = normalizeMember(section.leftMember);
     var rightMember = normalizeMember(section.rightMember);
     var topMember = isArch ? MEMBER_NONE : normalizeMember(section.topMember);
@@ -733,7 +692,8 @@
         "</style>"
     );
 
-    // Screen fill
+    // Screen fill. SVG Y increases downward, so sweep-flag 1 draws the circular
+    // arc UP from the straight-height chord toward Center Height (y0).
     if (isArch) {
       var rPx = ((riseFt * riseFt + (widthFt / 2) * (widthFt / 2)) / (2 * riseFt)) * scale;
       var largeArc = riseFt > widthFt / 2 ? 1 : 0;
@@ -752,7 +712,7 @@
         rPx +
         " 0 " +
         largeArc +
-        " 0 " +
+        " 1 " +
         x1 +
         " " +
         yFrameTop +
@@ -1043,7 +1003,7 @@
           rOutline +
           " 0 " +
           largeOutline +
-          " 0 " +
+          " 1 " +
           x1 +
           " " +
           yFrameTop +
@@ -1080,7 +1040,7 @@
     }
 
     // Frame / post members (overall W×H stay the same; thickness is visual only)
-    function drawPerimeterMember(size, edge, xA, yA, xB, yB, labelX, labelY, rotate, skipLabel, extraLabel) {
+    function drawPerimeterMember(size, edge, xA, yA, xB, yB, labelX, labelY, rotate, skipLabel) {
       var sw = memberStrokeWidth(size);
       if (!sw) return;
       parts.push(
@@ -1100,11 +1060,9 @@
       if (skipLabel) return;
       if ((edge === "top" || edge === "bottom") && drawW < 48) return;
       if ((edge === "left" || edge === "right") && drawH < 56) return;
-      var text = formatMemberLabel(size, compact);
-      if (extraLabel) text += compact ? "*" : extraLabel;
-      appendShopLabel(parts, labelX, labelY, text, {
+      appendShopLabel(parts, labelX, labelY, formatMemberLabel(size, compact), {
         rotate: rotate,
-        size: extraLabel && !compact ? 7.5 : 8.5,
+        size: 8.5,
       });
     }
     var leftLabelSize = doorTouchesLeft ? getEffectiveLeftMember(section, widthFt) : leftMember;
@@ -1120,8 +1078,7 @@
       x0 + 11,
       sideLabelY,
       true,
-      false,
-      prevShares ? " shared" : ""
+      false
     );
     drawPerimeterMember(
       rightLabelSize,
@@ -1133,8 +1090,7 @@
       x1 - 11,
       sideLabelY,
       true,
-      false,
-      sharesNext ? " shared" : ""
+      false
     );
     if (isArch) {
       var rFlex = ((riseFt * riseFt + (widthFt / 2) * (widthFt / 2)) / (2 * riseFt)) * scale;
@@ -1151,7 +1107,7 @@
           rFlex +
           " 0 " +
           largeFlex +
-          " 0 " +
+          " 1 " +
           x1 +
           " " +
           yFrameTop +
@@ -1499,7 +1455,7 @@
     }
     layoutDrawings.innerHTML = sections
       .map(function (s, i) {
-        return buildSectionSvg(s, i, sections);
+        return buildSectionSvg(s, i);
       })
       .join("");
   }
@@ -1861,7 +1817,6 @@
         rightMember: MEMBER_DEFAULT,
         topMember: MEMBER_DEFAULT,
         bottomMember: MEMBER_DEFAULT,
-        sharePostWithNext: false,
         openingShape: "rectangle",
         centerHeightFt: 10,
         centerHeightIn: 0,
@@ -1896,7 +1851,6 @@
       rightMember: memberFromData(d, "rightMember"),
       topMember: memberFromData(d, "topMember"),
       bottomMember: memberFromData(d, "bottomMember"),
-      sharePostWithNext: isSharePostWithNext(d) ? "yes" : "no",
       openingShape: isArchSection(d) ? "arch" : "rectangle",
       centerHeightFt: d.centerHeightFt != null ? d.centerHeightFt : 10,
       centerHeightIn: d.centerHeightIn != null ? d.centerHeightIn : 0,
@@ -1973,7 +1927,6 @@
       rightMember: normalizeMember(val("rightMember") || MEMBER_DEFAULT),
       topMember: normalizeMember(val("topMember") || MEMBER_DEFAULT),
       bottomMember: normalizeMember(val("bottomMember") || MEMBER_DEFAULT),
-      sharePostWithNext: val("sharePostWithNext") === "yes",
     };
   }
 
@@ -2048,8 +2001,6 @@
         cutsFlex: [],
         archRiseFt: 0,
         flexLf: 0,
-        sharedLeftWith: 0,
-        sharedRightWith: 0,
       };
 
       var section1x1Cuts = frame.cuts1x1.slice();
@@ -2140,8 +2091,6 @@
         rightMember: frame.rightMember,
         topMember: frame.topMember,
         bottomMember: frame.bottomMember,
-        sharedLeftWith: frame.sharedLeftWith,
-        sharedRightWith: frame.sharedRightWith,
         cuts1x1: section1x1Cuts,
         cuts1x2: section1x2Cuts,
         frame2x2Cuts: frame2x2Cuts,
@@ -2392,12 +2341,6 @@
             " · B " +
             formatMemberShort(s.bottomMember)
       );
-      if (s.sharedLeftWith) {
-        add("Shared left post", "Continuous with Section " + s.sharedLeftWith);
-      }
-      if (s.sharedRightWith) {
-        add("Shared right post", "Continuous with Section " + s.sharedRightWith);
-      }
       if (s.cuts1x1 && s.cuts1x1.length) {
         add("1x1 frame cuts", formatCutList(s.cuts1x1) + " (" + num(s.track1x1Lf, 1) + " LF)");
       }
@@ -2639,7 +2582,6 @@
       rightMember: MEMBER_DEFAULT,
       topMember: MEMBER_DEFAULT,
       bottomMember: MEMBER_DEFAULT,
-      sharePostWithNext: false,
       openingShape: "rectangle",
       centerHeightFt: 10,
       centerHeightIn: 0,

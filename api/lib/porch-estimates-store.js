@@ -46,7 +46,6 @@ function normalizeSection(raw) {
     rightMember: member(s.rightMember),
     topMember: member(s.topMember),
     bottomMember: member(s.bottomMember),
-    sharePostWithNext: Boolean(s.sharePostWithNext === true || s.sharePostWithNext === "yes"),
     openingShape: String(s.openingShape || "").toLowerCase() === "arch" ? "arch" : "rectangle",
     centerHeightFt: Math.max(0, Number(s.centerHeightFt) || 0),
     centerHeightIn: Math.max(0, Number(s.centerHeightIn) || 0),
