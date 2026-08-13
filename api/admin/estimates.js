@@ -1,6 +1,7 @@
 import { json, parseJsonBody, requireAdmin } from "../lib/admin-http.js";
 import {
   deleteEstimate,
+  estimateBelongsTo,
   getEstimate,
   listEstimates,
   normalizeEstimateInput,
@@ -27,29 +28,26 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     if (id) {
       const estimate = await getEstimate(id);
-      if (!estimate) return json(res, 404, { ok: false, error: "Estimate not found." });
+      if (!estimate || !estimateBelongsTo(estimate, session.username)) {
+        return json(res, 404, { ok: false, error: "Estimate not found." });
+      }
       return json(res, 200, { ok: true, storage: storageMode(), estimate });
     }
-    const estimates = await listEstimates();
+    const estimates = await listEstimates(session.username);
     return json(res, 200, {
       ok: true,
       storage: storageMode(),
       estimates: estimates.map((e) => ({
         id: e.id,
-        title: e.title,
+        name: e.name || e.title,
+        title: e.title || e.name,
         projectType: e.projectType,
         sectionCount: Array.isArray(e.sections) ? e.sections.length : 0,
         createdAt: e.createdAt,
         updatedAt: e.updatedAt,
         createdBy: e.createdBy,
         updatedBy: e.updatedBy,
-        totals: e.totals
-          ? {
-              areaSqft: e.totals.areaSqft,
-              materialCost: e.totals.materialCost,
-              calculatedPrice: e.totals.calculatedPrice,
-            }
-          : null,
+        userId: e.userId || e.createdBy,
       })),
     });
   }
@@ -57,6 +55,8 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     const result = normalizeEstimateInput(body, { username: session.username });
     if (!result.ok) return json(res, 400, { ok: false, error: result.error });
+    result.estimate.userId = session.username;
+    result.estimate.createdBy = session.username;
     const saved = await saveEstimate(result.estimate);
     return json(res, 201, { ok: true, storage: storageMode(), estimate: saved });
   }
@@ -64,7 +64,9 @@ export default async function handler(req, res) {
   if (req.method === "PUT") {
     if (!id) return json(res, 400, { ok: false, error: "Missing estimate id." });
     const existing = await getEstimate(id);
-    if (!existing) return json(res, 404, { ok: false, error: "Estimate not found." });
+    if (!existing || !estimateBelongsTo(existing, session.username)) {
+      return json(res, 404, { ok: false, error: "Estimate not found." });
+    }
     const result = normalizeEstimateInput(body, {
       existing,
       username: session.username,
@@ -72,13 +74,18 @@ export default async function handler(req, res) {
     if (!result.ok) return json(res, 400, { ok: false, error: result.error });
     result.estimate.id = existing.id;
     result.estimate.createdAt = existing.createdAt;
-    result.estimate.createdBy = existing.createdBy;
+    result.estimate.createdBy = existing.createdBy || session.username;
+    result.estimate.userId = existing.userId || existing.createdBy || session.username;
     const saved = await saveEstimate(result.estimate);
     return json(res, 200, { ok: true, storage: storageMode(), estimate: saved });
   }
 
   if (req.method === "DELETE") {
     if (!id) return json(res, 400, { ok: false, error: "Missing estimate id." });
+    const existing = await getEstimate(id);
+    if (!existing || !estimateBelongsTo(existing, session.username)) {
+      return json(res, 404, { ok: false, error: "Estimate not found." });
+    }
     const removed = await deleteEstimate(id);
     if (!removed) return json(res, 404, { ok: false, error: "Estimate not found." });
     return json(res, 200, { ok: true });

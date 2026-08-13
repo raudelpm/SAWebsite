@@ -11,8 +11,29 @@ function hasBlob() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
+const ESTIMATE_VERSION = 1;
+
 function newId() {
   return `est_${Date.now().toString(36)}_${crypto.randomBytes(4).toString("hex")}`;
+}
+
+function yesNo(value, defaultYes) {
+  if (value === false || value === "no" || value === "false") return false;
+  if (value === true || value === "yes" || value === "true") return true;
+  return Boolean(defaultYes);
+}
+
+function estimateOwner(estimate) {
+  if (!estimate || typeof estimate !== "object") return "";
+  return String(estimate.userId || estimate.createdBy || "").trim().toLowerCase();
+}
+
+export function estimateBelongsTo(estimate, username) {
+  const owner = estimateOwner(estimate);
+  const user = String(username || "")
+    .trim()
+    .toLowerCase();
+  return Boolean(owner && user && owner === user);
 }
 
 function normalizeSection(raw) {
@@ -26,33 +47,59 @@ function normalizeSection(raw) {
     doorPosition = "";
   }
   const members = ["none", "1x2", "2x2"];
-  function member(value) {
+  function member(value, fallback) {
     const v = String(value || "")
       .trim()
       .toLowerCase();
     if (v === "1x1") return "1x2";
-    return members.includes(v) ? v : "1x2";
+    if (members.includes(v)) return v;
+    return fallback == null ? "1x2" : fallback;
   }
+  function zBarLike(value, fallback) {
+    const v = String(value || "")
+      .trim()
+      .toLowerCase();
+    if (!v) return fallback;
+    if (v === "zbar") return "z-bar";
+    return v;
+  }
+  const openingShape = String(s.openingShape || "").toLowerCase() === "arch" ? "arch" : "rectangle";
+  const customDoor = door && yesNo(s.customDoor, false);
   return {
     widthFt: Math.max(0, Number(s.widthFt) || 0),
     widthIn: Math.max(0, Number(s.widthIn) || 0),
     heightFt: Math.max(0, Number(s.heightFt) || 0),
     heightIn: Math.max(0, Number(s.heightIn) || 0),
-    door,
-    doorPosition: door ? doorPosition : "",
-    kickPlate: Boolean(s.kickPlate),
-    chairRail: Boolean(s.chairRail),
+    openingShape,
+    centerHeightFt: Math.max(0, Number(s.centerHeightFt) || 0),
+    centerHeightIn: Math.max(0, Number(s.centerHeightIn) || 0),
+    straightAngle2x2: openingShape === "arch" ? yesNo(s.straightAngle2x2, true) : true,
     leftMember: member(s.leftMember),
     rightMember: member(s.rightMember),
     topMember: member(s.topMember),
     bottomMember: member(s.bottomMember),
-    openingShape: String(s.openingShape || "").toLowerCase() === "arch" ? "arch" : "rectangle",
-    centerHeightFt: Math.max(0, Number(s.centerHeightFt) || 0),
-    centerHeightIn: Math.max(0, Number(s.centerHeightIn) || 0),
-    straightAngle2x2: String(s.straightAngle2x2 == null ? "yes" : s.straightAngle2x2)
-      .toLowerCase() === "no" || s.straightAngle2x2 === false
-      ? false
-      : true,
+    door,
+    doorPosition: door ? doorPosition : "",
+    customDoor,
+    doorWidthFt: Math.max(0, Number(s.doorWidthFt) || 0),
+    doorWidthIn: Math.max(0, Number(s.doorWidthIn) || 0),
+    doorHeightFt: Math.max(0, Number(s.doorHeightFt) || 0),
+    doorHeightIn: Math.max(0, Number(s.doorHeightIn) || 0),
+    customDoorPrice: Math.max(0, Math.round((Number(s.customDoorPrice) || 0) * 100) / 100),
+    doorLeftPost: door ? member(s.doorLeftPost, "2x2") : "",
+    doorRightPost: door ? member(s.doorRightPost, "2x2") : "",
+    doorFrame: door ? zBarLike(s.doorFrame, "z-bar") : "",
+    doorHeader: door ? member(s.doorHeader, "2x2") : "",
+    doorHeaderInsert: door ? zBarLike(s.doorHeaderInsert, "z-bar") : "",
+    kickPlate: Boolean(s.kickPlate),
+    kickPlateHeightIn: Boolean(s.kickPlate)
+      ? Math.max(0, Number(s.kickPlateHeightIn) || 16)
+      : 0,
+    chairRail: Boolean(s.chairRail),
+    chairRailMember: Boolean(s.chairRail) ? member(s.chairRailMember, "2x2") : "",
+    chairRailHeightIn: Boolean(s.chairRail)
+      ? Math.max(0, Number(s.chairRailHeightIn) || 36)
+      : 0,
   };
 }
 
@@ -75,6 +122,16 @@ export function normalizeEstimateInput(body, { existing, username } = {}) {
         ok: false,
         error: `Section ${i + 1}: select Door Position (Left / Center / Right).`,
       };
+    }
+    if (sections[i].customDoor) {
+      const dw = sections[i].doorWidthFt + sections[i].doorWidthIn / 12;
+      const dh = sections[i].doorHeightFt + sections[i].doorHeightIn / 12;
+      if (dw <= 0 || dh <= 0) {
+        return {
+          ok: false,
+          error: `Section ${i + 1}: enter Custom Door width and height.`,
+        };
+      }
     }
     if (sections[i].openingShape === "arch") {
       const straight = sections[i].heightFt + sections[i].heightIn / 12;
@@ -104,32 +161,29 @@ export function normalizeEstimateInput(body, { existing, username } = {}) {
   const screenRaw =
     body?.screenCost != null
       ? body.screenCost
-      : body?.totals && body.totals.screenCost != null
-        ? body.totals.screenCost
-        : existing?.screenCost;
+      : existing?.screenCost;
   let screenCost = Number(screenRaw);
   if (!Number.isFinite(screenCost) || screenCost < 0) screenCost = 0;
   screenCost = Math.round(screenCost * 100) / 100;
 
-  const totals =
-    body?.totals && typeof body.totals === "object"
-      ? { ...body.totals, screenCost }
-      : existing?.totals
-        ? { ...existing.totals, screenCost }
-        : { screenCost };
+  const owner = String(existing?.userId || existing?.createdBy || username || "")
+    .trim()
+    .toLowerCase();
 
   const estimate = {
+    version: ESTIMATE_VERSION,
     id: existing?.id || newId(),
+    userId: owner,
+    name: title,
     title,
     projectType,
     notes,
     screenCost,
     sections,
-    totals,
     createdAt: existing?.createdAt || now,
     updatedAt: now,
-    createdBy: existing?.createdBy || username || "admin",
-    updatedBy: username || existing?.updatedBy || "admin",
+    createdBy: existing?.createdBy || owner || username || "admin",
+    updatedBy: username || existing?.updatedBy || owner || "admin",
   };
 
   return { ok: true, estimate };
@@ -184,11 +238,11 @@ async function listBlobEstimates() {
   return estimates;
 }
 
-export async function listEstimates() {
-  if (hasBlob()) return listBlobEstimates();
-  const estimates = await readLocalAll();
+export async function listEstimates(username) {
+  const estimates = hasBlob() ? await listBlobEstimates() : await readLocalAll();
   estimates.sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
-  return estimates;
+  if (!username) return [];
+  return estimates.filter((e) => estimateBelongsTo(e, username));
 }
 
 export async function getEstimate(id) {

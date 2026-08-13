@@ -12,7 +12,7 @@
   var PRICE_KICK_PLATE_PER_FT = 10;
   var PRICE_KICK_MOLDING_PER_FT = 1;
   var PRICE_SCREWS = 100;
-  var PRICE_OVERHEAD = 200;
+  var PRICE_OVERHEAD = 300;
   var MARKUP_DIVISOR = 0.7;
   // Calibrated so $860 materials → $400 total labor (2×$200) → $1,800 final (labor included).
   // Total Worker Pay = Material Cost × (20/43)
@@ -44,9 +44,11 @@
   var notesInput = document.getElementById("porchNotes");
   var screenCostInput = document.getElementById("porchScreenCost");
   var saveBtn = document.getElementById("porchSaveBtn");
+  var saveAsBtn = document.getElementById("porchSaveAsBtn");
   var deleteBtn = document.getElementById("porchDeleteBtn");
   var newBtn = document.getElementById("porchNewEstimateBtn");
   var saveStatus = document.getElementById("porchSaveStatus");
+  var dirtyStatus = document.getElementById("porchDirtyStatus");
   var savedList = document.getElementById("porchSavedList");
   var savedEmpty = document.getElementById("porchSavedEmpty");
   var storageModeEl = document.getElementById("porchStorageMode");
@@ -60,6 +62,19 @@
 
   var lastTotals = null;
   var layoutTimer = null;
+  var lastSavedSnapshot = "";
+  var applyingSaved = false;
+  var dirtyTimer = null;
+  var SECTION_EXTRA_KEYS = [
+    "kickPlateHeightIn",
+    "chairRailMember",
+    "chairRailHeightIn",
+    "doorLeftPost",
+    "doorRightPost",
+    "doorFrame",
+    "doorHeader",
+    "doorHeaderInsert",
+  ];
 
   if (!loginPanel || !toolPanel || !calcForm || !sectionsEl || !sectionTemplate) return;
 
@@ -468,9 +483,50 @@
   }
 
   function getDoorWidthFt(section) {
-    var custom = Number(section && section.doorWidthFt);
-    if (Number.isFinite(custom) && custom > 0) return roundLf(custom);
+    if (isCustomDoor(section)) {
+      var customW = roundLf(toFeet(section.doorWidthFt, section.doorWidthIn));
+      if (customW > 0) return customW;
+    }
     return DOOR_WIDTH_FT;
+  }
+
+  function getDoorHeightFt(section) {
+    if (isCustomDoor(section)) {
+      var customH = roundLf(toFeet(section.doorHeightFt, section.doorHeightIn));
+      if (customH > 0) return customH;
+    }
+    return DOOR_OPENING_HEIGHT_FT;
+  }
+
+  function isCustomDoor(section) {
+    if (!section || !section.door) return false;
+    var v = section.customDoor;
+    return v === true || v === "yes" || v === "true";
+  }
+
+  function getDoorPrice(section) {
+    if (!section || !section.door) return 0;
+    if (isCustomDoor(section)) {
+      var p = Number(section.customDoorPrice);
+      if (!Number.isFinite(p) || p < 0) return 0;
+      return Math.round(p * 100) / 100;
+    }
+    return PRICE_DOOR;
+  }
+
+  function formatDoorSizeLabel(section) {
+    var wIn;
+    var hIn;
+    if (isCustomDoor(section)) {
+      wIn = Math.round(((Number(section.doorWidthFt) || 0) * 12 + (Number(section.doorWidthIn) || 0)) * 100) / 100;
+      hIn = Math.round(((Number(section.doorHeightFt) || 0) * 12 + (Number(section.doorHeightIn) || 0)) * 100) / 100;
+    } else {
+      wIn = 36;
+      hIn = 80;
+    }
+    var wStr = Number.isInteger(wIn) ? String(wIn) : String(wIn);
+    var hStr = Number.isInteger(hIn) ? String(hIn) : String(hIn);
+    return wStr + '" × ' + hStr + '"';
   }
 
   /**
@@ -896,7 +952,7 @@
       doorOpenings.forEach(function (op) {
         var dx0 = sx(op.left);
         var dx1 = sx(op.right);
-        var openingH = Math.min(DOOR_OPENING_HEIGHT_FT, Math.max(1, heightFt - 0.05));
+        var openingH = Math.min(getDoorHeightFt(section), Math.max(1, heightFt - 0.05));
         var headerY = syFromBottom(openingH);
         var doorPx = Math.max(8, dx1 - dx0);
         var doorCompact = compact || doorPx < 78;
@@ -981,7 +1037,7 @@
           parts,
           (dx0 + dx1) / 2,
           (headerY + y1) / 2 + 5,
-          '36" × 80"',
+          formatDoorSizeLabel(section),
           { size: 8 }
         );
         if (y1 - headerY > 52) {
@@ -1177,7 +1233,7 @@
         { size: compact ? 8 : 9 }
       );
     } else {
-      var headerClearanceFt = heightFt - Math.min(DOOR_OPENING_HEIGHT_FT, Math.max(1, heightFt - 0.05));
+      var headerClearanceFt = heightFt - Math.min(getDoorHeightFt(section), Math.max(1, heightFt - 0.05));
       drawPerimeterMember(
         topMember,
         "top",
@@ -1877,6 +1933,7 @@
     }
     refreshLayout();
     refreshSavedList();
+    markClean();
   }
 
   function renumberSections() {
@@ -1898,6 +1955,12 @@
       heightIn: d.heightIn != null ? d.heightIn : 0,
       door: d.door ? "yes" : "no",
       doorPosition: normalizeDoorPosition(d.doorPosition) || "",
+      customDoor: d.door && isCustomDoor(d) ? "yes" : "no",
+      doorWidthFt: d.doorWidthFt != null ? d.doorWidthFt : 3,
+      doorWidthIn: d.doorWidthIn != null ? d.doorWidthIn : 0,
+      doorHeightFt: d.doorHeightFt != null ? d.doorHeightFt : 6,
+      doorHeightIn: d.doorHeightIn != null ? d.doorHeightIn : 8,
+      customDoorPrice: d.customDoorPrice != null && d.customDoorPrice !== "" ? d.customDoorPrice : "",
       kickPlate: d.kickPlate ? "yes" : "no",
       chairRail: d.chairRail ? "yes" : "no",
       leftMember: memberFromData(d, "leftMember"),
@@ -1919,6 +1982,7 @@
         el.value = map[key];
       }
     });
+    writeSectionExtras(card, d);
     syncDoorPositionVisibility(card);
     syncOpeningShapeVisibility(card);
   }
@@ -1927,11 +1991,31 @@
     var doorEl = card.querySelector('[data-field="door"]');
     var wrap = card.querySelector("[data-door-position-wrap]");
     var posEl = card.querySelector('[data-field="doorPosition"]');
-    if (!wrap || !doorEl) return;
+    var customWrap = card.querySelector("[data-custom-door-wrap]");
+    var customFields = card.querySelector("[data-custom-door-fields]");
+    var customEl = card.querySelector('[data-field="customDoor"]');
+    if (!doorEl) return;
     var on = doorEl.value === "yes";
-    wrap.hidden = !on;
+    if (wrap) wrap.hidden = !on;
+    if (customWrap) customWrap.hidden = !on;
+    var customOn = on && customEl && customEl.value === "yes";
+    if (customFields) customFields.hidden = !customOn;
     if (!on && posEl) {
       posEl.selectedIndex = 0;
+    }
+    if (!on && customEl) {
+      customEl.value = "no";
+    }
+    if (customOn) {
+      var wFt = card.querySelector('[data-field="doorWidthFt"]');
+      var hFt = card.querySelector('[data-field="doorHeightFt"]');
+      var wIn = card.querySelector('[data-field="doorWidthIn"]');
+      var hIn = card.querySelector('[data-field="doorHeightIn"]');
+      if (wFt && !(Number(wFt.value) || Number(wIn && wIn.value))) wFt.value = "3";
+      if (hFt && !(Number(hFt.value) || Number(hIn && hIn.value))) {
+        hFt.value = "6";
+        if (hIn) hIn.value = "8";
+      }
     }
   }
 
@@ -1967,7 +2051,7 @@
       return el ? el.value : "";
     }
     var doorOn = val("door") === "yes";
-    return {
+    var fields = {
       widthFt: Number(val("widthFt")) || 0,
       widthIn: Number(val("widthIn")) || 0,
       heightFt: Number(val("heightFt")) || 0,
@@ -1978,6 +2062,12 @@
       centerHeightIn: Number(val("centerHeightIn")) || 0,
       door: doorOn,
       doorPosition: doorOn ? normalizeDoorPosition(val("doorPosition")) : "",
+      customDoor: doorOn && val("customDoor") === "yes",
+      doorWidthFt: Number(val("doorWidthFt")) || 0,
+      doorWidthIn: Number(val("doorWidthIn")) || 0,
+      doorHeightFt: Number(val("doorHeightFt")) || 0,
+      doorHeightIn: Number(val("doorHeightIn")) || 0,
+      customDoorPrice: val("customDoorPrice") === "" ? "" : Number(val("customDoorPrice")),
       kickPlate: val("kickPlate") === "yes",
       chairRail: val("chairRail") === "yes",
       leftMember: normalizeMember(val("leftMember") || MEMBER_DEFAULT),
@@ -1985,6 +2075,7 @@
       topMember: normalizeMember(val("topMember") || MEMBER_DEFAULT),
       bottomMember: normalizeMember(val("bottomMember") || MEMBER_DEFAULT),
     };
+    return Object.assign({}, readSectionExtras(card), fields);
   }
 
   function addSection(data, afterCard) {
@@ -2011,6 +2102,79 @@
     );
   }
 
+  function readSectionExtras(card) {
+    try {
+      var parsed = JSON.parse(card.getAttribute("data-section-extras") || "{}");
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (err) {
+      return {};
+    }
+  }
+
+  function writeSectionExtras(card, data) {
+    var extras = {};
+    SECTION_EXTRA_KEYS.forEach(function (key) {
+      if (data && data[key] != null && data[key] !== "") extras[key] = data[key];
+    });
+    card.setAttribute("data-section-extras", JSON.stringify(extras));
+  }
+
+  function currentInputSnapshot() {
+    return JSON.stringify({
+      id: estimateIdInput ? estimateIdInput.value : "",
+      title: titleInput ? titleInput.value.trim() : "",
+      projectType: projectTypeInput ? projectTypeInput.value : "front",
+      notes: notesInput ? notesInput.value.trim() : "",
+      screenCost: readScreenCost(),
+      sections: readSections(),
+    });
+  }
+
+  function markClean() {
+    lastSavedSnapshot = currentInputSnapshot();
+    updateDirtyStatus();
+    updateSaveChrome();
+  }
+
+  function updateDirtyStatus() {
+    if (!dirtyStatus || applyingSaved) return;
+    var dirty = currentInputSnapshot() !== lastSavedSnapshot;
+    if (!estimateIdInput || !estimateIdInput.value) {
+      dirtyStatus.textContent = dirty ? "Unsaved changes" : "";
+    } else {
+      dirtyStatus.textContent = dirty ? "Unsaved changes" : "Saved";
+    }
+    dirtyStatus.classList.toggle("is-dirty", dirty);
+  }
+
+  function scheduleDirtyCheck() {
+    if (dirtyTimer) clearTimeout(dirtyTimer);
+    dirtyTimer = setTimeout(updateDirtyStatus, 80);
+  }
+
+  function updateSaveChrome() {
+    var hasId = Boolean(estimateIdInput && estimateIdInput.value);
+    if (saveBtn) saveBtn.textContent = hasId ? "SAVE CHANGES" : "SAVE ESTIMATE";
+    if (saveAsBtn) saveAsBtn.hidden = !hasId;
+    syncDeleteVisibility();
+  }
+
+  function confirmDiscardUnsaved() {
+    if (!dirtyStatus || currentInputSnapshot() === lastSavedSnapshot) return true;
+    return window.confirm("You have unsaved changes. Discard them?");
+  }
+
+  function formatModifiedDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
   function readScreenCost() {
     var raw = screenCostInput ? screenCostInput.value : "0";
     if (raw === "" || raw == null) return 0;
@@ -2034,6 +2198,7 @@
     var cutsFlex = [];
     var totalArea = 0;
     var doorCount = 0;
+    var doorCost = 0;
     var kickPlateLf = 0;
     var screenCost = Math.max(0, Number(screenCostInputValue) || 0);
     screenCost = Math.round(screenCost * 100) / 100;
@@ -2074,6 +2239,7 @@
       if (s.door) {
         var door = getDoorConstruction(s);
         doorCount += 1;
+        doorCost += getDoorPrice(s);
         zBarCount += doorZBarCount(s);
         openings.forEach(function (op) {
           if (roundLf(op.left) > 0.05) {
@@ -2146,6 +2312,9 @@
         straightAngle2x2: isStraightAngle2x2(s),
         areaSqft: areaSqft,
         door: s.door,
+        customDoor: isCustomDoor(s),
+        doorPrice: s.door ? getDoorPrice(s) : 0,
+        doorSizeLabel: s.door ? formatDoorSizeLabel(s) : "",
         doorPosition: normalizeDoorPosition(s.doorPosition) || "",
         kickPlate: s.kickPlate,
         chairRail: s.chairRail,
@@ -2193,7 +2362,6 @@
     var track1x2Cost = track1x2Sticks * PRICE_1X2_STICK;
     var track2x2Sticks = pack2x2.stickCount;
     var track2x2Cost = track2x2Sticks * PRICE_2X2_STICK;
-    var doorCost = doorCount * PRICE_DOOR;
     var zBarCount = sectionResults.reduce(function (sum, s) {
       return sum + (s.zBarCount || 0);
     }, 0);
@@ -2434,9 +2602,14 @@
       if (s.door) {
         add(
           "Door",
-          "36\" × 80\" · Position: " +
+          (s.doorSizeLabel || '36" × 80"') +
+            (s.customDoor ? " · Custom Door" : "") +
+            " · Position: " +
             (normalizeDoorPosition(s.doorPosition) || "—")
         );
+        if (s.customDoor) {
+          add("Custom Door Price", money(s.doorPrice));
+        }
         add(
           "Door posts",
           formatMemberLabel(DOOR_LEFT_POST_DEFAULT, false) +
@@ -2617,6 +2790,11 @@
       if (s.door && !normalizeDoorPosition(s.doorPosition)) {
         return "Section " + (i + 1) + ": select Door Position (Left / Center / Right).";
       }
+      if (isCustomDoor(s)) {
+        if (getDoorWidthFt(s) <= 0 || getDoorHeightFt(s) <= 0) {
+          return "Section " + (i + 1) + ": enter Custom Door width and height.";
+        }
+      }
     }
     return "";
   }
@@ -2661,20 +2839,19 @@
     setSaveStatus("");
     syncDeleteVisibility();
     refreshLayout();
+    markClean();
   }
 
   function loadEstimateIntoForm(estimate) {
+    applyingSaved = true;
     estimateIdInput.value = estimate.id || "";
-    titleInput.value = estimate.title || "";
+    titleInput.value = estimate.title || estimate.name || "";
     projectTypeInput.value = estimate.projectType === "back" ? "back" : "front";
     notesInput.value = estimate.notes || "";
-    // Preserve the originally saved screen cost — do not invent a new one.
     var savedScreen =
       estimate.screenCost != null
         ? estimate.screenCost
-        : estimate.totals && estimate.totals.screenCost != null
-          ? estimate.totals.screenCost
-          : 0;
+        : 0;
     setScreenCost(savedScreen);
     clearSections();
     var sections = Array.isArray(estimate.sections) ? estimate.sections : [];
@@ -2685,13 +2862,12 @@
         addSection(s);
       });
     }
-    // Recalculate with the restored screen cost so cut plans stay current,
-    // without changing the saved Screen Cost value itself.
     lastTotals = calculateProject(readSections(), readScreenCost());
     renderResults(lastTotals);
     refreshLayout();
-    setSaveStatus("Loaded “" + (estimate.title || estimate.id) + "”");
-    syncDeleteVisibility();
+    setSaveStatus("Loaded “" + (estimate.title || estimate.name || estimate.id) + "”");
+    applyingSaved = false;
+    markClean();
   }
 
   function buildPayload() {
@@ -2701,48 +2877,11 @@
     lastTotals = totals;
     return {
       title: titleInput.value.trim(),
+      name: titleInput.value.trim(),
       projectType: projectTypeInput.value,
       notes: notesInput.value.trim(),
       screenCost: screenCost,
       sections: sections,
-      totals: {
-        areaSqft: totals.areaSqft,
-        cuts1x1: totals.cuts1x1,
-        cuts1x2: totals.cuts1x2,
-        cuts2x2: totals.cuts2x2,
-        pack1x1: totals.pack1x1,
-        pack1x2: totals.pack1x2,
-        pack2x2: totals.pack2x2,
-        track1x1Lf: totals.track1x1Lf,
-        track1x1Sticks: totals.track1x1Sticks,
-        track1x1Cost: totals.track1x1Cost,
-        track1x2Lf: totals.track1x2Lf,
-        track1x2Sticks: totals.track1x2Sticks,
-        track1x2Cost: totals.track1x2Cost,
-        track2x2Lf: totals.track2x2Lf,
-        track2x2Sticks: totals.track2x2Sticks,
-        track2x2Cost: totals.track2x2Cost,
-        flexLf: totals.flexLf,
-        flexCuts: totals.flexCuts,
-        flexSticks: totals.flexSticks,
-        flexCost: totals.flexCost,
-        doorCount: totals.doorCount,
-        doorCost: totals.doorCost,
-        zBarCount: totals.zBarCount,
-        kickPlateLf: totals.kickPlateLf,
-        kickPlateCost: totals.kickPlateCost,
-        kickMoldingCost: totals.kickMoldingCost,
-        screws: totals.screws,
-        overhead: totals.overhead,
-        screenCost: totals.screenCost,
-        materialCost: totals.materialCost,
-        workerPay: totals.workerPay,
-        payPerWorker: totals.payPerWorker,
-        costPlusLabor: totals.costPlusLabor,
-        calculatedPrice: totals.calculatedPrice,
-        hasOversizedCuts: totals.hasOversizedCuts,
-        sections: totals.sections,
-      },
     };
   }
 
@@ -2773,28 +2912,50 @@
       if (savedEmpty) savedEmpty.hidden = items.length > 0;
       items.forEach(function (item) {
         var li = document.createElement("li");
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "admin-porch-saved-item";
-        if (item.id === estimateIdInput.value) btn.classList.add("is-active");
-        var price =
-          item.totals && item.totals.calculatedPrice != null
-            ? money(item.totals.calculatedPrice)
-            : "";
-        btn.innerHTML =
-          "<span class=\"admin-porch-saved-item__title\"></span>" +
-          "<span class=\"admin-porch-saved-item__meta\"></span>";
-        btn.querySelector(".admin-porch-saved-item__title").textContent = item.title || item.id;
-        btn.querySelector(".admin-porch-saved-item__meta").textContent =
-          (item.projectType === "back" ? "Back" : "Front") +
-          " · " +
-          (item.sectionCount || 0) +
-          " section(s)" +
-          (price ? " · " + price : "");
-        btn.addEventListener("click", function () {
+        var card = document.createElement("div");
+        card.className = "admin-porch-saved-item";
+        if (item.id === estimateIdInput.value) card.classList.add("is-active");
+        var titleBtn = document.createElement("button");
+        titleBtn.type = "button";
+        titleBtn.className = "admin-porch-saved-item__title";
+        titleBtn.textContent = item.name || item.title || item.id;
+        titleBtn.addEventListener("click", function () {
           openEstimate(item.id);
         });
-        li.appendChild(btn);
+        var meta = document.createElement("span");
+        meta.className = "admin-porch-saved-item__meta";
+        meta.textContent =
+          (item.projectType === "back" ? "Back porch" : "Front porch") +
+          (formatModifiedDate(item.updatedAt) ? " · " + formatModifiedDate(item.updatedAt) : "");
+        var actions = document.createElement("div");
+        actions.className = "admin-porch-saved-item__actions";
+        function smallBtn(label, handler) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "btn btn-secondary";
+          b.textContent = label;
+          b.addEventListener("click", handler);
+          return b;
+        }
+        actions.appendChild(
+          smallBtn("OPEN", function () {
+            openEstimate(item.id);
+          })
+        );
+        actions.appendChild(
+          smallBtn("DUPLICATE", function () {
+            duplicateSavedEstimate(item.id);
+          })
+        );
+        actions.appendChild(
+          smallBtn("DELETE", function () {
+            deleteSavedEstimate(item.id);
+          })
+        );
+        card.appendChild(titleBtn);
+        card.appendChild(meta);
+        card.appendChild(actions);
+        li.appendChild(card);
         savedList.appendChild(li);
       });
     } catch (err) {
@@ -2803,6 +2964,7 @@
   }
 
   async function openEstimate(id) {
+    if (!confirmDiscardUnsaved()) return;
     setSaveStatus("Loading…");
     try {
       var res = await fetch("/api/admin/estimates?id=" + encodeURIComponent(id), {
@@ -2823,7 +2985,7 @@
     }
   }
 
-  async function saveEstimate() {
+  async function saveEstimate(asNew) {
     var payload = buildPayload();
     var err = validateSections(payload.sections);
     if (err) {
@@ -2832,9 +2994,10 @@
     }
     renderResults(lastTotals);
     setSaveStatus("Saving…");
-    saveBtn.disabled = true;
+    if (saveBtn) saveBtn.disabled = true;
+    if (saveAsBtn) saveAsBtn.disabled = true;
     try {
-      var id = estimateIdInput.value;
+      var id = asNew ? "" : estimateIdInput.value;
       var res = await fetch(
         id ? "/api/admin/estimates?id=" + encodeURIComponent(id) : "/api/admin/estimates",
         {
@@ -2852,24 +3015,73 @@
         return;
       }
       estimateIdInput.value = data.estimate.id;
-      if (!titleInput.value.trim() && data.estimate.title) {
-        titleInput.value = data.estimate.title;
+      var savedTitle = data.estimate.title || data.estimate.name || "";
+      if (!titleInput.value.trim() && savedTitle) {
+        titleInput.value = savedTitle;
       }
-      setSaveStatus("Saved “" + data.estimate.title + "”");
-      syncDeleteVisibility();
+      setSaveStatus("Saved “" + savedTitle + "”");
+      markClean();
       refreshSavedList();
       refreshLayout();
     } catch (err) {
       setSaveStatus("Network error while saving.", true);
     } finally {
-      saveBtn.disabled = false;
+      if (saveBtn) saveBtn.disabled = false;
+      if (saveAsBtn) saveAsBtn.disabled = false;
     }
   }
 
-  async function deleteCurrentEstimate() {
-    var id = estimateIdInput.value;
+  async function duplicateSavedEstimate(id) {
+    setSaveStatus("Duplicating…");
+    try {
+      var res = await fetch("/api/admin/estimates?id=" + encodeURIComponent(id), {
+        method: "GET",
+        credentials: "same-origin",
+      });
+      var data = await res.json().catch(function () {
+        return {};
+      });
+      if (!res.ok || !data.ok || !data.estimate) {
+        setSaveStatus(data.error || "Could not duplicate estimate.", true);
+        return;
+      }
+      var source = data.estimate;
+      var copyPayload = {
+        title: "Copy of " + (source.title || source.name || "estimate"),
+        name: "Copy of " + (source.title || source.name || "estimate"),
+        projectType: source.projectType,
+        notes: source.notes || "",
+        screenCost: source.screenCost || 0,
+        sections: source.sections || [],
+      };
+      var saveRes = await fetch("/api/admin/estimates", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(copyPayload),
+      });
+      var saved = await saveRes.json().catch(function () {
+        return {};
+      });
+      if (!saveRes.ok || !saved.ok) {
+        setSaveStatus(saved.error || "Could not duplicate estimate.", true);
+        return;
+      }
+      if (!confirmDiscardUnsaved()) {
+        refreshSavedList();
+        setSaveStatus("Duplicated “" + saved.estimate.title + "”");
+        return;
+      }
+      loadEstimateIntoForm(saved.estimate);
+      refreshSavedList();
+    } catch (err) {
+      setSaveStatus("Network error while duplicating.", true);
+    }
+  }
+
+  async function deleteSavedEstimate(id) {
     if (!id) return;
-    if (!window.confirm("Delete this saved estimate?")) return;
+    if (!window.confirm("Delete this saved estimate? This cannot be undone.")) return;
     setSaveStatus("Deleting…");
     try {
       var res = await fetch("/api/admin/estimates?id=" + encodeURIComponent(id), {
@@ -2883,12 +3095,16 @@
         setSaveStatus(data.error || "Delete failed.", true);
         return;
       }
-      resetEstimateForm();
+      if (estimateIdInput.value === id) resetEstimateForm();
       setSaveStatus("Estimate deleted.");
       refreshSavedList();
     } catch (err) {
       setSaveStatus("Network error while deleting.", true);
     }
+  }
+
+  async function deleteCurrentEstimate() {
+    await deleteSavedEstimate(estimateIdInput.value);
   }
 
   sectionsEl.addEventListener("click", function (e) {
@@ -2902,8 +3118,10 @@
       card.remove();
       renumberSections();
       scheduleLayoutRefresh();
+      scheduleDirtyCheck();
     } else if (action === "duplicate") {
       addSection(readSectionCard(card), card);
+      scheduleDirtyCheck();
     }
   });
 
@@ -2912,33 +3130,58 @@
     if (!target || !target.getAttribute) return;
     if (target.getAttribute("data-field") === "door") {
       var card = target.closest("[data-section]");
-      if (card) syncDoorPositionVisibility(card);
+      if (card) {
+        var customEl = card.querySelector('[data-field="customDoor"]');
+        if (target.value === "yes" && customEl) customEl.value = "no";
+        syncDoorPositionVisibility(card);
+      }
+    }
+    if (target.getAttribute("data-field") === "customDoor") {
+      var customCard = target.closest("[data-section]");
+      if (customCard) syncDoorPositionVisibility(customCard);
     }
     if (target.getAttribute("data-field") === "openingShape") {
       var shapeCard = target.closest("[data-section]");
       if (shapeCard) syncOpeningShapeVisibility(shapeCard);
     }
     scheduleLayoutRefresh();
+    scheduleDirtyCheck();
   });
-  sectionsEl.addEventListener("input", scheduleLayoutRefresh);
-  if (titleInput) titleInput.addEventListener("input", scheduleLayoutRefresh);
-  if (projectTypeInput) projectTypeInput.addEventListener("change", scheduleLayoutRefresh);
+  sectionsEl.addEventListener("input", function () {
+    scheduleLayoutRefresh();
+    scheduleDirtyCheck();
+  });
+  if (titleInput) titleInput.addEventListener("input", function () {
+    scheduleLayoutRefresh();
+    scheduleDirtyCheck();
+  });
+  if (projectTypeInput) projectTypeInput.addEventListener("change", function () {
+    scheduleLayoutRefresh();
+    scheduleDirtyCheck();
+  });
+  if (notesInput) notesInput.addEventListener("input", scheduleDirtyCheck);
+  if (screenCostInput) screenCostInput.addEventListener("input", scheduleDirtyCheck);
 
   if (addSectionBtn) {
     addSectionBtn.addEventListener("click", function () {
       addSection();
+      scheduleDirtyCheck();
     });
   }
 
   if (newBtn) {
     newBtn.addEventListener("click", function () {
+      if (!confirmDiscardUnsaved()) return;
       resetEstimateForm();
       refreshSavedList();
     });
   }
 
   if (saveBtn) saveBtn.addEventListener("click", function () {
-    saveEstimate();
+    saveEstimate(false);
+  });
+  if (saveAsBtn) saveAsBtn.addEventListener("click", function () {
+    saveEstimate(true);
   });
   if (deleteBtn) deleteBtn.addEventListener("click", deleteCurrentEstimate);
 
