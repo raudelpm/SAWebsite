@@ -7965,11 +7965,12 @@ body.page-estimator-panel {
     flex-direction: column;
     background: #f4f4f5;
 }
-body.page-estimator-panel nav,
-body.page-estimator-panel nav.nav-compact {
+html body.page-estimator-panel nav,
+html body.page-estimator-panel nav.nav-compact {
     background: #0b0c0f !important;
+    background-color: #0b0c0f !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
 }
 body.page-estimator-panel .nav-compact .nav-links {
     background: #0b0c0f;
@@ -8126,6 +8127,7 @@ body.page-estimator-panel footer {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     pointer-events: none;
     user-select: none;
+    padding-top: clamp(1.1rem, 3vw, 1.5rem);
 }
 .admin-estimator-card--soon .admin-estimator-card__photo {
     filter: grayscale(0.35) saturate(0.8);

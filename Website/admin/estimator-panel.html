@@ -7,10 +7,22 @@
     <link rel="icon" type="image/jpeg" href="../public/Logo Black Yes Background.JPG">
     <title>Admin | Estimator Panel | SCREEN ARMORS</title>
     <link rel="preload" href="../styles.css" as="style">
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css?v=estimator-panel-nav">
+    <style>
+        html body.page-estimator-panel nav,
+        html body.page-estimator-panel nav.nav-compact {
+            background: #0b0c0f !important;
+            background-color: #0b0c0f !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
+        }
+        html body.page-estimator-panel .nav-compact .nav-links {
+            background: #0b0c0f !important;
+        }
+    </style>
 </head>
 <body class="page-admin-porch page-estimator-panel">
-    <nav>
+    <nav style="background:#0b0c0f !important;background-color:#0b0c0f !important;">
         <div class="nav-container">
             <a href="../index.html" class="logo">
                 <img src="../public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
@@ -165,6 +177,6 @@
         })();
     </script>
     <script src="../nav-menu.js"></script>
-    <script src="estimator-panel.js"></script>
+    <script src="estimator-panel.js?v=frontporch"></script>
 </body>
 </html>

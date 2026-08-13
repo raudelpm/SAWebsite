@@ -14,8 +14,8 @@
       href: CALCULATOR_PATH,
       status: "active",
       actionLabel: "Open Calculator",
-      image: "../public/Photo%208.webp",
-      imageAlt: "Screened porch enclosure",
+      image: "../public/frontporch.jpeg",
+      imageAlt: "Front porch screen enclosure",
       savedEstimates: true,
     },
     {
@@ -23,32 +23,24 @@
       description: "Coming soon",
       href: "",
       status: "coming-soon",
-      image: "../public/screenholes2.webp",
-      imageAlt: "Pool cage screen repair",
     },
     {
       name: "Full Rescreen",
       description: "Coming soon",
       href: "",
       status: "coming-soon",
-      image: "../public/screentype.webp",
-      imageAlt: "Pool cage rescreen",
     },
     {
       name: "Pool Cage Restoration",
       description: "Coming soon",
       href: "",
       status: "coming-soon",
-      image: "../public/restoration.webp",
-      imageAlt: "Pool cage restoration",
     },
     {
       name: "Clearview Conversion",
       description: "Coming soon",
       href: "",
       status: "coming-soon",
-      image: "../public/Photo%2017.webp",
-      imageAlt: "Clearview conversion",
     },
   ];
 
