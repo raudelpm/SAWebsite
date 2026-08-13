@@ -47,6 +47,9 @@ function normalizeSection(raw) {
     topMember: member(s.topMember),
     bottomMember: member(s.bottomMember),
     sharePostWithNext: Boolean(s.sharePostWithNext === true || s.sharePostWithNext === "yes"),
+    openingShape: String(s.openingShape || "").toLowerCase() === "arch" ? "arch" : "rectangle",
+    centerHeightFt: Math.max(0, Number(s.centerHeightFt) || 0),
+    centerHeightIn: Math.max(0, Number(s.centerHeightIn) || 0),
   };
 }
 
@@ -69,6 +72,16 @@ export function normalizeEstimateInput(body, { existing, username } = {}) {
         ok: false,
         error: `Section ${i + 1}: select Door Position (Left / Center / Right).`,
       };
+    }
+    if (sections[i].openingShape === "arch") {
+      const straight = sections[i].heightFt + sections[i].heightIn / 12;
+      const center = sections[i].centerHeightFt + sections[i].centerHeightIn / 12;
+      if (center <= straight) {
+        return {
+          ok: false,
+          error: `Section ${i + 1}: Center Height must be greater than Straight Height.`,
+        };
+      }
     }
   }
 

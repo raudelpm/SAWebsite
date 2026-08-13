@@ -5,7 +5,9 @@
   var PRICE_1X2_STICK = 37;
   var PRICE_2X2_STICK = 60;
   var PRICE_1X1_STICK = 28;
+  var PRICE_FLEX_STICK = 30;
   var STICK_FT = 24;
+  var STICK_FLEX_FT = 20;
   var PRICE_DOOR = 150;
   var PRICE_KICK_PLATE_PER_FT = 10;
   var PRICE_KICK_MOLDING_PER_FT = 1;
@@ -151,10 +153,13 @@
     return memberRank(a) >= memberRank(b) ? a : b;
   }
 
+  var MEMBER_FLEX = "1x1/2";
+
   function memberStrokeWidth(size) {
     if (size === "2x2") return 4.8;
     if (size === "1x2") return 2.6;
     if (size === "1x1") return 1.5;
+    if (size === MEMBER_FLEX || size === "flex") return 2.2;
     return 0;
   }
 
@@ -167,11 +172,13 @@
       "L " +
       formatMemberShort(normalizeMember(section.leftMember)) +
       " · R " +
-      formatMemberShort(normalizeMember(section.rightMember)) +
-      " · T " +
-      formatMemberShort(normalizeMember(section.topMember)) +
-      " · B " +
-      formatMemberShort(normalizeMember(section.bottomMember));
+      formatMemberShort(normalizeMember(section.rightMember));
+    if (isArchSection(section)) {
+      base += " · Arch 1x1/2 Flexible";
+    } else {
+      base += " · T " + formatMemberShort(normalizeMember(section.topMember));
+    }
+    base += " · B " + formatMemberShort(normalizeMember(section.bottomMember));
     if (isSharePostWithNext(section)) base += " · shared post with next";
     return base;
   }
@@ -250,6 +257,10 @@
     if (t === "z-bar" || t === "zbar") return compact ? "ZB" : "Z-BAR";
     if (t === "z-bar-door" || t === "z-bar-frame") return compact ? "Z-BAR" : "Z-BAR DOOR FRAME";
     if (t === "2x2+z-bar" || t === "2x2+zbar") return compact ? "2x2+ZB" : "2x2 + Z-BAR";
+    if (t === "1x1/2" || t === "1x1/2 flexible" || t === "flex") {
+      return compact ? "FLEX" : "1x1/2 FLEXIBLE";
+    }
+    if (t === "1x2" || t === "2x2") return t;
     return t.toUpperCase();
   }
 
@@ -309,6 +320,64 @@
     return v === true || v === "yes" || v === "true";
   }
 
+  function isArchSection(section) {
+    var v = section && section.openingShape;
+    return v === "arch" || v === true;
+  }
+
+  function getStraightHeightFt(section) {
+    return roundLf(toFeet(section && section.heightFt, section && section.heightIn));
+  }
+
+  function getCenterHeightFt(section) {
+    if (!isArchSection(section)) return getStraightHeightFt(section);
+    return roundLf(toFeet(section.centerHeightFt, section.centerHeightIn));
+  }
+
+  function getArchRiseFt(section) {
+    return roundLf(Math.max(0, getCenterHeightFt(section) - getStraightHeightFt(section)));
+  }
+
+  function getSectionOverallHeightFt(section) {
+    return isArchSection(section) ? getCenterHeightFt(section) : getStraightHeightFt(section);
+  }
+
+  /**
+   * Circular-arc length for a chord of `widthFt` and sagitta `riseFt`.
+   * This is the 1x1/2 Flexible run from the left straight top, over the arch, to the right.
+   */
+  function circularArcLength(widthFt, riseFt) {
+    var c = roundLf(widthFt);
+    var h = roundLf(riseFt);
+    if (c <= 0) return 0;
+    if (h <= 0.001) return c;
+    var r = (h * h + (c / 2) * (c / 2)) / (2 * h);
+    var ratio = Math.max(-1, Math.min(1, (r - h) / r));
+    return roundLf(r * 2 * Math.acos(ratio));
+  }
+
+  function getArchFlexibleLength(section) {
+    if (!isArchSection(section)) return 0;
+    return circularArcLength(toFeet(section.widthFt, section.widthIn), getArchRiseFt(section));
+  }
+
+  function circularSegmentArea(widthFt, riseFt) {
+    var c = roundLf(widthFt);
+    var h = roundLf(riseFt);
+    if (c <= 0 || h <= 0.001) return 0;
+    var r = (h * h + (c / 2) * (c / 2)) / (2 * h);
+    var ratio = Math.max(-1, Math.min(1, (r - h) / r));
+    return roundLf(
+      r * r * Math.acos(ratio) - (r - h) * Math.sqrt(Math.max(0, 2 * r * h - h * h))
+    );
+  }
+
+  function flexStickCount(totalLf) {
+    var lf = Number(totalLf) || 0;
+    if (lf <= 0) return 0;
+    return Math.ceil(lf / STICK_FLEX_FT - 1e-9);
+  }
+
   /**
    * Frame/post cuts per section. Each opening is an independent concrete frame
    * with its own left and right posts. A vertical post is shared with the next
@@ -329,6 +398,9 @@
         cuts1x1: [],
         cuts1x2: [],
         cuts2x2: [],
+        cutsFlex: [],
+        archRiseFt: 0,
+        flexLf: 0,
         sharedLeftWith: 0,
         sharedRightWith: 0,
       });
@@ -345,12 +417,13 @@
     for (i = 0; i < n; i++) {
       var s = sectionsInput[i];
       var width = roundLf(toFeet(s.widthFt, s.widthIn));
-      var height = roundLf(toFeet(s.heightFt, s.heightIn));
+      var straightH = getStraightHeightFt(s);
+      var isArch = isArchSection(s);
       var leftSelected = normalizeMember(s.leftMember);
       var rightSelected = normalizeMember(s.rightMember);
       var left = getEffectiveLeftMember(s, width);
       var right = getEffectiveRightMember(s, width);
-      var top = normalizeMember(s.topMember);
+      var top = isArch ? MEMBER_NONE : normalizeMember(s.topMember);
       var bottom = normalizeMember(s.bottomMember);
       out[i].leftMember = leftSelected;
       out[i].rightMember = rightSelected;
@@ -358,8 +431,11 @@
       out[i].effectiveRight = right;
       out[i].topMember = top;
       out[i].bottomMember = bottom;
+      out[i].archRiseFt = isArch ? getArchRiseFt(s) : 0;
+      out[i].flexLf = isArch ? getArchFlexibleLength(s) : 0;
+      if (out[i].flexLf > 0) out[i].cutsFlex.push(out[i].flexLf);
 
-      addCut(i, top, width);
+      if (!isArch) addCut(i, top, width);
       addCut(i, bottom, width);
 
       var prevShares = i > 0 && isSharePostWithNext(sectionsInput[i - 1]);
@@ -367,9 +443,8 @@
 
       if (prevShares) {
         out[i].sharedLeftWith = i;
-        // Left post already counted on the previous opening's right.
       } else {
-        addCut(i, left, height);
+        addCut(i, left, straightH);
       }
 
       if (shareWithNext) {
@@ -378,9 +453,9 @@
         );
         var nextLeft = getEffectiveLeftMember(sectionsInput[i + 1], nextWidth);
         out[i].sharedRightWith = i + 2;
-        addCut(i, largerMember(right, nextLeft), height);
+        addCut(i, largerMember(right, nextLeft), straightH);
       } else {
-        addCut(i, right, height);
+        addCut(i, right, straightH);
       }
     }
     return out;
@@ -546,14 +621,31 @@
 
   function buildSectionSvg(section, index, allSections) {
     var widthFt = roundLf(toFeet(section.widthFt, section.widthIn));
-    var heightFt = roundLf(toFeet(section.heightFt, section.heightIn));
-    if (widthFt <= 0 || heightFt <= 0) {
+    var straightH = getStraightHeightFt(section);
+    var isArch = isArchSection(section);
+    var riseFt = isArch ? getArchRiseFt(section) : 0;
+    var centerH = isArch ? getCenterHeightFt(section) : straightH;
+    var heightFt = straightH;
+    var overallH = isArch ? Math.max(centerH, straightH) : straightH;
+    if (widthFt <= 0 || straightH <= 0) {
       return (
         '<div class="admin-porch-drawing-card">' +
         "<h3>SECTION " +
         (index + 1) +
         "</h3>" +
-        '<p class="admin-porch-hint">Enter width and height to preview this section.</p>' +
+        '<p class="admin-porch-hint">Enter width and ' +
+        (isArch ? "straight height" : "height") +
+        " to preview this section.</p>" +
+        "</div>"
+      );
+    }
+    if (isArch && riseFt <= 0) {
+      return (
+        '<div class="admin-porch-drawing-card">' +
+        "<h3>SECTION " +
+        (index + 1) +
+        "</h3>" +
+        '<p class="admin-porch-hint">Center Height must be greater than Straight Height to preview the arch.</p>' +
         "</div>"
       );
     }
@@ -568,28 +660,36 @@
       );
     }
 
-    var dimLabel = formatFtInParts(section.widthFt, section.widthIn) + " W × " + formatFtInParts(section.heightFt, section.heightIn) + " H";
+    var dimLabel = isArch
+      ? formatFtInParts(section.widthFt, section.widthIn) +
+        " W × " +
+        formatFtInParts(section.heightFt, section.heightIn) +
+        " straight × " +
+        formatFtInParts(section.centerHeightFt, section.centerHeightIn) +
+        " center"
+      : formatFtInParts(section.widthFt, section.widthIn) + " W × " + formatFtInParts(section.heightFt, section.heightIn) + " H";
     var memberSummary = formatMemberSummary(section);
     var allList = allSections || [];
     var prevShares = index > 0 && isSharePostWithNext(allList[index - 1]);
     var sharesNext = isSharePostWithNext(section) && index < allList.length - 1;
     var leftMember = normalizeMember(section.leftMember);
     var rightMember = normalizeMember(section.rightMember);
-    var topMember = normalizeMember(section.topMember);
+    var topMember = isArch ? MEMBER_NONE : normalizeMember(section.topMember);
     var bottomMember = normalizeMember(section.bottomMember);
-    var padL = 78;
+    var padL = isArch ? 96 : 78;
     var padR = 28;
-    var padT = 54;
+    var padT = isArch ? 64 : 54;
     var padB = 36;
     var maxDrawW = 320;
     var maxDrawH = 340;
-    var scale = Math.min(maxDrawW / widthFt, maxDrawH / heightFt);
+    var scale = Math.min(maxDrawW / widthFt, maxDrawH / overallH);
     var drawW = widthFt * scale;
-    var drawH = heightFt * scale;
+    var drawH = overallH * scale;
     var x0 = padL;
     var y0 = padT;
     var x1 = x0 + drawW;
     var y1 = y0 + drawH;
+    var yFrameTop = isArch ? y0 + riseFt * scale : y0;
     var vbW = padL + drawW + padR;
     var vbH = padT + drawH + padB;
 
@@ -634,17 +734,47 @@
     );
 
     // Screen fill
-    parts.push(
-      '<rect x="' +
+    if (isArch) {
+      var rPx = ((riseFt * riseFt + (widthFt / 2) * (widthFt / 2)) / (2 * riseFt)) * scale;
+      var largeArc = riseFt > widthFt / 2 ? 1 : 0;
+      var archFill =
+        "M " +
         x0 +
-        '" y="' +
-        y0 +
-        '" width="' +
-        drawW +
-        '" height="' +
-        drawH +
-        '" fill="#f4f7fa" stroke="none"/>'
-    );
+        " " +
+        y1 +
+        " L " +
+        x0 +
+        " " +
+        yFrameTop +
+        " A " +
+        rPx +
+        " " +
+        rPx +
+        " 0 " +
+        largeArc +
+        " 0 " +
+        x1 +
+        " " +
+        yFrameTop +
+        " L " +
+        x1 +
+        " " +
+        y1 +
+        " Z";
+      parts.push('<path d="' + archFill + '" fill="#f4f7fa" stroke="none"/>');
+    } else {
+      parts.push(
+        '<rect x="' +
+          x0 +
+          '" y="' +
+          y0 +
+          '" width="' +
+          drawW +
+          '" height="' +
+          drawH +
+          '" fill="#f4f7fa" stroke="none"/>'
+      );
+    }
 
     var doorOpenings = getDoorOpenings(section, widthFt);
     var compact = drawW < 150 || widthFt < 3.5;
@@ -772,7 +902,7 @@
           '<line x1="' +
             dx0 +
             '" y1="' +
-            y0 +
+            yFrameTop +
             '" x2="' +
             dx0 +
             '" y2="' +
@@ -785,7 +915,7 @@
           '<line x1="' +
             dx1 +
             '" y1="' +
-            y0 +
+            yFrameTop +
             '" x2="' +
             dx1 +
             '" y2="' +
@@ -852,11 +982,11 @@
             formatMemberLabel("z-bar-door", doorCompact)
           );
         }
-        if (headerY - y0 > 20) {
+        if (headerY - yFrameTop > 20) {
           appendShopLabel(
             parts,
             (dx0 + dx1) / 2,
-            (y0 + headerY) / 2 + 3,
+            (yFrameTop + headerY) / 2 + 3,
             "ABOVE DOOR",
             { size: 8 }
           );
@@ -895,17 +1025,59 @@
     }
 
     // Light section outline so "None" edges still show the opening bounds.
-    parts.push(
-      '<rect x="' +
-        x0 +
-        '" y="' +
-        y0 +
-        '" width="' +
-        drawW +
-        '" height="' +
-        drawH +
-        '" fill="none" stroke="#c5cdd4" stroke-width="1"/>'
-    );
+    if (isArch) {
+      var rOutline = ((riseFt * riseFt + (widthFt / 2) * (widthFt / 2)) / (2 * riseFt)) * scale;
+      var largeOutline = riseFt > widthFt / 2 ? 1 : 0;
+      parts.push(
+        '<path d="M ' +
+          x0 +
+          " " +
+          y1 +
+          " L " +
+          x0 +
+          " " +
+          yFrameTop +
+          " A " +
+          rOutline +
+          " " +
+          rOutline +
+          " 0 " +
+          largeOutline +
+          " 0 " +
+          x1 +
+          " " +
+          yFrameTop +
+          " L " +
+          x1 +
+          " " +
+          y1 +
+          " Z" +
+          '" fill="none" stroke="#c5cdd4" stroke-width="1"/>'
+      );
+      parts.push(
+        '<line x1="' +
+          x0 +
+          '" y1="' +
+          yFrameTop +
+          '" x2="' +
+          x1 +
+          '" y2="' +
+          yFrameTop +
+          '" stroke="#c5cdd4" stroke-width="1" stroke-dasharray="4 3"/>'
+      );
+    } else {
+      parts.push(
+        '<rect x="' +
+          x0 +
+          '" y="' +
+          y0 +
+          '" width="' +
+          drawW +
+          '" height="' +
+          drawH +
+          '" fill="none" stroke="#c5cdd4" stroke-width="1"/>'
+      );
+    }
 
     // Frame / post members (overall W×H stay the same; thickness is visual only)
     function drawPerimeterMember(size, edge, xA, yA, xB, yB, labelX, labelY, rotate, skipLabel, extraLabel) {
@@ -937,15 +1109,16 @@
     }
     var leftLabelSize = doorTouchesLeft ? getEffectiveLeftMember(section, widthFt) : leftMember;
     var rightLabelSize = doorTouchesRight ? getEffectiveRightMember(section, widthFt) : rightMember;
+    var sideLabelY = yFrameTop + (y1 - yFrameTop) * 0.28;
     drawPerimeterMember(
       leftLabelSize,
       "left",
       x0,
-      y0,
+      yFrameTop,
       x0,
       y1,
       x0 + 11,
-      y0 + drawH * 0.28,
+      sideLabelY,
       true,
       false,
       prevShares ? " shared" : ""
@@ -954,28 +1127,61 @@
       rightLabelSize,
       "right",
       x1,
-      y0,
+      yFrameTop,
       x1,
       y1,
       x1 - 11,
-      y0 + drawH * 0.28,
+      sideLabelY,
       true,
       false,
       sharesNext ? " shared" : ""
     );
-    var headerClearanceFt = heightFt - Math.min(DOOR_OPENING_HEIGHT_FT, Math.max(1, heightFt - 0.05));
-    drawPerimeterMember(
-      topMember,
-      "top",
-      x0,
-      y0,
-      x1,
-      y0,
-      x0 + drawW / 2,
-      y0 + 13,
-      false,
-      doorOpenings.length && (drawW < 120 || headerClearanceFt < 0.5)
-    );
+    if (isArch) {
+      var rFlex = ((riseFt * riseFt + (widthFt / 2) * (widthFt / 2)) / (2 * riseFt)) * scale;
+      var largeFlex = riseFt > widthFt / 2 ? 1 : 0;
+      var flexStroke = memberStrokeWidth(MEMBER_FLEX);
+      parts.push(
+        '<path d="M ' +
+          x0 +
+          " " +
+          yFrameTop +
+          " A " +
+          rFlex +
+          " " +
+          rFlex +
+          " 0 " +
+          largeFlex +
+          " 0 " +
+          x1 +
+          " " +
+          yFrameTop +
+          '" fill="none" stroke="#111" stroke-linecap="square" stroke-width="' +
+          flexStroke +
+          '"/>'
+      );
+      addLegend(MEMBER_FLEX, "arch");
+      appendShopLabel(
+        parts,
+        x0 + drawW / 2,
+        y0 - 8,
+        formatMemberLabel(MEMBER_FLEX, compact),
+        { size: compact ? 8 : 9 }
+      );
+    } else {
+      var headerClearanceFt = heightFt - Math.min(DOOR_OPENING_HEIGHT_FT, Math.max(1, heightFt - 0.05));
+      drawPerimeterMember(
+        topMember,
+        "top",
+        x0,
+        y0,
+        x1,
+        y0,
+        x0 + drawW / 2,
+        y0 + 13,
+        false,
+        doorOpenings.length && (drawW < 120 || headerClearanceFt < 0.5)
+      );
+    }
     var bottomLabelX = x0 + drawW * (section.kickPlate ? 0.78 : 0.5);
     drawPerimeterMember(
       bottomMember,
@@ -1044,61 +1250,173 @@
     );
 
     // Height dimension (left)
-    var dimX = 34;
-    parts.push(
-      '<line x1="' +
-        dimX +
-        '" y1="' +
-        y0 +
-        '" x2="' +
-        dimX +
-        '" y2="' +
-        y1 +
-        '" stroke="#333" stroke-width="1.2"/>'
-    );
-    parts.push(
-      '<polyline points="' +
-        (dimX - 5) +
-        "," +
-        y0 +
-        " " +
-        (dimX + 5) +
-        "," +
-        y0 +
-        " " +
-        dimX +
-        "," +
-        (y0 + 8) +
-        '" fill="#333"/>'
-    );
-    parts.push(
-      '<polyline points="' +
-        (dimX - 5) +
-        "," +
-        y1 +
-        " " +
-        (dimX + 5) +
-        "," +
-        y1 +
-        " " +
-        dimX +
-        "," +
-        (y1 - 8) +
-        '" fill="#333"/>'
-    );
-    parts.push(
-      '<text x="' +
-        (dimX - 12) +
-        '" y="' +
-        (y0 + drawH / 2) +
-        '" text-anchor="middle" transform="rotate(-90 ' +
-        (dimX - 12) +
-        " " +
-        (y0 + drawH / 2) +
-        ')" font-size="12" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="#222" class="admin-porch-svg-dim">' +
-        escapeXml(formatFtInParts(section.heightFt, section.heightIn)) +
-        "</text>"
-    );
+    var dimX = isArch ? 28 : 34;
+    if (isArch) {
+      var dimXStraight = 58;
+      parts.push(
+        '<line x1="' +
+          dimX +
+          '" y1="' +
+          y0 +
+          '" x2="' +
+          dimX +
+          '" y2="' +
+          y1 +
+          '" stroke="#333" stroke-width="1.2"/>'
+      );
+      parts.push(
+        '<polyline points="' +
+          (dimX - 5) +
+          "," +
+          y0 +
+          " " +
+          (dimX + 5) +
+          "," +
+          y0 +
+          " " +
+          dimX +
+          "," +
+          (y0 + 8) +
+          '" fill="#333"/>'
+      );
+      parts.push(
+        '<polyline points="' +
+          (dimX - 5) +
+          "," +
+          y1 +
+          " " +
+          (dimX + 5) +
+          "," +
+          y1 +
+          " " +
+          dimX +
+          "," +
+          (y1 - 8) +
+          '" fill="#333"/>'
+      );
+      parts.push(
+        '<text x="' +
+          (dimX - 12) +
+          '" y="' +
+          (y0 + drawH / 2) +
+          '" text-anchor="middle" transform="rotate(-90 ' +
+          (dimX - 12) +
+          " " +
+          (y0 + drawH / 2) +
+          ')" font-size="11" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="#222" class="admin-porch-svg-dim">' +
+          escapeXml(formatFtInParts(section.centerHeightFt, section.centerHeightIn) + " CTR") +
+          "</text>"
+      );
+      parts.push(
+        '<line x1="' +
+          dimXStraight +
+          '" y1="' +
+          yFrameTop +
+          '" x2="' +
+          dimXStraight +
+          '" y2="' +
+          y1 +
+          '" stroke="#333" stroke-width="1.2"/>'
+      );
+      parts.push(
+        '<polyline points="' +
+          (dimXStraight - 5) +
+          "," +
+          yFrameTop +
+          " " +
+          (dimXStraight + 5) +
+          "," +
+          yFrameTop +
+          " " +
+          dimXStraight +
+          "," +
+          (yFrameTop + 8) +
+          '" fill="#333"/>'
+      );
+      parts.push(
+        '<polyline points="' +
+          (dimXStraight - 5) +
+          "," +
+          y1 +
+          " " +
+          (dimXStraight + 5) +
+          "," +
+          y1 +
+          " " +
+          dimXStraight +
+          "," +
+          (y1 - 8) +
+          '" fill="#333"/>'
+      );
+      parts.push(
+        '<text x="' +
+          (dimXStraight - 12) +
+          '" y="' +
+          (yFrameTop + (y1 - yFrameTop) / 2) +
+          '" text-anchor="middle" transform="rotate(-90 ' +
+          (dimXStraight - 12) +
+          " " +
+          (yFrameTop + (y1 - yFrameTop) / 2) +
+          ')" font-size="11" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="#222" class="admin-porch-svg-dim">' +
+          escapeXml(formatFtInParts(section.heightFt, section.heightIn) + " STR") +
+          "</text>"
+      );
+    } else {
+      parts.push(
+        '<line x1="' +
+          dimX +
+          '" y1="' +
+          y0 +
+          '" x2="' +
+          dimX +
+          '" y2="' +
+          y1 +
+          '" stroke="#333" stroke-width="1.2"/>'
+      );
+      parts.push(
+        '<polyline points="' +
+          (dimX - 5) +
+          "," +
+          y0 +
+          " " +
+          (dimX + 5) +
+          "," +
+          y0 +
+          " " +
+          dimX +
+          "," +
+          (y0 + 8) +
+          '" fill="#333"/>'
+      );
+      parts.push(
+        '<polyline points="' +
+          (dimX - 5) +
+          "," +
+          y1 +
+          " " +
+          (dimX + 5) +
+          "," +
+          y1 +
+          " " +
+          dimX +
+          "," +
+          (y1 - 8) +
+          '" fill="#333"/>'
+      );
+      parts.push(
+        '<text x="' +
+          (dimX - 12) +
+          '" y="' +
+          (y0 + drawH / 2) +
+          '" text-anchor="middle" transform="rotate(-90 ' +
+          (dimX - 12) +
+          " " +
+          (y0 + drawH / 2) +
+          ')" font-size="12" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="#222" class="admin-porch-svg-dim">' +
+          escapeXml(formatFtInParts(section.heightFt, section.heightIn)) +
+          "</text>"
+      );
+    }
 
     parts.push("</svg>");
 
@@ -1276,6 +1594,7 @@
       date: meta.date,
       sticks1x2: totals.track1x2Sticks || 0,
       sticks2x2: totals.track2x2Sticks || 0,
+      sticksFlex: totals.flexSticks || 0,
       doors: totals.doorCount || 0,
       zBar: totals.zBarCount || 0,
       kickPlateLf: totals.kickPlateLf || 0,
@@ -1295,6 +1614,7 @@
     var rows = [
       { material: "1x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks1x2) },
       { material: "2x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks2x2) },
+      { material: "1x1/2 Flexible Aluminum (20 ft)", quantity: stickLabel(data.sticksFlex) },
       { material: "Screen Door", quantity: String(data.doors) },
       { material: "Z-Bar", quantity: String(data.zBar) },
       {
@@ -1542,6 +1862,9 @@
         topMember: MEMBER_DEFAULT,
         bottomMember: MEMBER_DEFAULT,
         sharePostWithNext: false,
+        openingShape: "rectangle",
+        centerHeightFt: 10,
+        centerHeightIn: 0,
       });
     }
     refreshLayout();
@@ -1574,6 +1897,9 @@
       topMember: memberFromData(d, "topMember"),
       bottomMember: memberFromData(d, "bottomMember"),
       sharePostWithNext: isSharePostWithNext(d) ? "yes" : "no",
+      openingShape: isArchSection(d) ? "arch" : "rectangle",
+      centerHeightFt: d.centerHeightFt != null ? d.centerHeightFt : 10,
+      centerHeightIn: d.centerHeightIn != null ? d.centerHeightIn : 0,
     };
     Object.keys(map).forEach(function (key) {
       var el = card.querySelector('[data-field="' + key + '"]');
@@ -1586,6 +1912,7 @@
       }
     });
     syncDoorPositionVisibility(card);
+    syncOpeningShapeVisibility(card);
   }
 
   function syncDoorPositionVisibility(card) {
@@ -1600,6 +1927,30 @@
     }
   }
 
+  function syncOpeningShapeVisibility(card) {
+    var shapeEl = card.querySelector('[data-field="openingShape"]');
+    var isArch = shapeEl && shapeEl.value === "arch";
+    var heightLegend = card.querySelector("[data-height-legend]");
+    var centerWrap = card.querySelector("[data-center-height-wrap]");
+    var topWrap = card.querySelector("[data-top-member-wrap]");
+    if (heightLegend) heightLegend.textContent = isArch ? "Straight Height" : "Height";
+    if (centerWrap) centerWrap.hidden = !isArch;
+    if (topWrap) topWrap.hidden = !!isArch;
+    if (!isArch) return;
+    var cFtEl = card.querySelector('[data-field="centerHeightFt"]');
+    var cInEl = card.querySelector('[data-field="centerHeightIn"]');
+    var hFtEl = card.querySelector('[data-field="heightFt"]');
+    var hInEl = card.querySelector('[data-field="heightIn"]');
+    var cFt = Number(cFtEl && cFtEl.value) || 0;
+    var cIn = Number(cInEl && cInEl.value) || 0;
+    var hFt = Number(hFtEl && hFtEl.value) || 0;
+    var hIn = Number(hInEl && hInEl.value) || 0;
+    if (cFt + cIn / 12 <= hFt + hIn / 12) {
+      if (cFtEl) cFtEl.value = String(hFt + 2);
+      if (cInEl) cInEl.value = String(hIn);
+    }
+  }
+
   function readSectionCard(card) {
     function val(field) {
       var el = card.querySelector('[data-field="' + field + '"]');
@@ -1611,6 +1962,9 @@
       widthIn: Number(val("widthIn")) || 0,
       heightFt: Number(val("heightFt")) || 0,
       heightIn: Number(val("heightIn")) || 0,
+      openingShape: val("openingShape") === "arch" ? "arch" : "rectangle",
+      centerHeightFt: Number(val("centerHeightFt")) || 0,
+      centerHeightIn: Number(val("centerHeightIn")) || 0,
       door: doorOn,
       doorPosition: doorOn ? normalizeDoorPosition(val("doorPosition")) : "",
       kickPlate: val("kickPlate") === "yes",
@@ -1667,6 +2021,7 @@
     var cuts1x1 = [];
     var cuts1x2 = [];
     var cuts2x2 = [];
+    var cutsFlex = [];
     var totalArea = 0;
     var doorCount = 0;
     var kickPlateLf = 0;
@@ -1677,7 +2032,11 @@
     sectionsInput.forEach(function (s, index) {
       var width = roundLf(toFeet(s.widthFt, s.widthIn));
       var height = roundLf(toFeet(s.heightFt, s.heightIn));
-      var areaSqft = roundLf(width * height);
+      var isArch = isArchSection(s);
+      var riseFt = isArch ? getArchRiseFt(s) : 0;
+      var centerH = isArch ? getCenterHeightFt(s) : height;
+      var flexLf = isArch ? getArchFlexibleLength(s) : 0;
+      var areaSqft = roundLf(width * height + (isArch ? circularSegmentArea(width, riseFt) : 0));
       var frame = frameBySection[index] || {
         leftMember: MEMBER_DEFAULT,
         rightMember: MEMBER_DEFAULT,
@@ -1686,6 +2045,9 @@
         cuts1x1: [],
         cuts1x2: [],
         cuts2x2: [],
+        cutsFlex: [],
+        archRiseFt: 0,
+        flexLf: 0,
         sharedLeftWith: 0,
         sharedRightWith: 0,
       };
@@ -1739,10 +2101,12 @@
       }
 
       var section2x2Cuts = frame2x2Cuts.concat(door2x2Cuts, kick2x2Cuts, chair2x2Cuts);
+      var sectionFlexCuts = (frame.cutsFlex || []).slice();
 
       cuts1x1 = cuts1x1.concat(section1x1Cuts);
       cuts1x2 = cuts1x2.concat(section1x2Cuts);
       cuts2x2 = cuts2x2.concat(section2x2Cuts);
+      cutsFlex = cutsFlex.concat(sectionFlexCuts);
       totalArea += areaSqft;
 
       function sumCuts(arr) {
@@ -1764,6 +2128,9 @@
         index: index + 1,
         width: width,
         height: height,
+        centerHeight: centerH,
+        archRiseFt: riseFt,
+        openingShape: isArch ? "arch" : "rectangle",
         areaSqft: areaSqft,
         door: s.door,
         doorPosition: normalizeDoorPosition(s.doorPosition) || "",
@@ -1779,6 +2146,7 @@
         cuts1x2: section1x2Cuts,
         frame2x2Cuts: frame2x2Cuts,
         cuts2x2: section2x2Cuts,
+        cutsFlex: sectionFlexCuts,
         kick2x2Cuts: kick2x2Cuts,
         kickPlateSegments: kickSegments,
         chair2x2Cuts: chair2x2Cuts,
@@ -1790,6 +2158,7 @@
         kick2x2Lf: kick2x2Lf,
         chair2x2Lf: chair2x2Lf,
         track2x2Lf: roundLf(frame2x2Lf + door2x2Lf + kick2x2Lf + chair2x2Lf),
+        flexLf: flexLf,
         zBarCount: zBarCount,
         doorConstruction: s.door ? getDoorConstruction(s) : null,
         kickPlateHeightIn: s.kickPlate ? getKickPlateHeightIn(s) : 0,
@@ -1800,6 +2169,13 @@
     var pack1x1 = packCuts(cuts1x1, STICK_FT);
     var pack1x2 = packCuts(cuts1x2, STICK_FT);
     var pack2x2 = packCuts(cuts2x2, STICK_FT);
+    var flexLfTotal = roundLf(
+      cutsFlex.reduce(function (sum, c) {
+        return sum + c;
+      }, 0)
+    );
+    var flexSticks = flexStickCount(flexLfTotal);
+    var flexCost = flexSticks * PRICE_FLEX_STICK;
     var track1x1Sticks = pack1x1.stickCount;
     var track1x1Cost = track1x1Sticks * PRICE_1X1_STICK;
     var track1x2Sticks = pack1x2.stickCount;
@@ -1817,6 +2193,7 @@
       track1x1Cost +
       track1x2Cost +
       track2x2Cost +
+      flexCost +
       doorCost +
       kickPlateCost +
       kickMoldingCost +
@@ -1849,6 +2226,10 @@
       track2x2Lf: pack2x2.totalLf,
       track2x2Sticks: track2x2Sticks,
       track2x2Cost: track2x2Cost,
+      flexLf: flexLfTotal,
+      flexCuts: cutsFlex,
+      flexSticks: flexSticks,
+      flexCost: flexCost,
       doorCount: doorCount,
       doorCost: doorCost,
       zBarCount: zBarCount,
@@ -1979,18 +2360,37 @@
         dl.appendChild(dt);
         dl.appendChild(dd);
       }
-      add("Opening", num(s.width, 2) + " ft W × " + num(s.height, 2) + " ft H");
+      add(
+        "Opening",
+        s.openingShape === "arch"
+          ? num(s.width, 2) +
+            " ft W × " +
+            num(s.height, 2) +
+            " ft straight × " +
+            num(s.centerHeight, 2) +
+            " ft center (rise " +
+            num(s.archRiseFt, 2) +
+            " ft)"
+          : num(s.width, 2) + " ft W × " + num(s.height, 2) + " ft H"
+      );
       add("Area", num(s.areaSqft, 1) + " sqft");
       add(
         "Frame / posts",
-        "L " +
-          formatMemberShort(s.leftMember) +
-          " · R " +
-          formatMemberShort(s.rightMember) +
-          " · T " +
-          formatMemberShort(s.topMember) +
-          " · B " +
-          formatMemberShort(s.bottomMember)
+        s.openingShape === "arch"
+          ? "L " +
+            formatMemberShort(s.leftMember) +
+            " · R " +
+            formatMemberShort(s.rightMember) +
+            " · Arch 1x1/2 Flexible · B " +
+            formatMemberShort(s.bottomMember)
+          : "L " +
+            formatMemberShort(s.leftMember) +
+            " · R " +
+            formatMemberShort(s.rightMember) +
+            " · T " +
+            formatMemberShort(s.topMember) +
+            " · B " +
+            formatMemberShort(s.bottomMember)
       );
       if (s.sharedLeftWith) {
         add("Shared left post", "Continuous with Section " + s.sharedLeftWith);
@@ -2007,6 +2407,12 @@
           ? formatCutList(s.cuts1x2) + " (" + num(s.track1x2Lf, 1) + " LF)"
           : "none"
       );
+      if (s.flexLf > 0) {
+        add(
+          "1x1/2 Flexible (arch)",
+          formatCutList(s.cutsFlex) + " (" + num(s.flexLf, 2) + " LF)"
+        );
+      }
       if (s.frame2x2Cuts && s.frame2x2Cuts.length) {
         add(
           "2x2 frame cuts",
@@ -2079,6 +2485,27 @@
     }
     appendCutPlan(total, "1x2 CUT PLAN", r.pack1x2, PRICE_1X2_STICK);
     appendCutPlan(total, "2x2 CUT PLAN", r.pack2x2, PRICE_2X2_STICK);
+    if (r.flexLf > 0) {
+      var flexNote = document.createElement("div");
+      flexNote.className = "admin-porch-cutplan";
+      var flexH = document.createElement("h4");
+      flexH.className = "admin-porch-cutplan__title";
+      flexH.textContent = "1x1/2 FLEXIBLE (20 ft sticks)";
+      flexNote.appendChild(flexH);
+      var flexReq = document.createElement("p");
+      flexReq.className = "admin-porch-cutplan__required";
+      flexReq.textContent =
+        "Required curved length: " +
+        (r.flexCuts && r.flexCuts.length ? formatCutList(r.flexCuts) : num(r.flexLf, 2) + " ft") +
+        " · " +
+        r.flexSticks +
+        " stick(s) × " +
+        money(PRICE_FLEX_STICK) +
+        " = " +
+        money(r.flexCost);
+      flexNote.appendChild(flexReq);
+      total.appendChild(flexNote);
+    }
 
     var tdl = document.createElement("dl");
     tdl.className = "admin-porch-dl";
@@ -2122,6 +2549,17 @@
         money(r.track2x2Cost) +
         " (no splicing)"
     );
+    if (r.flexLf > 0) {
+      trow(
+        "1x1/2 Flexible Aluminum (20 ft)",
+        num(r.flexLf, 2) +
+          " LF · " +
+          r.flexSticks +
+          " stick(s) · " +
+          money(r.flexCost) +
+          " (round up)"
+      );
+    }
     trow("Doors", r.doorCount + " · " + money(r.doorCost));
     trow("Z-Bar", (r.zBarCount || 0) + " pc");
     trow(
@@ -2156,6 +2594,13 @@
       var s = sections[i];
       if (toFeet(s.widthFt, s.widthIn) <= 0 || toFeet(s.heightFt, s.heightIn) <= 0) {
         return "Section " + (i + 1) + ": enter a valid width and height.";
+      }
+      if (isArchSection(s) && getCenterHeightFt(s) <= getStraightHeightFt(s)) {
+        return (
+          "Section " +
+          (i + 1) +
+          ": Center Height must be greater than Straight Height."
+        );
       }
       if (s.door && !normalizeDoorPosition(s.doorPosition)) {
         return "Section " + (i + 1) + ": select Door Position (Left / Center / Right).";
@@ -2195,6 +2640,9 @@
       topMember: MEMBER_DEFAULT,
       bottomMember: MEMBER_DEFAULT,
       sharePostWithNext: false,
+      openingShape: "rectangle",
+      centerHeightFt: 10,
+      centerHeightIn: 0,
     });
     lastTotals = null;
     resultsBody.innerHTML =
@@ -2263,6 +2711,10 @@
         track2x2Lf: totals.track2x2Lf,
         track2x2Sticks: totals.track2x2Sticks,
         track2x2Cost: totals.track2x2Cost,
+        flexLf: totals.flexLf,
+        flexCuts: totals.flexCuts,
+        flexSticks: totals.flexSticks,
+        flexCost: totals.flexCost,
         doorCount: totals.doorCount,
         doorCost: totals.doorCost,
         zBarCount: totals.zBarCount,
@@ -2450,6 +2902,10 @@
     if (target.getAttribute("data-field") === "door") {
       var card = target.closest("[data-section]");
       if (card) syncDoorPositionVisibility(card);
+    }
+    if (target.getAttribute("data-field") === "openingShape") {
+      var shapeCard = target.closest("[data-section]");
+      if (shapeCard) syncOpeningShapeVisibility(shapeCard);
     }
     scheduleLayoutRefresh();
   });

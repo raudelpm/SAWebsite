@@ -163,7 +163,7 @@
                         </div>
                     </fieldset>
                     <fieldset class="admin-porch-dim-group">
-                        <legend>Height</legend>
+                        <legend data-height-legend>Height</legend>
                         <div class="admin-porch-dim-inputs">
                             <div class="form-field">
                                 <label>Feet</label>
@@ -175,8 +175,28 @@
                             </div>
                         </div>
                     </fieldset>
+                    <fieldset class="admin-porch-dim-group" data-center-height-wrap hidden>
+                        <legend>Center Height</legend>
+                        <div class="admin-porch-dim-inputs">
+                            <div class="form-field">
+                                <label>Feet</label>
+                                <input class="admin-porch-dim-input" data-field="centerHeightFt" type="number" min="0" step="1" inputmode="numeric" value="10">
+                            </div>
+                            <div class="form-field">
+                                <label>Inches</label>
+                                <input class="admin-porch-dim-input" data-field="centerHeightIn" type="number" min="0" max="11.999" step="0.01" inputmode="decimal" value="0">
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
                 <div class="admin-porch-options">
+                    <div class="form-field">
+                        <label>Opening</label>
+                        <select data-field="openingShape">
+                            <option value="rectangle" selected>Rectangle</option>
+                            <option value="arch">Arch</option>
+                        </select>
+                    </div>
                     <div class="form-field">
                         <label>Door</label>
                         <select data-field="door">
@@ -227,7 +247,7 @@
                                 <option value="2x2">2x2</option>
                             </select>
                         </div>
-                        <div class="form-field">
+                        <div class="form-field" data-top-member-wrap>
                             <label>Top Member</label>
                             <select data-field="topMember">
                                 <option value="none">None</option>
