@@ -7965,6 +7965,8 @@ body.page-estimator-panel {
     flex-direction: column;
     background: #f4f4f5;
 }
+html body.page-admin-porch nav,
+html body.page-admin-porch nav.nav-compact,
 html body.page-estimator-panel nav,
 html body.page-estimator-panel nav.nav-compact {
     background: #0b0c0f !important;
@@ -7972,8 +7974,9 @@ html body.page-estimator-panel nav.nav-compact {
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
 }
+body.page-admin-porch .nav-compact .nav-links,
 body.page-estimator-panel .nav-compact .nav-links {
-    background: #0b0c0f;
+    background: #0b0c0f !important;
 }
 body.page-estimator-panel .admin-estimator-main {
     flex: 1 1 auto;
