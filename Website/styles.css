@@ -7497,10 +7497,12 @@ body.page-blog-post .nav-compact {
 }
 .admin-porch-custom-door {
     grid-column: 1 / -1;
-    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
     min-width: 0;
+}
+.admin-porch-custom-door:not([hidden]) {
+    display: grid;
 }
 .admin-porch-frame {
     margin: 0;
