@@ -25,11 +25,12 @@ function normalizeSection(raw) {
   if (doorPosition !== "left" && doorPosition !== "center" && doorPosition !== "right") {
     doorPosition = "";
   }
-  const members = ["none", "1x1", "1x2", "2x2"];
+  const members = ["none", "1x2", "2x2"];
   function member(value) {
     const v = String(value || "")
       .trim()
       .toLowerCase();
+    if (v === "1x1") return "1x2";
     return members.includes(v) ? v : "1x2";
   }
   return {
@@ -45,6 +46,7 @@ function normalizeSection(raw) {
     rightMember: member(s.rightMember),
     topMember: member(s.topMember),
     bottomMember: member(s.bottomMember),
+    sharePostWithNext: Boolean(s.sharePostWithNext === true || s.sharePostWithNext === "yes"),
   };
 }
 

@@ -129,7 +129,7 @@
     var v = String(value == null ? "" : value)
       .trim()
       .toLowerCase();
-    if (v === "1x1" || v === "1x2" || v === "2x2" || v === MEMBER_NONE) return v;
+    if (v === "1x2" || v === "2x2" || v === MEMBER_NONE) return v;
     return MEMBER_DEFAULT;
   }
 
@@ -163,7 +163,7 @@
   }
 
   function formatMemberSummary(section) {
-    return (
+    var base =
       "L " +
       formatMemberShort(normalizeMember(section.leftMember)) +
       " · R " +
@@ -171,13 +171,148 @@
       " · T " +
       formatMemberShort(normalizeMember(section.topMember)) +
       " · B " +
-      formatMemberShort(normalizeMember(section.bottomMember))
+      formatMemberShort(normalizeMember(section.bottomMember));
+    if (isSharePostWithNext(section)) base += " · shared post with next";
+    return base;
+  }
+
+  var MEMBER_ZBAR = "z-bar";
+  var MEMBER_2X2_ZBAR = "2x2+z-bar";
+  var DOOR_LEFT_POST_DEFAULT = "2x2";
+  var DOOR_RIGHT_POST_DEFAULT = "2x2";
+  var DOOR_FRAME_DEFAULT = MEMBER_ZBAR;
+  var DOOR_HEADER_DEFAULT = "2x2";
+  var DOOR_HEADER_INSERT_DEFAULT = MEMBER_ZBAR;
+  var CHAIR_RAIL_MEMBER_DEFAULT = "2x2";
+
+  function getKickPlateHeightIn(section) {
+    var custom = Number(section && section.kickPlateHeightIn);
+    if (Number.isFinite(custom) && custom > 0) return custom;
+    return Math.round(KICK_PLATE_HEIGHT_FT * 12 * 100) / 100;
+  }
+
+  function getKickPlateHeightFt(section) {
+    return roundLf(getKickPlateHeightIn(section) / 12);
+  }
+
+  function getChairRailMember(section) {
+    if (section && section.chairRailMember) return normalizeMember(section.chairRailMember);
+    return CHAIR_RAIL_MEMBER_DEFAULT;
+  }
+
+  function getDoorConstruction(section) {
+    var s = section || {};
+    return {
+      leftPost: s.doorLeftPost ? normalizeMember(s.doorLeftPost) : DOOR_LEFT_POST_DEFAULT,
+      rightPost: s.doorRightPost ? normalizeMember(s.doorRightPost) : DOOR_RIGHT_POST_DEFAULT,
+      frame: s.doorFrame ? String(s.doorFrame).toLowerCase() : DOOR_FRAME_DEFAULT,
+      header: s.doorHeader ? normalizeMember(s.doorHeader) : DOOR_HEADER_DEFAULT,
+      headerInsert: s.doorHeaderInsert
+        ? String(s.doorHeaderInsert).toLowerCase()
+        : DOOR_HEADER_INSERT_DEFAULT,
+    };
+  }
+
+  function openingTouchesLeft(openings) {
+    return (openings || []).some(function (op) {
+      return roundLf(op.left) <= 0.05;
+    });
+  }
+
+  function openingTouchesRight(openings, widthFt) {
+    var w = roundLf(widthFt);
+    return (openings || []).some(function (op) {
+      return roundLf(w - op.right) <= 0.05;
+    });
+  }
+
+  function getEffectiveLeftMember(section, widthFt) {
+    var openings = getDoorOpenings(section, widthFt);
+    if (section && section.door && openingTouchesLeft(openings)) {
+      return getDoorConstruction(section).leftPost;
+    }
+    return normalizeMember(section && section.leftMember);
+  }
+
+  function getEffectiveRightMember(section, widthFt) {
+    var openings = getDoorOpenings(section, widthFt);
+    if (section && section.door && openingTouchesRight(openings, widthFt)) {
+      return getDoorConstruction(section).rightPost;
+    }
+    return normalizeMember(section && section.rightMember);
+  }
+
+  function formatMemberLabel(type, compact) {
+    var t = String(type || "")
+      .trim()
+      .toLowerCase();
+    if (!t || t === MEMBER_NONE) return "";
+    if (t === "z-bar" || t === "zbar") return compact ? "ZB" : "Z-BAR";
+    if (t === "z-bar-door" || t === "z-bar-frame") return compact ? "Z-BAR" : "Z-BAR DOOR FRAME";
+    if (t === "2x2+z-bar" || t === "2x2+zbar") return compact ? "2x2+ZB" : "2x2 + Z-BAR";
+    return t.toUpperCase();
+  }
+
+  function formatKickPlateLabel(section, compact) {
+    var inches = getKickPlateHeightIn(section);
+    var inchStr = Number.isInteger(inches) ? String(inches) : String(inches);
+    return compact ? 'KP ' + inchStr + '"' : 'KICK PLATE — ' + inchStr + '"';
+  }
+
+  function formatChairRailLabel(section, compact) {
+    var member = getChairRailMember(section);
+    return compact
+      ? "CR " + formatMemberLabel(member, true)
+      : "CHAIR RAIL — " + formatMemberLabel(member, false);
+  }
+
+  function doorZBarCount(section) {
+    if (!section || !section.door) return 0;
+    var door = getDoorConstruction(section);
+    var n = 0;
+    if (door.frame === MEMBER_ZBAR || door.frame === "zbar") n += 1;
+    if (door.headerInsert === MEMBER_ZBAR || door.headerInsert === "zbar") n += 1;
+    return n;
+  }
+
+  function appendShopLabel(parts, x, y, text, options) {
+    if (!text) return;
+    var o = options || {};
+    var anchor = o.anchor || "middle";
+    var size = o.size || 8.5;
+    var fill = o.fill || "#1f1f1f";
+    var cls = o.cls || "admin-porch-svg-shop";
+    var extra = o.rotate ? ' transform="rotate(-90 ' + x + " " + y + ')"' : "";
+    parts.push(
+      '<text x="' +
+        x +
+        '" y="' +
+        y +
+        '" text-anchor="' +
+        anchor +
+        '" font-size="' +
+        size +
+        '" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="' +
+        fill +
+        '"' +
+        extra +
+        ' class="' +
+        cls +
+        '">' +
+        escapeXml(text) +
+        "</text>"
     );
   }
 
+  function isSharePostWithNext(section) {
+    var v = section && section.sharePostWithNext;
+    return v === true || v === "yes" || v === "true";
+  }
+
   /**
-   * Frame/post cuts per section. Consecutive sections that both specify a
-   * vertical member on the shared edge count that post only once (larger size).
+   * Frame/post cuts per section. Each opening is an independent concrete frame
+   * with its own left and right posts. A vertical post is shared with the next
+   * opening only when sharePostWithNext is explicitly enabled.
    */
   function getSectionFrameCuts(sectionsInput) {
     var n = (sectionsInput || []).length;
@@ -187,6 +322,8 @@
       out.push({
         leftMember: MEMBER_DEFAULT,
         rightMember: MEMBER_DEFAULT,
+        effectiveLeft: MEMBER_DEFAULT,
+        effectiveRight: MEMBER_DEFAULT,
         topMember: MEMBER_DEFAULT,
         bottomMember: MEMBER_DEFAULT,
         cuts1x1: [],
@@ -209,29 +346,37 @@
       var s = sectionsInput[i];
       var width = roundLf(toFeet(s.widthFt, s.widthIn));
       var height = roundLf(toFeet(s.heightFt, s.heightIn));
-      var left = normalizeMember(s.leftMember);
-      var right = normalizeMember(s.rightMember);
+      var leftSelected = normalizeMember(s.leftMember);
+      var rightSelected = normalizeMember(s.rightMember);
+      var left = getEffectiveLeftMember(s, width);
+      var right = getEffectiveRightMember(s, width);
       var top = normalizeMember(s.topMember);
       var bottom = normalizeMember(s.bottomMember);
-      out[i].leftMember = left;
-      out[i].rightMember = right;
+      out[i].leftMember = leftSelected;
+      out[i].rightMember = rightSelected;
+      out[i].effectiveLeft = left;
+      out[i].effectiveRight = right;
       out[i].topMember = top;
       out[i].bottomMember = bottom;
 
       addCut(i, top, width);
       addCut(i, bottom, width);
 
-      var prevRight = i > 0 ? normalizeMember(sectionsInput[i - 1].rightMember) : MEMBER_NONE;
-      var nextLeft = i < n - 1 ? normalizeMember(sectionsInput[i + 1].leftMember) : MEMBER_NONE;
+      var prevShares = i > 0 && isSharePostWithNext(sectionsInput[i - 1]);
+      var shareWithNext = isSharePostWithNext(s) && i < n - 1;
 
-      if (left !== MEMBER_NONE && prevRight !== MEMBER_NONE) {
+      if (prevShares) {
         out[i].sharedLeftWith = i;
-        // Counted on the previous section's right post.
+        // Left post already counted on the previous opening's right.
       } else {
         addCut(i, left, height);
       }
 
-      if (right !== MEMBER_NONE && nextLeft !== MEMBER_NONE) {
+      if (shareWithNext) {
+        var nextWidth = roundLf(
+          toFeet(sectionsInput[i + 1].widthFt, sectionsInput[i + 1].widthIn)
+        );
+        var nextLeft = getEffectiveLeftMember(sectionsInput[i + 1], nextWidth);
         out[i].sharedRightWith = i + 2;
         addCut(i, largerMember(right, nextLeft), height);
       } else {
@@ -399,7 +544,7 @@
     };
   }
 
-  function buildSectionSvg(section, index) {
+  function buildSectionSvg(section, index, allSections) {
     var widthFt = roundLf(toFeet(section.widthFt, section.widthIn));
     var heightFt = roundLf(toFeet(section.heightFt, section.heightIn));
     if (widthFt <= 0 || heightFt <= 0) {
@@ -425,6 +570,9 @@
 
     var dimLabel = formatFtInParts(section.widthFt, section.widthIn) + " W × " + formatFtInParts(section.heightFt, section.heightIn) + " H";
     var memberSummary = formatMemberSummary(section);
+    var allList = allSections || [];
+    var prevShares = index > 0 && isSharePostWithNext(allList[index - 1]);
+    var sharesNext = isSharePostWithNext(section) && index < allList.length - 1;
     var leftMember = normalizeMember(section.leftMember);
     var rightMember = normalizeMember(section.rightMember);
     var topMember = normalizeMember(section.topMember);
@@ -444,7 +592,6 @@
     var y1 = y0 + drawH;
     var vbW = padL + drawW + padR;
     var vbH = padT + drawH + padB;
-    var stroke2 = 3.2;
 
     function sx(ft) {
       return x0 + ft * scale;
@@ -482,6 +629,7 @@
         ".admin-porch-svg-label{font:700 12px 'Segoe UI',Arial,sans-serif;fill:#1a1a1a;}" +
         ".admin-porch-svg-label-sm{font:600 10px 'Segoe UI',Arial,sans-serif;fill:#2a2a2a;}" +
         ".admin-porch-svg-dim{font:700 12px 'Segoe UI',Arial,sans-serif;fill:#222;}" +
+        ".admin-porch-svg-shop{font:700 8.5px 'Segoe UI',Arial,sans-serif;fill:#1f1f1f;letter-spacing:.02em;}" +
         "</style>"
     );
 
@@ -498,13 +646,27 @@
         '" fill="#f4f7fa" stroke="none"/>'
     );
 
-    // Kick plate — never continues under door openings; each wall run is its own segment.
     var doorOpenings = getDoorOpenings(section, widthFt);
+    var compact = drawW < 150 || widthFt < 3.5;
+    var doorConstr = getDoorConstruction(section);
+    var doorTouchesLeft = section.door && openingTouchesLeft(doorOpenings);
+    var doorTouchesRight = section.door && openingTouchesRight(doorOpenings, widthFt);
+    var legendItems = [];
+    var legendSeen = {};
+    function addLegend(type, note) {
+      if (!type || type === MEMBER_NONE) return;
+      var key = type + "|" + (note || "");
+      if (legendSeen[key]) return;
+      legendSeen[key] = true;
+      legendItems.push({ type: type, note: note || "" });
+    }
+
+    // Kick plate — never continues under door openings; each wall run is its own segment.
     var kickSegments = section.kickPlate
       ? getKickPlateSegments(widthFt, doorOpenings)
       : [];
     if (section.kickPlate && kickSegments.length) {
-      var kickH = Math.min(KICK_PLATE_HEIGHT_FT, heightFt * 0.35);
+      var kickH = Math.min(getKickPlateHeightFt(section), heightFt * 0.35);
       var kickTopY = syFromBottom(kickH);
       var largest = kickSegments[0];
       kickSegments.forEach(function (seg) {
@@ -534,33 +696,33 @@
             '" y2="' +
             kickTopY +
             '" stroke="#1a1a1a" stroke-width="' +
-            stroke2 +
+            memberStrokeWidth("2x2") +
             '"/>'
         );
-        if (seg.length >= 2) {
-          parts.push(
-            '<text x="' +
-              (segX + 6) +
-              '" y="' +
-              (kickTopY - 6) +
-              '" class="admin-porch-svg-label-sm">2x2</text>'
-          );
+        if (seg.length >= 2.5 && !compact) {
+          appendShopLabel(parts, segX + 8, kickTopY - 5, formatMemberLabel("2x2", compact), {
+            anchor: "start",
+            size: 8,
+          });
         }
       });
-      parts.push(
-        '<text x="' +
-          (sx(largest.start) + (largest.length * scale) / 2) +
-          '" y="' +
-          (kickTopY + (kickH * scale) / 2 + 4) +
-          '" text-anchor="middle" class="admin-porch-svg-label">KICK PLATE</text>'
-      );
+      if (largest.length * scale >= 48) {
+        appendShopLabel(
+          parts,
+          sx(largest.start) + (largest.length * scale) / 2,
+          kickTopY + (kickH * scale) / 2 + 3,
+          formatKickPlateLabel(section, compact || largest.length * scale < 90)
+        );
+        addLegend("kick", formatKickPlateLabel(section, false));
+      }
     }
 
     // Chair rail — never continues through door openings; each wall run is its own segment.
     if (section.chairRail) {
+      var chairMember = getChairRailMember(section);
       var railFromBottom = Math.min(CHAIR_RAIL_HEIGHT_FT, heightFt * 0.55);
       if (section.kickPlate) {
-        railFromBottom = Math.max(railFromBottom, KICK_PLATE_HEIGHT_FT + 0.75);
+        railFromBottom = Math.max(railFromBottom, getKickPlateHeightFt(section) + 0.75);
       }
       railFromBottom = Math.min(railFromBottom, heightFt - 0.5);
       var railY = syFromBottom(railFromBottom);
@@ -580,29 +742,32 @@
             '" y2="' +
             railY +
             '" stroke="#1a1a1a" stroke-width="' +
-            stroke2 +
+            memberStrokeWidth(chairMember) +
             '"/>'
         );
       });
-      if (largestChair && largestChair.length >= 1.5) {
-        parts.push(
-          '<text x="' +
-            (sx(largestChair.start) + (largestChair.length * scale) / 2) +
-            '" y="' +
-            (railY - 8) +
-            '" text-anchor="middle" class="admin-porch-svg-label-sm">CHAIR RAIL — 2x2</text>'
+      if (largestChair && largestChair.length * scale >= 70) {
+        appendShopLabel(
+          parts,
+          sx(largestChair.start) + (largestChair.length * scale) / 2,
+          railY - 6,
+          formatChairRailLabel(section, compact || largestChair.length * scale < 110)
         );
+        addLegend(chairMember, "chair rail");
       }
     }
 
-    // Door — verticals floor-to-top; opening is 36" × 80"; header at 80" AFF.
+    // Door — vertical 2x2 posts, Z-Bar door frame, 2x2 + Z-Bar header.
     if (doorOpenings.length) {
       doorOpenings.forEach(function (op) {
         var dx0 = sx(op.left);
         var dx1 = sx(op.right);
         var openingH = Math.min(DOOR_OPENING_HEIGHT_FT, Math.max(1, heightFt - 0.05));
         var headerY = syFromBottom(openingH);
-        // Full-height vertical 2x2 framing members
+        var doorPx = Math.max(8, dx1 - dx0);
+        var doorCompact = compact || doorPx < 78;
+        var postStroke = memberStrokeWidth(doorConstr.leftPost);
+        var headerStroke = memberStrokeWidth(doorConstr.header);
         parts.push(
           '<line x1="' +
             dx0 +
@@ -613,7 +778,7 @@
             '" y2="' +
             y1 +
             '" stroke="#1a1a1a" stroke-width="' +
-            stroke2 +
+            postStroke +
             '"/>'
         );
         parts.push(
@@ -626,10 +791,9 @@
             '" y2="' +
             y1 +
             '" stroke="#1a1a1a" stroke-width="' +
-            stroke2 +
+            postStroke +
             '"/>'
         );
-        // 36" header at top of 80" door opening
         parts.push(
           '<line x1="' +
             dx0 +
@@ -640,44 +804,93 @@
             '" y2="' +
             headerY +
             '" stroke="#1a1a1a" stroke-width="' +
-            stroke2 +
+            headerStroke +
             '"/>'
         );
-        // Door leaf (opening only — not to the top of the section)
+        var inset = 3.5;
         parts.push(
           '<rect x="' +
-            (dx0 + 4) +
+            (dx0 + inset) +
             '" y="' +
-            (headerY + 4) +
+            (headerY + inset) +
             '" width="' +
-            Math.max(8, dx1 - dx0 - 8) +
+            Math.max(6, dx1 - dx0 - inset * 2) +
             '" height="' +
-            Math.max(8, y1 - headerY - 8) +
-            '" fill="none" stroke="#5b6770" stroke-width="1.2" stroke-dasharray="4 3"/>'
+            Math.max(6, y1 - headerY - inset * 2) +
+            '" fill="none" stroke="#3a3a3a" stroke-width="1.6"/>'
         );
         parts.push(
-          '<text x="' +
-            ((dx0 + dx1) / 2) +
+          '<rect x="' +
+            (dx0 + 7) +
             '" y="' +
-            ((headerY + y1) / 2 - 6) +
-            '" text-anchor="middle" class="admin-porch-svg-label">DOOR</text>'
+            (headerY + 7) +
+            '" width="' +
+            Math.max(4, dx1 - dx0 - 14) +
+            '" height="' +
+            Math.max(4, y1 - headerY - 14) +
+            '" fill="none" stroke="#5b6770" stroke-width="1" stroke-dasharray="4 3"/>'
         );
-        parts.push(
-          '<text x="' +
-            ((dx0 + dx1) / 2) +
-            '" y="' +
-            ((headerY + y1) / 2 + 10) +
-            '" text-anchor="middle" class="admin-porch-svg-label-sm">36" × 80"</text>'
+        appendShopLabel(
+          parts,
+          (dx0 + dx1) / 2,
+          (headerY + y1) / 2 - 8,
+          "DOOR",
+          { cls: "admin-porch-svg-label", size: doorCompact ? 9 : 11 }
         );
-        if (headerY - y0 > 18) {
-          parts.push(
-            '<text x="' +
-              ((dx0 + dx1) / 2) +
-              '" y="' +
-              ((y0 + headerY) / 2 + 4) +
-              '" text-anchor="middle" class="admin-porch-svg-label-sm">ABOVE DOOR</text>'
+        appendShopLabel(
+          parts,
+          (dx0 + dx1) / 2,
+          (headerY + y1) / 2 + 5,
+          '36" × 80"',
+          { size: 8 }
+        );
+        if (y1 - headerY > 52) {
+          appendShopLabel(
+            parts,
+            (dx0 + dx1) / 2,
+            (headerY + y1) / 2 + 18,
+            formatMemberLabel("z-bar-door", doorCompact)
           );
         }
+        if (headerY - y0 > 20) {
+          appendShopLabel(
+            parts,
+            (dx0 + dx1) / 2,
+            (y0 + headerY) / 2 + 3,
+            "ABOVE DOOR",
+            { size: 8 }
+          );
+        }
+        if (doorPx >= 52) {
+          appendShopLabel(
+            parts,
+            (dx0 + dx1) / 2,
+            headerY - 6,
+            formatMemberLabel(MEMBER_2X2_ZBAR, doorCompact)
+          );
+        }
+        var postLabelY = headerY + Math.max(28, (y1 - headerY) * 0.32);
+        if (!doorTouchesLeft && doorPx >= 44) {
+          appendShopLabel(
+            parts,
+            dx0 + 10,
+            postLabelY,
+            formatMemberLabel(doorConstr.leftPost, true),
+            { rotate: true }
+          );
+        }
+        if (!doorTouchesRight && doorPx >= 44) {
+          appendShopLabel(
+            parts,
+            dx1 - 10,
+            postLabelY,
+            formatMemberLabel(doorConstr.rightPost, true),
+            { rotate: true }
+          );
+        }
+        addLegend(doorConstr.leftPost, "door post");
+        addLegend("z-bar-door", "door frame");
+        addLegend(MEMBER_2X2_ZBAR, "above door");
       });
     }
 
@@ -695,7 +908,7 @@
     );
 
     // Frame / post members (overall W×H stay the same; thickness is visual only)
-    function drawMember(size, edge, xA, yA, xB, yB, labelX, labelY, rotate) {
+    function drawPerimeterMember(size, edge, xA, yA, xB, yB, labelX, labelY, rotate, skipLabel, extraLabel) {
       var sw = memberStrokeWidth(size);
       if (!sw) return;
       parts.push(
@@ -711,27 +924,71 @@
           sw +
           '"/>'
       );
-      if ((edge === "top" || edge === "bottom") && drawW < 40) return;
-      if ((edge === "left" || edge === "right") && drawH < 48) return;
-      var transform = rotate
-        ? ' transform="rotate(-90 ' + labelX + " " + labelY + ')"'
-        : "";
-      parts.push(
-        '<text x="' +
-          labelX +
-          '" y="' +
-          labelY +
-          '" text-anchor="middle" font-size="9" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="#222"' +
-          transform +
-          ' class="admin-porch-svg-label-sm">' +
-          size.toUpperCase() +
-          "</text>"
-      );
+      addLegend(size, edge);
+      if (skipLabel) return;
+      if ((edge === "top" || edge === "bottom") && drawW < 48) return;
+      if ((edge === "left" || edge === "right") && drawH < 56) return;
+      var text = formatMemberLabel(size, compact);
+      if (extraLabel) text += compact ? "*" : extraLabel;
+      appendShopLabel(parts, labelX, labelY, text, {
+        rotate: rotate,
+        size: extraLabel && !compact ? 7.5 : 8.5,
+      });
     }
-    drawMember(leftMember, "left", x0, y0, x0, y1, x0 + 12, y0 + drawH / 2, true);
-    drawMember(rightMember, "right", x1, y0, x1, y1, x1 - 12, y0 + drawH / 2, true);
-    drawMember(topMember, "top", x0, y0, x1, y0, x0 + drawW / 2, y0 + 14, false);
-    drawMember(bottomMember, "bottom", x0, y1, x1, y1, x0 + drawW / 2, y1 - 6, false);
+    var leftLabelSize = doorTouchesLeft ? getEffectiveLeftMember(section, widthFt) : leftMember;
+    var rightLabelSize = doorTouchesRight ? getEffectiveRightMember(section, widthFt) : rightMember;
+    drawPerimeterMember(
+      leftLabelSize,
+      "left",
+      x0,
+      y0,
+      x0,
+      y1,
+      x0 + 11,
+      y0 + drawH * 0.28,
+      true,
+      false,
+      prevShares ? " shared" : ""
+    );
+    drawPerimeterMember(
+      rightLabelSize,
+      "right",
+      x1,
+      y0,
+      x1,
+      y1,
+      x1 - 11,
+      y0 + drawH * 0.28,
+      true,
+      false,
+      sharesNext ? " shared" : ""
+    );
+    var headerClearanceFt = heightFt - Math.min(DOOR_OPENING_HEIGHT_FT, Math.max(1, heightFt - 0.05));
+    drawPerimeterMember(
+      topMember,
+      "top",
+      x0,
+      y0,
+      x1,
+      y0,
+      x0 + drawW / 2,
+      y0 + 13,
+      false,
+      doorOpenings.length && (drawW < 120 || headerClearanceFt < 0.5)
+    );
+    var bottomLabelX = x0 + drawW * (section.kickPlate ? 0.78 : 0.5);
+    drawPerimeterMember(
+      bottomMember,
+      "bottom",
+      x0,
+      y1,
+      x1,
+      y1,
+      bottomLabelX,
+      y1 - 5,
+      false,
+      section.kickPlate && drawW < 140
+    );
 
     // Width dimension (top)
     var dimY = 22;
@@ -845,6 +1102,21 @@
 
     parts.push("</svg>");
 
+    var legendHtml = "";
+    if (compact && legendItems.length) {
+      legendHtml =
+        '<ul class="admin-porch-drawing-legend">' +
+        legendItems
+          .map(function (item) {
+            var label =
+              item.type === "kick" ? item.note : formatMemberLabel(item.type, false);
+            var note = item.type === "kick" || !item.note ? "" : " — " + item.note;
+            return "<li>" + escapeXml(label + note) + "</li>";
+          })
+          .join("") +
+        "</ul>";
+    }
+
     return (
       '<article class="admin-porch-drawing-card">' +
       "<h3>SECTION " +
@@ -859,6 +1131,7 @@
       '<div class="admin-porch-drawing-preview">' +
       parts.join("") +
       "</div>" +
+      legendHtml +
       "</article>"
     );
   }
@@ -908,7 +1181,7 @@
     }
     layoutDrawings.innerHTML = sections
       .map(function (s, i) {
-        return buildSectionSvg(s, i);
+        return buildSectionSvg(s, i, sections);
       })
       .join("");
   }
@@ -939,12 +1212,14 @@
         ".admin-porch-drawing-card h3{margin:0 0 4px;font-size:15px;letter-spacing:.04em;}" +
         ".admin-porch-drawing-card__dims{margin:0 0 4px;color:#444;font-size:13px;}" +
         ".admin-porch-drawing-card__members{margin:0 0 8px;color:#666;font-size:11px;}" +
+        ".admin-porch-drawing-legend{list-style:none;margin:8px 0 0;padding:6px 0 0;border-top:1px solid #ddd;display:flex;flex-wrap:wrap;gap:4px 12px;font-size:10px;font-weight:700;}" +
         ".admin-porch-drawing-preview{display:flex;align-items:center;justify-content:center;width:100%;height:280px;overflow:hidden;}" +
         ".admin-porch-section-svg{max-width:100%;max-height:100%;width:auto;height:auto;display:block;}" +
-        ".admin-porch-svg-label,.admin-porch-svg-label-sm,.admin-porch-svg-dim{font-family:Segoe UI,Arial,sans-serif;fill:#222;}" +
+        ".admin-porch-svg-label,.admin-porch-svg-label-sm,.admin-porch-svg-dim,.admin-porch-svg-shop{font-family:Segoe UI,Arial,sans-serif;fill:#222;}" +
         ".admin-porch-svg-label{font-size:12px;font-weight:700;}" +
         ".admin-porch-svg-label-sm{font-size:10px;font-weight:600;}" +
         ".admin-porch-svg-dim{font-size:12px;font-weight:700;}" +
+        ".admin-porch-svg-shop{font-size:8.5px;font-weight:700;}" +
         "</style></head><body>" +
         sheet.innerHTML +
         "</body></html>"
@@ -999,11 +1274,10 @@
       estimateName: meta.customerName || "Untitled estimate",
       projectType: meta.projectType,
       date: meta.date,
-      sticks1x1: totals.track1x1Sticks || 0,
       sticks1x2: totals.track1x2Sticks || 0,
       sticks2x2: totals.track2x2Sticks || 0,
       doors: totals.doorCount || 0,
-      zBar: totals.doorCount || 0,
+      zBar: totals.zBarCount || 0,
       kickPlateLf: totals.kickPlateLf || 0,
       kickMoldingLf: totals.kickPlateLf || 0,
     };
@@ -1019,7 +1293,6 @@
     var rowH = 22;
 
     var rows = [
-      { material: "1x1 Aluminum (24 ft)", quantity: stickLabel(data.sticks1x1) },
       { material: "1x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks1x2) },
       { material: "2x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks2x2) },
       { material: "Screen Door", quantity: String(data.doors) },
@@ -1268,6 +1541,7 @@
         rightMember: MEMBER_DEFAULT,
         topMember: MEMBER_DEFAULT,
         bottomMember: MEMBER_DEFAULT,
+        sharePostWithNext: false,
       });
     }
     refreshLayout();
@@ -1299,6 +1573,7 @@
       rightMember: memberFromData(d, "rightMember"),
       topMember: memberFromData(d, "topMember"),
       bottomMember: memberFromData(d, "bottomMember"),
+      sharePostWithNext: isSharePostWithNext(d) ? "yes" : "no",
     };
     Object.keys(map).forEach(function (key) {
       var el = card.querySelector('[data-field="' + key + '"]');
@@ -1344,6 +1619,7 @@
       rightMember: normalizeMember(val("rightMember") || MEMBER_DEFAULT),
       topMember: normalizeMember(val("topMember") || MEMBER_DEFAULT),
       bottomMember: normalizeMember(val("bottomMember") || MEMBER_DEFAULT),
+      sharePostWithNext: val("sharePostWithNext") === "yes",
     };
   }
 
@@ -1422,12 +1698,21 @@
       var kickSegments = [];
       var chair2x2Cuts = [];
       var chairSegments = [];
+      var zBarCount = 0;
+      var openings = s.door || s.kickPlate || s.chairRail ? getDoorOpenings(s, width) : [];
 
       if (s.door) {
-        door2x2Cuts = [height, height, DOOR_HEADER_FT];
+        var door = getDoorConstruction(s);
         doorCount += 1;
+        zBarCount += doorZBarCount(s);
+        openings.forEach(function (op) {
+          if (roundLf(op.left) > 0.05) door2x2Cuts.push(height);
+          if (roundLf(width - op.right) > 0.05) door2x2Cuts.push(height);
+          if (door.header === "2x2") door2x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
+          else if (door.header === "1x2") section1x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
+          else if (door.header === "1x1") section1x1Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
+        });
       }
-      var openings = s.door || s.kickPlate || s.chairRail ? getDoorOpenings(s, width) : [];
       if (s.kickPlate) {
         // Kick plate never runs under doors — each wall run is a separate continuous cut.
         kickSegments = getKickPlateSegments(width, openings);
@@ -1444,9 +1729,13 @@
       if (s.chairRail) {
         // Chair rail never runs through doors — each wall run is a separate continuous cut.
         chairSegments = getChairRailSegments(width, openings);
-        chair2x2Cuts = chairSegments.map(function (seg) {
+        var chairMember = getChairRailMember(s);
+        var chairLens = chairSegments.map(function (seg) {
           return seg.length;
         });
+        if (chairMember === "1x2") section1x2Cuts = section1x2Cuts.concat(chairLens);
+        else if (chairMember === "1x1") section1x1Cuts = section1x1Cuts.concat(chairLens);
+        else chair2x2Cuts = chairLens;
       }
 
       var section2x2Cuts = frame2x2Cuts.concat(door2x2Cuts, kick2x2Cuts, chair2x2Cuts);
@@ -1501,6 +1790,10 @@
         kick2x2Lf: kick2x2Lf,
         chair2x2Lf: chair2x2Lf,
         track2x2Lf: roundLf(frame2x2Lf + door2x2Lf + kick2x2Lf + chair2x2Lf),
+        zBarCount: zBarCount,
+        doorConstruction: s.door ? getDoorConstruction(s) : null,
+        kickPlateHeightIn: s.kickPlate ? getKickPlateHeightIn(s) : 0,
+        chairRailMember: s.chairRail ? getChairRailMember(s) : "",
       });
     });
 
@@ -1514,6 +1807,9 @@
     var track2x2Sticks = pack2x2.stickCount;
     var track2x2Cost = track2x2Sticks * PRICE_2X2_STICK;
     var doorCost = doorCount * PRICE_DOOR;
+    var zBarCount = sectionResults.reduce(function (sum, s) {
+      return sum + (s.zBarCount || 0);
+    }, 0);
     var kickPlateCost = kickPlateLf * PRICE_KICK_PLATE_PER_FT;
     var kickMoldingCost = kickPlateLf * PRICE_KICK_MOLDING_PER_FT;
 
@@ -1555,6 +1851,7 @@
       track2x2Cost: track2x2Cost,
       doorCount: doorCount,
       doorCost: doorCost,
+      zBarCount: zBarCount,
       kickPlateLf: roundLf(kickPlateLf),
       kickPlateCost: kickPlateCost,
       kickMoldingCost: kickMoldingCost,
@@ -1696,10 +1993,10 @@
           formatMemberShort(s.bottomMember)
       );
       if (s.sharedLeftWith) {
-        add("Shared left post", "Counted with Section " + s.sharedLeftWith);
+        add("Shared left post", "Continuous with Section " + s.sharedLeftWith);
       }
       if (s.sharedRightWith) {
-        add("Shared right post", "Counted once with Section " + s.sharedRightWith);
+        add("Shared right post", "Continuous with Section " + s.sharedRightWith);
       }
       if (s.cuts1x1 && s.cuts1x1.length) {
         add("1x1 frame cuts", formatCutList(s.cuts1x1) + " (" + num(s.track1x1Lf, 1) + " LF)");
@@ -1722,13 +2019,26 @@
           "36\" × 80\" · Position: " +
             (normalizeDoorPosition(s.doorPosition) || "—")
         );
-        add("Door 2x2 cuts", formatCutList([s.height, s.height, DOOR_HEADER_FT]));
+        add(
+          "Door posts",
+          formatMemberLabel(DOOR_LEFT_POST_DEFAULT, false) +
+            " left / " +
+            formatMemberLabel(DOOR_RIGHT_POST_DEFAULT, false) +
+            " right"
+        );
+        add("Door frame", formatMemberLabel("z-bar-door", false));
+        add("Above door", formatMemberLabel(MEMBER_2X2_ZBAR, false));
+        if (s.door2x2Cuts && s.door2x2Cuts.length) {
+          add("Door 2x2 cuts", formatCutList(s.door2x2Cuts) + " (" + num(s.door2x2Lf, 1) + " LF)");
+        }
+        add("Z-Bar", String(s.zBarCount || 0) + " pc");
       }
       if (s.kickPlate) {
         add(
           "Kick plate LF",
           num(s.kick2x2Lf, 2) +
-            " LF (excludes door openings)"
+            " LF · " +
+            formatKickPlateLabel(s, false)
         );
         add(
           "Kick plate 2x2 cuts",
@@ -1740,7 +2050,9 @@
       if (s.chairRail) {
         add(
           "Chair rail LF",
-          num(s.chair2x2Lf, 2) + " LF (excludes door openings)"
+          num(s.chair2x2Lf, 2) +
+            " LF · " +
+            formatChairRailLabel(s, false)
         );
         add(
           "Chair rail 2x2 cuts",
@@ -1811,6 +2123,7 @@
         " (no splicing)"
     );
     trow("Doors", r.doorCount + " · " + money(r.doorCost));
+    trow("Z-Bar", (r.zBarCount || 0) + " pc");
     trow(
       "Kick plate",
       r.kickPlateLf > 0
@@ -1881,6 +2194,7 @@
       rightMember: MEMBER_DEFAULT,
       topMember: MEMBER_DEFAULT,
       bottomMember: MEMBER_DEFAULT,
+      sharePostWithNext: false,
     });
     lastTotals = null;
     resultsBody.innerHTML =
@@ -1951,6 +2265,7 @@
         track2x2Cost: totals.track2x2Cost,
         doorCount: totals.doorCount,
         doorCost: totals.doorCost,
+        zBarCount: totals.zBarCount,
         kickPlateLf: totals.kickPlateLf,
         kickPlateCost: totals.kickPlateCost,
         kickMoldingCost: totals.kickMoldingCost,

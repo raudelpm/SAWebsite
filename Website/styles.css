@@ -7543,6 +7543,9 @@ body.page-blog-post .nav-compact {
     margin-bottom: 0;
     min-width: 0;
 }
+.admin-porch-frame-span {
+    grid-column: 1 / -1;
+}
 .admin-porch-form .admin-porch-frame-grid select {
     padding: 0.5rem 0.65rem;
 }
@@ -7767,6 +7770,22 @@ body.page-blog-post .nav-compact {
     font-size: 0.75rem;
     line-height: 1.35;
 }
+.admin-porch-drawing-legend {
+    list-style: none;
+    margin: 0.55rem 0 0;
+    padding: 0.45rem 0 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.85rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: rgba(0, 0, 0, 0.62);
+}
+.admin-porch-drawing-legend li {
+    margin: 0;
+}
 .admin-porch-drawing-preview {
     display: flex;
     align-items: center;
@@ -7793,6 +7812,12 @@ body.page-blog-post .nav-compact {
     font-size: 12px;
     font-weight: 700;
     fill: #222;
+}
+.admin-porch-svg-shop {
+    font-size: 8.5px;
+    font-weight: 700;
+    fill: #1f1f1f;
+    letter-spacing: 0.02em;
 }
 @media (max-width: 1199px) {
     .admin-porch-layout-drawings {
