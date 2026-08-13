@@ -49,6 +49,10 @@ function normalizeSection(raw) {
     openingShape: String(s.openingShape || "").toLowerCase() === "arch" ? "arch" : "rectangle",
     centerHeightFt: Math.max(0, Number(s.centerHeightFt) || 0),
     centerHeightIn: Math.max(0, Number(s.centerHeightIn) || 0),
+    straightAngle2x2: String(s.straightAngle2x2 == null ? "yes" : s.straightAngle2x2)
+      .toLowerCase() === "no" || s.straightAngle2x2 === false
+      ? false
+      : true,
   };
 }
 

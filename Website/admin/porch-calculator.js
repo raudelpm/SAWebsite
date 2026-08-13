@@ -163,6 +163,7 @@
       " · R " +
       formatMemberShort(normalizeMember(section.rightMember));
     if (isArchSection(section)) {
+      if (isStraightAngle2x2(section)) base += " · Arch base 2x2";
       base += " · Arch 1x1/2 Flexible";
     } else {
       base += " · T " + formatMemberShort(normalizeMember(section.topMember));
@@ -308,6 +309,14 @@
     return v === "arch" || v === true;
   }
 
+  /** Default Yes. Only meaningful when the opening is an arch. */
+  function isStraightAngle2x2(section) {
+    if (!isArchSection(section)) return false;
+    var v = section && section.straightAngle2x2;
+    if (v === false || v === "no" || v === "false") return false;
+    return true;
+  }
+
   function getStraightHeightFt(section) {
     return roundLf(toFeet(section && section.heightFt, section && section.heightIn));
   }
@@ -342,6 +351,40 @@
   function getArchFlexibleLength(section) {
     if (!isArchSection(section)) return 0;
     return circularArcLength(toFeet(section.widthFt, section.widthIn), getArchRiseFt(section));
+  }
+
+  /**
+   * Height from the opening bottom to the circular arch at horizontal position xFt.
+   * At the left/right edges this equals Straight Height; at center it equals Center Height.
+   */
+  function circularArchHeightAtX(widthFt, straightH, riseFt, xFt) {
+    var w = roundLf(widthFt);
+    var s = roundLf(straightH);
+    var h = roundLf(riseFt);
+    var x = roundLf(xFt);
+    if (w <= 0 || h <= 0.001) return s;
+    if (x < 0) x = 0;
+    if (x > w) x = w;
+    var r = (h * h + (w / 2) * (w / 2)) / (2 * h);
+    var dx = x - w / 2;
+    var inside = Math.max(0, r * r - dx * dx);
+    return roundLf(s + h - r + Math.sqrt(inside));
+  }
+
+  function getArchHeightAtX(section, xFt) {
+    return circularArchHeightAtX(
+      toFeet(section.widthFt, section.widthIn),
+      getStraightHeightFt(section),
+      getArchRiseFt(section),
+      xFt
+    );
+  }
+
+  function getDoorPostHeightFt(section, widthFt, xFt, fallbackHeight) {
+    if (isArchSection(section) && !isStraightAngle2x2(section)) {
+      return getArchHeightAtX(section, xFt);
+    }
+    return roundLf(fallbackHeight);
   }
 
   function circularSegmentArea(widthFt, riseFt) {
@@ -416,6 +459,7 @@
       if (out[i].flexLf > 0) out[i].cutsFlex.push(out[i].flexLf);
 
       if (!isArch) addCut(i, top, width);
+      else if (isStraightAngle2x2(s)) addCut(i, "2x2", width); // full-width 2x2 at Straight Height
       addCut(i, bottom, width);
       addCut(i, left, straightH);
       addCut(i, right, straightH);
@@ -858,11 +902,17 @@
         var doorCompact = compact || doorPx < 78;
         var postStroke = memberStrokeWidth(doorConstr.leftPost);
         var headerStroke = memberStrokeWidth(doorConstr.header);
+        var leftPostTopY = isArch && !isStraightAngle2x2(section)
+          ? syFromBottom(getArchHeightAtX(section, op.left))
+          : yFrameTop;
+        var rightPostTopY = isArch && !isStraightAngle2x2(section)
+          ? syFromBottom(getArchHeightAtX(section, op.right))
+          : yFrameTop;
         parts.push(
           '<line x1="' +
             dx0 +
             '" y1="' +
-            yFrameTop +
+            leftPostTopY +
             '" x2="' +
             dx0 +
             '" y2="' +
@@ -875,7 +925,7 @@
           '<line x1="' +
             dx1 +
             '" y1="' +
-            yFrameTop +
+            rightPostTopY +
             '" x2="' +
             dx1 +
             '" y2="' +
@@ -1014,17 +1064,6 @@
           " Z" +
           '" fill="none" stroke="#c5cdd4" stroke-width="1"/>'
       );
-      parts.push(
-        '<line x1="' +
-          x0 +
-          '" y1="' +
-          yFrameTop +
-          '" x2="' +
-          x1 +
-          '" y2="' +
-          yFrameTop +
-          '" stroke="#c5cdd4" stroke-width="1" stroke-dasharray="4 3"/>'
-      );
     } else {
       parts.push(
         '<rect x="' +
@@ -1093,6 +1132,20 @@
       false
     );
     if (isArch) {
+      if (isStraightAngle2x2(section)) {
+        drawPerimeterMember(
+          "2x2",
+          "arch-base",
+          x0,
+          yFrameTop,
+          x1,
+          yFrameTop,
+          x0 + drawW / 2,
+          yFrameTop - 7,
+          false,
+          drawW < 40
+        );
+      }
       var rFlex = ((riseFt * riseFt + (widthFt / 2) * (widthFt / 2)) / (2 * riseFt)) * scale;
       var largeFlex = riseFt > widthFt / 2 ? 1 : 0;
       var flexStroke = memberStrokeWidth(MEMBER_FLEX);
@@ -1852,6 +1905,7 @@
       topMember: memberFromData(d, "topMember"),
       bottomMember: memberFromData(d, "bottomMember"),
       openingShape: isArchSection(d) ? "arch" : "rectangle",
+      straightAngle2x2: isArchSection(d) && !isStraightAngle2x2(d) ? "no" : "yes",
       centerHeightFt: d.centerHeightFt != null ? d.centerHeightFt : 10,
       centerHeightIn: d.centerHeightIn != null ? d.centerHeightIn : 0,
     };
@@ -1887,9 +1941,11 @@
     var heightLegend = card.querySelector("[data-height-legend]");
     var centerWrap = card.querySelector("[data-center-height-wrap]");
     var topWrap = card.querySelector("[data-top-member-wrap]");
+    var angleWrap = card.querySelector("[data-straight-angle-wrap]");
     if (heightLegend) heightLegend.textContent = isArch ? "Straight Height" : "Height";
     if (centerWrap) centerWrap.hidden = !isArch;
     if (topWrap) topWrap.hidden = !!isArch;
+    if (angleWrap) angleWrap.hidden = !isArch;
     if (!isArch) return;
     var cFtEl = card.querySelector('[data-field="centerHeightFt"]');
     var cInEl = card.querySelector('[data-field="centerHeightIn"]');
@@ -1917,6 +1973,7 @@
       heightFt: Number(val("heightFt")) || 0,
       heightIn: Number(val("heightIn")) || 0,
       openingShape: val("openingShape") === "arch" ? "arch" : "rectangle",
+      straightAngle2x2: val("openingShape") === "arch" ? val("straightAngle2x2") !== "no" : true,
       centerHeightFt: Number(val("centerHeightFt")) || 0,
       centerHeightIn: Number(val("centerHeightIn")) || 0,
       door: doorOn,
@@ -2019,8 +2076,12 @@
         doorCount += 1;
         zBarCount += doorZBarCount(s);
         openings.forEach(function (op) {
-          if (roundLf(op.left) > 0.05) door2x2Cuts.push(height);
-          if (roundLf(width - op.right) > 0.05) door2x2Cuts.push(height);
+          if (roundLf(op.left) > 0.05) {
+            door2x2Cuts.push(getDoorPostHeightFt(s, width, op.left, height));
+          }
+          if (roundLf(width - op.right) > 0.05) {
+            door2x2Cuts.push(getDoorPostHeightFt(s, width, op.right, height));
+          }
           if (door.header === "2x2") door2x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
           else if (door.header === "1x2") section1x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
           else if (door.header === "1x1") section1x1Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
@@ -2082,6 +2143,7 @@
         centerHeight: centerH,
         archRiseFt: riseFt,
         openingShape: isArch ? "arch" : "rectangle",
+        straightAngle2x2: isStraightAngle2x2(s),
         areaSqft: areaSqft,
         door: s.door,
         doorPosition: normalizeDoorPosition(s.doorPosition) || "",
@@ -2330,6 +2392,7 @@
             formatMemberShort(s.leftMember) +
             " · R " +
             formatMemberShort(s.rightMember) +
+            (s.straightAngle2x2 ? " · Arch base 2x2" : "") +
             " · Arch 1x1/2 Flexible · B " +
             formatMemberShort(s.bottomMember)
           : "L " +
@@ -2341,6 +2404,12 @@
             " · B " +
             formatMemberShort(s.bottomMember)
       );
+      if (s.openingShape === "arch" && s.straightAngle2x2) {
+        add("Arch base 2x2", num(s.width, 2) + " ft (full width at straight height)");
+      }
+      if (s.openingShape === "arch" && !s.straightAngle2x2 && s.door) {
+        add("2x2 at Straight Angle", "No — door posts extend to the arch");
+      }
       if (s.cuts1x1 && s.cuts1x1.length) {
         add("1x1 frame cuts", formatCutList(s.cuts1x1) + " (" + num(s.track1x1Lf, 1) + " LF)");
       }
