@@ -323,7 +323,7 @@ body.nav-menu-open::before {
 	padding: 0.55rem 1.15rem !important;
 }
 
-/* Home hero: third slot in .cta-buttons (replaces Email Us) */
+/* Home hero: hidden Quick Screen slot (Email Us is the visible third CTA) */
 .cta-buttons .hero-quick-repair-btn--cta-row {
 	order: 3;
 	white-space: normal;
@@ -1469,6 +1469,9 @@ body.nav-menu-open::before {
     box-shadow: var(--btn-relief-light-hover);
     transform: translateY(-3px) scale(1.05);
     z-index: 2;
+}
+.btn-secondary .btn-lottie-icon svg {
+    filter: none;
 }
 
 /* Reviews page: “View all on Google” CTA (purple, same relief pattern as other .btn variants) */
