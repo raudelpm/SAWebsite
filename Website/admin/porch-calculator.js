@@ -4,6 +4,7 @@
 (function () {
   var PRICE_1X2_STICK = 37;
   var PRICE_2X2_STICK = 60;
+  var PRICE_1X1_STICK = 28;
   var STICK_FT = 24;
   var PRICE_DOOR = 150;
   var PRICE_KICK_PLATE_PER_FT = 10;
@@ -119,6 +120,125 @@
     if (p === "middle") return "center";
     if (p === "left" || p === "center" || p === "right") return p;
     return "";
+  }
+
+  var MEMBER_NONE = "none";
+  var MEMBER_DEFAULT = "1x2";
+
+  function normalizeMember(value) {
+    var v = String(value == null ? "" : value)
+      .trim()
+      .toLowerCase();
+    if (v === "1x1" || v === "1x2" || v === "2x2" || v === MEMBER_NONE) return v;
+    return MEMBER_DEFAULT;
+  }
+
+  function memberFromData(data, key) {
+    if (data && data[key] != null && String(data[key]).trim() !== "") {
+      return normalizeMember(data[key]);
+    }
+    return MEMBER_DEFAULT;
+  }
+
+  function memberRank(size) {
+    if (size === "2x2") return 3;
+    if (size === "1x2") return 2;
+    if (size === "1x1") return 1;
+    return 0;
+  }
+
+  function largerMember(a, b) {
+    return memberRank(a) >= memberRank(b) ? a : b;
+  }
+
+  function memberStrokeWidth(size) {
+    if (size === "2x2") return 4.8;
+    if (size === "1x2") return 2.6;
+    if (size === "1x1") return 1.5;
+    return 0;
+  }
+
+  function formatMemberShort(size) {
+    return !size || size === MEMBER_NONE ? "—" : size;
+  }
+
+  function formatMemberSummary(section) {
+    return (
+      "L " +
+      formatMemberShort(normalizeMember(section.leftMember)) +
+      " · R " +
+      formatMemberShort(normalizeMember(section.rightMember)) +
+      " · T " +
+      formatMemberShort(normalizeMember(section.topMember)) +
+      " · B " +
+      formatMemberShort(normalizeMember(section.bottomMember))
+    );
+  }
+
+  /**
+   * Frame/post cuts per section. Consecutive sections that both specify a
+   * vertical member on the shared edge count that post only once (larger size).
+   */
+  function getSectionFrameCuts(sectionsInput) {
+    var n = (sectionsInput || []).length;
+    var out = [];
+    var i;
+    for (i = 0; i < n; i++) {
+      out.push({
+        leftMember: MEMBER_DEFAULT,
+        rightMember: MEMBER_DEFAULT,
+        topMember: MEMBER_DEFAULT,
+        bottomMember: MEMBER_DEFAULT,
+        cuts1x1: [],
+        cuts1x2: [],
+        cuts2x2: [],
+        sharedLeftWith: 0,
+        sharedRightWith: 0,
+      });
+    }
+
+    function addCut(index, size, length) {
+      if (!size || size === MEMBER_NONE || !(length > 0)) return;
+      var len = roundLf(length);
+      if (size === "2x2") out[index].cuts2x2.push(len);
+      else if (size === "1x1") out[index].cuts1x1.push(len);
+      else out[index].cuts1x2.push(len);
+    }
+
+    for (i = 0; i < n; i++) {
+      var s = sectionsInput[i];
+      var width = roundLf(toFeet(s.widthFt, s.widthIn));
+      var height = roundLf(toFeet(s.heightFt, s.heightIn));
+      var left = normalizeMember(s.leftMember);
+      var right = normalizeMember(s.rightMember);
+      var top = normalizeMember(s.topMember);
+      var bottom = normalizeMember(s.bottomMember);
+      out[i].leftMember = left;
+      out[i].rightMember = right;
+      out[i].topMember = top;
+      out[i].bottomMember = bottom;
+
+      addCut(i, top, width);
+      addCut(i, bottom, width);
+
+      var prevRight = i > 0 ? normalizeMember(sectionsInput[i - 1].rightMember) : MEMBER_NONE;
+      var nextLeft = i < n - 1 ? normalizeMember(sectionsInput[i + 1].leftMember) : MEMBER_NONE;
+
+      if (left !== MEMBER_NONE && prevRight !== MEMBER_NONE) {
+        out[i].sharedLeftWith = i;
+        // Counted on the previous section's right post.
+      } else {
+        addCut(i, left, height);
+      }
+
+      if (right !== MEMBER_NONE && nextLeft !== MEMBER_NONE) {
+        out[i].sharedRightWith = i + 2;
+        addCut(i, largerMember(right, nextLeft), height);
+      } else {
+        addCut(i, right, height);
+      }
+    }
+    return out;
   }
 
   function getDoorWidthFt(section) {
@@ -304,12 +424,17 @@
     }
 
     var dimLabel = formatFtInParts(section.widthFt, section.widthIn) + " W × " + formatFtInParts(section.heightFt, section.heightIn) + " H";
+    var memberSummary = formatMemberSummary(section);
+    var leftMember = normalizeMember(section.leftMember);
+    var rightMember = normalizeMember(section.rightMember);
+    var topMember = normalizeMember(section.topMember);
+    var bottomMember = normalizeMember(section.bottomMember);
     var padL = 78;
     var padR = 28;
     var padT = 54;
     var padB = 36;
-    var maxDrawW = 420;
-    var maxDrawH = 320;
+    var maxDrawW = 320;
+    var maxDrawH = 340;
     var scale = Math.min(maxDrawW / widthFt, maxDrawH / heightFt);
     var drawW = widthFt * scale;
     var drawH = heightFt * scale;
@@ -319,7 +444,6 @@
     var y1 = y0 + drawH;
     var vbW = padL + drawW + padR;
     var vbH = padT + drawH + padB;
-    var stroke = 2.4;
     var stroke2 = 3.2;
 
     function sx(ft) {
@@ -338,7 +462,11 @@
         vbW +
         " " +
         vbH +
-        '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Section ' +
+        '" width="' +
+        vbW +
+        '" height="' +
+        vbH +
+        '" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Section ' +
         (index + 1) +
         ' shop drawing">'
     );
@@ -348,6 +476,13 @@
         '" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
         '<line x1="0" y1="0" x2="0" y2="8" stroke="#9aa3ad" stroke-width="1.2"/>' +
         "</pattern></defs>"
+    );
+    parts.push(
+      "<style>" +
+        ".admin-porch-svg-label{font:700 12px 'Segoe UI',Arial,sans-serif;fill:#1a1a1a;}" +
+        ".admin-porch-svg-label-sm{font:600 10px 'Segoe UI',Arial,sans-serif;fill:#2a2a2a;}" +
+        ".admin-porch-svg-dim{font:700 12px 'Segoe UI',Arial,sans-serif;fill:#222;}" +
+        "</style>"
     );
 
     // Screen fill
@@ -546,7 +681,7 @@
       });
     }
 
-    // 1x2 perimeter (draw last so it sits on top)
+    // Light section outline so "None" edges still show the opening bounds.
     parts.push(
       '<rect x="' +
         x0 +
@@ -556,10 +691,47 @@
         drawW +
         '" height="' +
         drawH +
-        '" fill="none" stroke="#111" stroke-width="' +
-        stroke +
-        '"/>'
+        '" fill="none" stroke="#c5cdd4" stroke-width="1"/>'
     );
+
+    // Frame / post members (overall W×H stay the same; thickness is visual only)
+    function drawMember(size, edge, xA, yA, xB, yB, labelX, labelY, rotate) {
+      var sw = memberStrokeWidth(size);
+      if (!sw) return;
+      parts.push(
+        '<line x1="' +
+          xA +
+          '" y1="' +
+          yA +
+          '" x2="' +
+          xB +
+          '" y2="' +
+          yB +
+          '" stroke="#111" stroke-linecap="square" stroke-width="' +
+          sw +
+          '"/>'
+      );
+      if ((edge === "top" || edge === "bottom") && drawW < 40) return;
+      if ((edge === "left" || edge === "right") && drawH < 48) return;
+      var transform = rotate
+        ? ' transform="rotate(-90 ' + labelX + " " + labelY + ')"'
+        : "";
+      parts.push(
+        '<text x="' +
+          labelX +
+          '" y="' +
+          labelY +
+          '" text-anchor="middle" font-size="9" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="#222"' +
+          transform +
+          ' class="admin-porch-svg-label-sm">' +
+          size.toUpperCase() +
+          "</text>"
+      );
+    }
+    drawMember(leftMember, "left", x0, y0, x0, y1, x0 + 12, y0 + drawH / 2, true);
+    drawMember(rightMember, "right", x1, y0, x1, y1, x1 - 12, y0 + drawH / 2, true);
+    drawMember(topMember, "top", x0, y0, x1, y0, x0 + drawW / 2, y0 + 14, false);
+    drawMember(bottomMember, "bottom", x0, y1, x1, y1, x0 + drawW / 2, y1 - 6, false);
 
     // Width dimension (top)
     var dimY = 22;
@@ -609,7 +781,7 @@
         (x0 + drawW / 2) +
         '" y="' +
         (dimY - 8) +
-        '" text-anchor="middle" class="admin-porch-svg-dim">' +
+        '" text-anchor="middle" font-size="12" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="#222" class="admin-porch-svg-dim">' +
         escapeXml(formatFtInParts(section.widthFt, section.widthIn)) +
         "</text>"
     );
@@ -666,7 +838,7 @@
         (dimX - 12) +
         " " +
         (y0 + drawH / 2) +
-        ')" class="admin-porch-svg-dim">' +
+        ')" font-size="12" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="#222" class="admin-porch-svg-dim">' +
         escapeXml(formatFtInParts(section.heightFt, section.heightIn)) +
         "</text>"
     );
@@ -681,7 +853,12 @@
       '<p class="admin-porch-drawing-card__dims">' +
       escapeXml(dimLabel) +
       "</p>" +
+      '<p class="admin-porch-drawing-card__members">' +
+      escapeXml(memberSummary) +
+      "</p>" +
+      '<div class="admin-porch-drawing-preview">' +
       parts.join("") +
+      "</div>" +
       "</article>"
     );
   }
@@ -757,11 +934,13 @@
         ".admin-porch-layout-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #ddd;}" +
         ".admin-porch-layout-meta span{display:block;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.04em;}" +
         ".admin-porch-layout-meta strong{font-size:14px;}" +
-        ".admin-porch-layout-drawings{display:grid;gap:22px;}" +
-        ".admin-porch-drawing-card{break-inside:avoid;page-break-inside:avoid;border:1px solid #ddd;padding:12px;border-radius:8px;}" +
+        ".admin-porch-layout-drawings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:stretch;}" +
+        ".admin-porch-drawing-card{break-inside:avoid;page-break-inside:avoid;border:1px solid #ddd;padding:12px;border-radius:8px;display:flex;flex-direction:column;min-width:0;}" +
         ".admin-porch-drawing-card h3{margin:0 0 4px;font-size:15px;letter-spacing:.04em;}" +
-        ".admin-porch-drawing-card__dims{margin:0 0 10px;color:#444;font-size:13px;}" +
-        ".admin-porch-section-svg{width:100%;max-width:520px;height:auto;display:block;}" +
+        ".admin-porch-drawing-card__dims{margin:0 0 4px;color:#444;font-size:13px;}" +
+        ".admin-porch-drawing-card__members{margin:0 0 8px;color:#666;font-size:11px;}" +
+        ".admin-porch-drawing-preview{display:flex;align-items:center;justify-content:center;width:100%;height:280px;overflow:hidden;}" +
+        ".admin-porch-section-svg{max-width:100%;max-height:100%;width:auto;height:auto;display:block;}" +
         ".admin-porch-svg-label,.admin-porch-svg-label-sm,.admin-porch-svg-dim{font-family:Segoe UI,Arial,sans-serif;fill:#222;}" +
         ".admin-porch-svg-label{font-size:12px;font-weight:700;}" +
         ".admin-porch-svg-label-sm{font-size:10px;font-weight:600;}" +
@@ -820,6 +999,7 @@
       estimateName: meta.customerName || "Untitled estimate",
       projectType: meta.projectType,
       date: meta.date,
+      sticks1x1: totals.track1x1Sticks || 0,
       sticks1x2: totals.track1x2Sticks || 0,
       sticks2x2: totals.track2x2Sticks || 0,
       doors: totals.doorCount || 0,
@@ -839,6 +1019,7 @@
     var rowH = 22;
 
     var rows = [
+      { material: "1x1 Aluminum (24 ft)", quantity: stickLabel(data.sticks1x1) },
       { material: "1x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks1x2) },
       { material: "2x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks2x2) },
       { material: "Screen Door", quantity: String(data.doors) },
@@ -967,34 +1148,70 @@
     var drawings = Array.prototype.slice.call(
       layoutDrawings.querySelectorAll(".admin-porch-drawing-card")
     );
+    var cols = Math.min(4, Math.max(1, drawings.length));
+    var cellW = 300;
+    var cellH = 430;
+    var originX = 36;
+    var originY = 110;
     var blocks = drawings
       .map(function (card, i) {
         var title = card.querySelector("h3");
         var dims = card.querySelector(".admin-porch-drawing-card__dims");
+        var members = card.querySelector(".admin-porch-drawing-card__members");
         var svg = card.querySelector("svg");
+        var col = i % cols;
+        var row = Math.floor(i / cols);
+        var svgMarkup = "";
+        if (svg) {
+          var vb = svg.viewBox && svg.viewBox.baseVal;
+          var vbW = vb && vb.width ? vb.width : Number(svg.getAttribute("width")) || 300;
+          var vbH = vb && vb.height ? vb.height : Number(svg.getAttribute("height")) || 320;
+          var fitW = cellW - 16;
+          var fitH = cellH - 78;
+          var s = Math.min(fitW / vbW, fitH / vbH);
+          var ox = (fitW - vbW * s) / 2;
+          svgMarkup =
+            '<g transform="translate(' +
+            ox +
+            ",36) scale(" +
+            s +
+            ')">' +
+            svg.outerHTML +
+            "</g>";
+        }
         return (
-          '<g transform="translate(40,' +
-          (110 + i * 420) +
+          '<g transform="translate(' +
+          (originX + col * cellW) +
+          "," +
+          (originY + row * cellH) +
           ')">' +
-          '<text x="0" y="0" font-size="18" font-weight="700" font-family="Segoe UI, Arial, sans-serif">' +
+          '<text x="0" y="0" font-size="16" font-weight="700" font-family="Segoe UI, Arial, sans-serif">' +
           escapeXml(title ? title.textContent : "SECTION " + (i + 1)) +
           "</text>" +
-          '<text x="0" y="22" font-size="13" fill="#444" font-family="Segoe UI, Arial, sans-serif">' +
+          '<text x="0" y="18" font-size="12" fill="#444" font-family="Segoe UI, Arial, sans-serif">' +
           escapeXml(dims ? dims.textContent : "") +
           "</text>" +
-          '<g transform="translate(0,36)">' +
-          (svg ? svg.outerHTML.replace(/class="[^"]*"/g, "") : "") +
-          "</g></g>"
+          '<text x="0" y="34" font-size="11" fill="#666" font-family="Segoe UI, Arial, sans-serif">' +
+          escapeXml(members ? members.textContent : "") +
+          "</text>" +
+          svgMarkup +
+          "</g>"
         );
       })
       .join("");
 
-    var height = Math.max(700, 140 + drawings.length * 420);
+    var rows = Math.max(1, Math.ceil(drawings.length / cols));
+    var height = Math.max(700, originY + rows * cellH + 40);
+    var width = Math.max(900, originX + cols * cellW + 36);
     var svgDoc =
       '<?xml version="1.0" encoding="UTF-8"?>' +
-      '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="' +
+      width +
+      '" height="' +
       height +
-      '" viewBox="0 0 900 ' +
+      '" viewBox="0 0 ' +
+      width +
+      " " +
       height +
       '">' +
       '<rect width="100%" height="100%" fill="#ffffff"/>' +
@@ -1047,6 +1264,10 @@
         doorPosition: "left",
         kickPlate: false,
         chairRail: false,
+        leftMember: MEMBER_DEFAULT,
+        rightMember: MEMBER_DEFAULT,
+        topMember: MEMBER_DEFAULT,
+        bottomMember: MEMBER_DEFAULT,
       });
     }
     refreshLayout();
@@ -1074,6 +1295,10 @@
       doorPosition: normalizeDoorPosition(d.doorPosition) || "",
       kickPlate: d.kickPlate ? "yes" : "no",
       chairRail: d.chairRail ? "yes" : "no",
+      leftMember: memberFromData(d, "leftMember"),
+      rightMember: memberFromData(d, "rightMember"),
+      topMember: memberFromData(d, "topMember"),
+      bottomMember: memberFromData(d, "bottomMember"),
     };
     Object.keys(map).forEach(function (key) {
       var el = card.querySelector('[data-field="' + key + '"]');
@@ -1115,6 +1340,10 @@
       doorPosition: doorOn ? normalizeDoorPosition(val("doorPosition")) : "",
       kickPlate: val("kickPlate") === "yes",
       chairRail: val("chairRail") === "yes",
+      leftMember: normalizeMember(val("leftMember") || MEMBER_DEFAULT),
+      rightMember: normalizeMember(val("rightMember") || MEMBER_DEFAULT),
+      topMember: normalizeMember(val("topMember") || MEMBER_DEFAULT),
+      bottomMember: normalizeMember(val("bottomMember") || MEMBER_DEFAULT),
     };
   }
 
@@ -1159,6 +1388,7 @@
 
   function calculateProject(sectionsInput, screenCostInputValue) {
     var sectionResults = [];
+    var cuts1x1 = [];
     var cuts1x2 = [];
     var cuts2x2 = [];
     var totalArea = 0;
@@ -1166,15 +1396,27 @@
     var kickPlateLf = 0;
     var screenCost = Math.max(0, Number(screenCostInputValue) || 0);
     screenCost = Math.round(screenCost * 100) / 100;
+    var frameBySection = getSectionFrameCuts(sectionsInput);
 
     sectionsInput.forEach(function (s, index) {
       var width = roundLf(toFeet(s.widthFt, s.widthIn));
       var height = roundLf(toFeet(s.heightFt, s.heightIn));
       var areaSqft = roundLf(width * height);
+      var frame = frameBySection[index] || {
+        leftMember: MEMBER_DEFAULT,
+        rightMember: MEMBER_DEFAULT,
+        topMember: MEMBER_DEFAULT,
+        bottomMember: MEMBER_DEFAULT,
+        cuts1x1: [],
+        cuts1x2: [],
+        cuts2x2: [],
+        sharedLeftWith: 0,
+        sharedRightWith: 0,
+      };
 
-      // Perimeter 1x2: each side is one continuous member (no splicing).
-      var section1x2Cuts = [width, width, height, height];
-      var section2x2Cuts = [];
+      var section1x1Cuts = frame.cuts1x1.slice();
+      var section1x2Cuts = frame.cuts1x2.slice();
+      var frame2x2Cuts = frame.cuts2x2.slice();
       var door2x2Cuts = [];
       var kick2x2Cuts = [];
       var kickSegments = [];
@@ -1207,32 +1449,27 @@
         });
       }
 
-      section2x2Cuts = door2x2Cuts.concat(kick2x2Cuts, chair2x2Cuts);
+      var section2x2Cuts = frame2x2Cuts.concat(door2x2Cuts, kick2x2Cuts, chair2x2Cuts);
 
+      cuts1x1 = cuts1x1.concat(section1x1Cuts);
       cuts1x2 = cuts1x2.concat(section1x2Cuts);
       cuts2x2 = cuts2x2.concat(section2x2Cuts);
       totalArea += areaSqft;
 
-      var track1x2Lf = roundLf(
-        section1x2Cuts.reduce(function (sum, c) {
-          return sum + c;
-        }, 0)
-      );
-      var door2x2Lf = roundLf(
-        door2x2Cuts.reduce(function (sum, c) {
-          return sum + c;
-        }, 0)
-      );
-      var kick2x2Lf = roundLf(
-        kick2x2Cuts.reduce(function (sum, c) {
-          return sum + c;
-        }, 0)
-      );
-      var chair2x2Lf = roundLf(
-        chair2x2Cuts.reduce(function (sum, c) {
-          return sum + c;
-        }, 0)
-      );
+      function sumCuts(arr) {
+        return roundLf(
+          (arr || []).reduce(function (sum, c) {
+            return sum + c;
+          }, 0)
+        );
+      }
+
+      var frame1x1Lf = sumCuts(section1x1Cuts);
+      var frame1x2Lf = sumCuts(section1x2Cuts);
+      var frame2x2Lf = sumCuts(frame2x2Cuts);
+      var door2x2Lf = sumCuts(door2x2Cuts);
+      var kick2x2Lf = sumCuts(kick2x2Cuts);
+      var chair2x2Lf = sumCuts(chair2x2Cuts);
 
       sectionResults.push({
         index: index + 1,
@@ -1243,22 +1480,35 @@
         doorPosition: normalizeDoorPosition(s.doorPosition) || "",
         kickPlate: s.kickPlate,
         chairRail: s.chairRail,
+        leftMember: frame.leftMember,
+        rightMember: frame.rightMember,
+        topMember: frame.topMember,
+        bottomMember: frame.bottomMember,
+        sharedLeftWith: frame.sharedLeftWith,
+        sharedRightWith: frame.sharedRightWith,
+        cuts1x1: section1x1Cuts,
         cuts1x2: section1x2Cuts,
+        frame2x2Cuts: frame2x2Cuts,
         cuts2x2: section2x2Cuts,
         kick2x2Cuts: kick2x2Cuts,
         kickPlateSegments: kickSegments,
         chair2x2Cuts: chair2x2Cuts,
         chairRailSegments: chairSegments,
-        track1x2Lf: track1x2Lf,
+        track1x1Lf: frame1x1Lf,
+        track1x2Lf: frame1x2Lf,
+        frame2x2Lf: frame2x2Lf,
         door2x2Lf: door2x2Lf,
         kick2x2Lf: kick2x2Lf,
         chair2x2Lf: chair2x2Lf,
-        track2x2Lf: roundLf(door2x2Lf + kick2x2Lf + chair2x2Lf),
+        track2x2Lf: roundLf(frame2x2Lf + door2x2Lf + kick2x2Lf + chair2x2Lf),
       });
     });
 
+    var pack1x1 = packCuts(cuts1x1, STICK_FT);
     var pack1x2 = packCuts(cuts1x2, STICK_FT);
     var pack2x2 = packCuts(cuts2x2, STICK_FT);
+    var track1x1Sticks = pack1x1.stickCount;
+    var track1x1Cost = track1x1Sticks * PRICE_1X1_STICK;
     var track1x2Sticks = pack1x2.stickCount;
     var track1x2Cost = track1x2Sticks * PRICE_1X2_STICK;
     var track2x2Sticks = pack2x2.stickCount;
@@ -1268,6 +1518,7 @@
     var kickMoldingCost = kickPlateLf * PRICE_KICK_MOLDING_PER_FT;
 
     var materialCost =
+      track1x1Cost +
       track1x2Cost +
       track2x2Cost +
       doorCost +
@@ -1287,10 +1538,15 @@
     return {
       sections: sectionResults,
       areaSqft: roundLf(totalArea),
+      cuts1x1: pack1x1.cuts,
       cuts1x2: pack1x2.cuts,
       cuts2x2: pack2x2.cuts,
+      pack1x1: pack1x1,
       pack1x2: pack1x2,
       pack2x2: pack2x2,
+      track1x1Lf: pack1x1.totalLf,
+      track1x1Sticks: track1x1Sticks,
+      track1x1Cost: track1x1Cost,
       track1x2Lf: pack1x2.totalLf,
       track1x2Sticks: track1x2Sticks,
       track1x2Cost: track1x2Cost,
@@ -1310,7 +1566,7 @@
       payPerWorker: payPerWorker,
       costPlusLabor: costPlusLabor,
       calculatedPrice: calculatedPrice,
-      hasOversizedCuts: pack1x2.exceedsStock || pack2x2.exceedsStock,
+      hasOversizedCuts: pack1x1.exceedsStock || pack1x2.exceedsStock || pack2x2.exceedsStock,
     };
   }
 
@@ -1428,7 +1684,38 @@
       }
       add("Opening", num(s.width, 2) + " ft W × " + num(s.height, 2) + " ft H");
       add("Area", num(s.areaSqft, 1) + " sqft");
-      add("1x2 cuts", formatCutList(s.cuts1x2) + " (" + num(s.track1x2Lf, 1) + " LF)");
+      add(
+        "Frame / posts",
+        "L " +
+          formatMemberShort(s.leftMember) +
+          " · R " +
+          formatMemberShort(s.rightMember) +
+          " · T " +
+          formatMemberShort(s.topMember) +
+          " · B " +
+          formatMemberShort(s.bottomMember)
+      );
+      if (s.sharedLeftWith) {
+        add("Shared left post", "Counted with Section " + s.sharedLeftWith);
+      }
+      if (s.sharedRightWith) {
+        add("Shared right post", "Counted once with Section " + s.sharedRightWith);
+      }
+      if (s.cuts1x1 && s.cuts1x1.length) {
+        add("1x1 frame cuts", formatCutList(s.cuts1x1) + " (" + num(s.track1x1Lf, 1) + " LF)");
+      }
+      add(
+        "1x2 frame cuts",
+        s.cuts1x2 && s.cuts1x2.length
+          ? formatCutList(s.cuts1x2) + " (" + num(s.track1x2Lf, 1) + " LF)"
+          : "none"
+      );
+      if (s.frame2x2Cuts && s.frame2x2Cuts.length) {
+        add(
+          "2x2 frame cuts",
+          formatCutList(s.frame2x2Cuts) + " (" + num(s.frame2x2Lf, 1) + " LF)"
+        );
+      }
       if (s.door) {
         add(
           "Door",
@@ -1462,7 +1749,9 @@
             : "none"
         );
       }
-      if (!s.door && !s.kickPlate && !s.chairRail) add("2x2 cuts", "none");
+      if (!s.door && !s.kickPlate && !s.chairRail && !(s.frame2x2Cuts && s.frame2x2Cuts.length)) {
+        add("Other 2x2 cuts", "none");
+      }
       block.appendChild(dl);
       resultsBody.appendChild(block);
     });
@@ -1473,6 +1762,9 @@
     th.textContent = "PROJECT TOTAL";
     total.appendChild(th);
 
+    if (r.pack1x1 && r.pack1x1.cuts && r.pack1x1.cuts.length) {
+      appendCutPlan(total, "1x1 CUT PLAN", r.pack1x1, PRICE_1X1_STICK);
+    }
     appendCutPlan(total, "1x2 CUT PLAN", r.pack1x2, PRICE_1X2_STICK);
     appendCutPlan(total, "2x2 CUT PLAN", r.pack2x2, PRICE_2X2_STICK);
 
@@ -1489,6 +1781,17 @@
       tdl.appendChild(dd);
     }
     trow("Total area", num(r.areaSqft, 1) + " sqft");
+    if (r.track1x1Lf > 0) {
+      trow(
+        "1x1 track",
+        num(r.track1x1Lf, 1) +
+          " LF · " +
+          r.track1x1Sticks +
+          " stick(s) · " +
+          money(r.track1x1Cost) +
+          " (no splicing)"
+      );
+    }
     trow(
       "1x2 track",
       num(r.track1x2Lf, 1) +
@@ -1574,6 +1877,10 @@
       doorPosition: "left",
       kickPlate: false,
       chairRail: false,
+      leftMember: MEMBER_DEFAULT,
+      rightMember: MEMBER_DEFAULT,
+      topMember: MEMBER_DEFAULT,
+      bottomMember: MEMBER_DEFAULT,
     });
     lastTotals = null;
     resultsBody.innerHTML =
@@ -1627,10 +1934,15 @@
       sections: sections,
       totals: {
         areaSqft: totals.areaSqft,
+        cuts1x1: totals.cuts1x1,
         cuts1x2: totals.cuts1x2,
         cuts2x2: totals.cuts2x2,
+        pack1x1: totals.pack1x1,
         pack1x2: totals.pack1x2,
         pack2x2: totals.pack2x2,
+        track1x1Lf: totals.track1x1Lf,
+        track1x1Sticks: totals.track1x1Sticks,
+        track1x1Cost: totals.track1x1Cost,
         track1x2Lf: totals.track1x2Lf,
         track1x2Sticks: totals.track1x2Sticks,
         track1x2Cost: totals.track1x2Cost,

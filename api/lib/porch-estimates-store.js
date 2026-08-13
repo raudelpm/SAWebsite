@@ -25,6 +25,13 @@ function normalizeSection(raw) {
   if (doorPosition !== "left" && doorPosition !== "center" && doorPosition !== "right") {
     doorPosition = "";
   }
+  const members = ["none", "1x1", "1x2", "2x2"];
+  function member(value) {
+    const v = String(value || "")
+      .trim()
+      .toLowerCase();
+    return members.includes(v) ? v : "1x2";
+  }
   return {
     widthFt: Math.max(0, Number(s.widthFt) || 0),
     widthIn: Math.max(0, Number(s.widthIn) || 0),
@@ -34,6 +41,10 @@ function normalizeSection(raw) {
     doorPosition: door ? doorPosition : "",
     kickPlate: Boolean(s.kickPlate),
     chairRail: Boolean(s.chairRail),
+    leftMember: member(s.leftMember),
+    rightMember: member(s.rightMember),
+    topMember: member(s.topMember),
+    bottomMember: member(s.bottomMember),
   };
 }
 

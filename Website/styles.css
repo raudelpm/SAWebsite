@@ -7286,8 +7286,9 @@ body.page-blog-post .nav-compact {
     gap: 1rem;
 }
 .admin-porch-section-svg {
-    width: 100%;
-    max-width: none;
+    width: auto;
+    max-width: 100%;
+    max-height: 100%;
     height: auto;
     display: block;
     background: #fff;
@@ -7494,6 +7495,57 @@ body.page-blog-post .nav-compact {
     margin-bottom: 0;
     min-width: 0;
 }
+.admin-porch-frame {
+    margin: 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    background: #fff;
+    min-width: 0;
+}
+.admin-porch-frame > summary {
+    cursor: pointer;
+    list-style: none;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #111;
+    padding: 0.7rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+.admin-porch-frame > summary::-webkit-details-marker {
+    display: none;
+}
+.admin-porch-frame > summary::after {
+    content: "";
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 2px solid rgba(0, 0, 0, 0.45);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.45);
+    transform: rotate(45deg);
+    transition: transform 0.15s ease;
+    flex: 0 0 auto;
+    margin-top: -0.2rem;
+}
+.admin-porch-frame[open] > summary::after {
+    transform: rotate(225deg);
+    margin-top: 0.15rem;
+}
+.admin-porch-frame-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+    padding: 0 1rem 0.9rem;
+    min-width: 0;
+}
+.admin-porch-frame-grid .form-field {
+    margin-bottom: 0;
+    min-width: 0;
+}
+.admin-porch-form .admin-porch-frame-grid select {
+    padding: 0.5rem 0.65rem;
+}
 @media (max-width: 650px) {
     .admin-porch-dimensions {
         grid-template-columns: 1fr;
@@ -7645,7 +7697,7 @@ body.page-blog-post .nav-compact {
     border: 1px solid rgba(183, 28, 28, 0.22);
 }
 .admin-porch-layout-panel {
-    margin-top: 1.25rem;
+    margin-top: 0;
 }
 .admin-porch-layout-toolbar {
     display: flex;
@@ -7686,9 +7738,14 @@ body.page-blog-post .nav-compact {
 }
 .admin-porch-layout-drawings {
     display: grid;
-    gap: 1.15rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: stretch;
 }
 .admin-porch-drawing-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     padding: 0.85rem;
@@ -7700,9 +7757,27 @@ body.page-blog-post .nav-compact {
     letter-spacing: 0.05em;
 }
 .admin-porch-drawing-card__dims {
-    margin: 0 0 0.65rem;
+    margin: 0 0 0.35rem;
     color: rgba(0, 0, 0, 0.55);
     font-size: 0.88rem;
+}
+.admin-porch-drawing-card__members {
+    margin: 0 0 0.65rem;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 0.75rem;
+    line-height: 1.35;
+}
+.admin-porch-drawing-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 400px;
+    max-height: 420px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
 }
 .admin-porch-svg-label {
     font-size: 12px;
@@ -7719,6 +7794,33 @@ body.page-blog-post .nav-compact {
     font-weight: 700;
     fill: #222;
 }
+@media (max-width: 1199px) {
+    .admin-porch-layout-drawings {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .admin-porch-drawing-preview {
+        height: 360px;
+    }
+}
+@media (max-width: 899px) {
+    .admin-porch-layout-drawings {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .admin-porch-drawing-preview {
+        height: 320px;
+    }
+}
+@media (max-width: 599px) {
+    .admin-porch-layout-drawings {
+        grid-template-columns: 1fr;
+    }
+    .admin-porch-drawing-preview {
+        height: 300px;
+    }
+    .admin-porch-frame-grid {
+        grid-template-columns: 1fr;
+    }
+}
 @media print {
     body.page-admin-porch nav,
     body.page-admin-porch footer,
@@ -7731,11 +7833,25 @@ body.page-blog-post .nav-compact {
         display: none !important;
     }
     body.page-admin-porch .admin-porch-layout {
-        grid-template-columns: 1fr;
+        display: none !important;
     }
     body.page-admin-porch .admin-porch-layout-panel {
         box-shadow: none;
         border: 0;
+        margin: 0;
+        padding: 0;
+    }
+    body.page-admin-porch .admin-porch-layout-drawings {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+    body.page-admin-porch .admin-porch-drawing-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    body.page-admin-porch .admin-porch-drawing-preview {
+        height: 280px;
+        max-height: 300px;
     }
 }
 .form-status.is-error {
