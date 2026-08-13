@@ -282,12 +282,8 @@
   }
 
   function doorZBarCount(section) {
-    if (!section || !section.door) return 0;
-    var door = getDoorConstruction(section);
-    var n = 0;
-    if (door.frame === MEMBER_ZBAR || door.frame === "zbar") n += 1;
-    if (door.headerInsert === MEMBER_ZBAR || door.headerInsert === "zbar") n += 1;
-    return n;
+    // One Z-Bar per door. "Above door 2x2 + ZB" is the same assembly, not extra material.
+    return section && section.door ? 1 : 0;
   }
 
   function appendShopLabel(parts, x, y, text, options) {
@@ -2240,7 +2236,7 @@
         var door = getDoorConstruction(s);
         doorCount += 1;
         doorCost += getDoorPrice(s);
-        zBarCount += doorZBarCount(s);
+        zBarCount = doorZBarCount(s);
         openings.forEach(function (op) {
           if (roundLf(op.left) > 0.05) {
             door2x2Cuts.push(getDoorPostHeightFt(s, width, op.left, height));
@@ -2362,9 +2358,7 @@
     var track1x2Cost = track1x2Sticks * PRICE_1X2_STICK;
     var track2x2Sticks = pack2x2.stickCount;
     var track2x2Cost = track2x2Sticks * PRICE_2X2_STICK;
-    var zBarCount = sectionResults.reduce(function (sum, s) {
-      return sum + (s.zBarCount || 0);
-    }, 0);
+    var zBarCount = doorCount;
     var kickPlateCost = kickPlateLf * PRICE_KICK_PLATE_PER_FT;
     var kickMoldingCost = kickPlateLf * PRICE_KICK_MOLDING_PER_FT;
 
