@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/jpeg" href="../public/Logo Black Yes Background.JPG">
+    <title>Admin | Estimator Panel | SCREEN ARMORS</title>
+    <link rel="preload" href="../styles.css" as="style">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="page-admin-porch">
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <img src="../public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+                <span class="logo-wordmark">SCREEN ARMORS</span>
+            </a>
+            <button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navLinks">
+                <span class="menu-toggle-icon" aria-hidden="true">☰</span>
+                <span class="menu-toggle-label">Menu</span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../blog.html">Blog</a></li>
+                <li><a href="../index.html">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container admin-porch-main">
+        <section id="adminLoginPanel" class="admin-porch-card admin-estimator-login" hidden>
+            <h1 class="admin-porch-title">Admin Access</h1>
+            <p class="admin-porch-lead">Sign in to open Screen Armors estimating and project management tools.</p>
+            <form id="adminLoginForm" class="admin-porch-form" autocomplete="on">
+                <div class="form-field">
+                    <label for="adminUsername">Username</label>
+                    <input id="adminUsername" name="username" type="text" autocomplete="username" required>
+                </div>
+                <div class="form-field">
+                    <label for="adminPassword">Password</label>
+                    <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+                </div>
+                <p id="adminLoginStatus" class="form-status" role="status" aria-live="polite"></p>
+                <button type="submit" class="btn btn-quote" id="adminLoginBtn">Sign in</button>
+            </form>
+        </section>
+
+        <section id="adminToolPanel" class="admin-estimator-panel" hidden>
+            <div class="admin-porch-toolbar">
+                <div>
+                    <p class="admin-porch-eyebrow">Internal tools</p>
+                    <h1 class="admin-porch-title">Estimator Panel</h1>
+                    <p class="admin-porch-lead">Screen Armors estimating and project management tools.</p>
+                </div>
+                <div class="admin-porch-user">
+                    <span id="adminUserLabel"></span>
+                    <button type="button" class="btn btn-secondary" id="adminLogoutBtn">Log out</button>
+                </div>
+            </div>
+
+            <div id="estimatorToolGrid" class="admin-estimator-grid" aria-label="Estimating tools"></div>
+        </section>
+
+        <p id="adminBootStatus" class="admin-porch-boot" role="status">Checking access…</p>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-bottom">&copy; SCREEN ARMORS — internal estimate tools</div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+        (function() {
+            const navEl = document.querySelector('nav');
+            if (!navEl) return;
+            const TOP_REVEAL_PX = 8;
+            function setSpacer() {
+                const h = navEl.offsetHeight;
+                document.body.style.paddingTop = h + 'px';
+                document.documentElement.style.setProperty('--nav-height', h + 'px');
+            }
+            window.addEventListener('load', setSpacer);
+            window.addEventListener('resize', setSpacer);
+            setSpacer();
+            window.addEventListener('scroll', function() {
+                const currentY = window.scrollY;
+                const navLinks = document.getElementById('navLinks');
+                const menuOpen = navLinks && navLinks.classList.contains('active');
+                if (menuOpen) return;
+                if (currentY <= TOP_REVEAL_PX) navEl.classList.remove('nav-compact');
+                else navEl.classList.add('nav-compact');
+            }, { passive: true });
+        })();
+    </script>
+    <script src="../nav-menu.js"></script>
+    <script src="estimator-panel.js"></script>
+</body>
+</html>

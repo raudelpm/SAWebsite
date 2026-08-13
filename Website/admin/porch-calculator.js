@@ -3216,7 +3216,7 @@
     } catch (err) {
       /* fall through */
     }
-    showLogin();
+    window.location.replace("/admin/estimator-panel.html");
   }
 
   if (loginForm) {
@@ -3244,7 +3244,7 @@
           }
           return;
         }
-        showTool(data.username);
+        window.location.replace("/admin/estimator-panel.html");
       } catch (err) {
         if (loginStatus) loginStatus.textContent = "Network error. Try again.";
       } finally {
@@ -3267,7 +3267,7 @@
       }
       if (loginForm) loginForm.reset();
       if (loginStatus) loginStatus.textContent = "";
-      showLogin();
+      window.location.replace("/admin/estimator-panel.html");
     });
   }
 
