@@ -7959,6 +7959,90 @@ body.page-blog-post .nav-compact {
 .admin-porch-results {
     margin-bottom: 0;
 }
+body.page-estimator-panel {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f4f4f5;
+}
+body.page-estimator-panel nav,
+body.page-estimator-panel nav.nav-compact {
+    background: #0b0c0f !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+body.page-estimator-panel .nav-compact .nav-links {
+    background: #0b0c0f;
+}
+body.page-estimator-panel .admin-estimator-main {
+    flex: 1 1 auto;
+    max-width: min(1180px, calc(100% - 2rem));
+}
+body.page-estimator-panel footer {
+    margin-top: auto;
+}
+.admin-estimator-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: min(42vh, 360px);
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: #0b0c0f;
+}
+.admin-estimator-hero__mosaic {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    z-index: 0;
+}
+.admin-estimator-hero__mosaic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.admin-estimator-hero__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        linear-gradient(180deg, rgba(11, 12, 15, 0.55) 0%, rgba(11, 12, 15, 0.72) 55%, rgba(11, 12, 15, 0.88) 100%),
+        radial-gradient(80% 80% at 50% 40%, rgba(183, 28, 28, 0.28), transparent 70%);
+}
+.admin-estimator-hero__inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 2.5rem 1.25rem 2.25rem;
+    max-width: 42rem;
+}
+.admin-estimator-hero__logo {
+    width: min(160px, 42vw);
+    height: auto;
+    margin: 0 auto 0.85rem;
+    display: block;
+    filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45));
+}
+.admin-estimator-hero .admin-porch-eyebrow {
+    color: rgba(255, 255, 255, 0.7);
+}
+.admin-estimator-hero__title {
+    margin: 0 0 0.45rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 1.2rem + 2vw, 2.6rem);
+    letter-spacing: var(--title-tracking);
+    line-height: 1.1;
+    color: #fff;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+}
+.admin-estimator-hero__lead {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.5;
+}
 .admin-estimator-login {
     max-width: 28rem;
     margin-left: auto;
@@ -7969,7 +8053,7 @@ body.page-blog-post .nav-compact {
 }
 .admin-estimator-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
     gap: 1rem;
     align-items: stretch;
 }
@@ -7979,6 +8063,38 @@ body.page-blog-post .nav-compact {
     gap: 0.75rem;
     margin-bottom: 0;
     min-height: 100%;
+    overflow: hidden;
+    padding: 0 0 1.15rem;
+}
+.admin-estimator-card__photo {
+    margin: 0 0 0.15rem;
+    height: 148px;
+    overflow: hidden;
+    background: #1a1a1a;
+}
+.admin-estimator-card__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.admin-estimator-card__name,
+.admin-estimator-card__desc,
+.admin-estimator-card__actions,
+.admin-estimator-saved {
+    padding-left: clamp(1.1rem, 3vw, 1.5rem);
+    padding-right: clamp(1.1rem, 3vw, 1.5rem);
+}
+.admin-estimator-card--featured {
+    grid-column: 1 / -1;
+}
+@media (min-width: 900px) {
+    .admin-estimator-card--featured {
+        grid-column: span 2;
+    }
+    .admin-estimator-hero__mosaic {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 .admin-estimator-card__name {
     margin: 0;
@@ -7994,17 +8110,26 @@ body.page-blog-post .nav-compact {
     color: rgba(0, 0, 0, 0.62);
     line-height: 1.55;
 }
+.admin-estimator-card__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+}
 .admin-estimator-card__action {
     align-self: flex-start;
-    margin-top: 0.35rem;
     text-decoration: none;
     order: 0;
 }
 .admin-estimator-card--soon {
     background: #fafafa;
-    box-shadow: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     pointer-events: none;
     user-select: none;
+}
+.admin-estimator-card--soon .admin-estimator-card__photo {
+    filter: grayscale(0.35) saturate(0.8);
+    opacity: 0.88;
 }
 .admin-estimator-card__status {
     margin: 0.15rem 0 0;
@@ -8012,6 +8137,88 @@ body.page-blog-post .nav-compact {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: rgba(0, 0, 0, 0.42);
+}
+.admin-estimator-saved {
+    display: grid;
+    gap: 0.65rem;
+}
+.admin-estimator-saved[hidden] {
+    display: none !important;
+}
+.admin-estimator-saved__status {
+    margin: 0;
+    font-size: 0.88rem;
+    color: rgba(0, 0, 0, 0.55);
+}
+.admin-estimator-saved__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+}
+.admin-estimator-saved__item {
+    width: 100%;
+    text-align: left;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: #fff;
+    border-radius: 12px;
+    padding: 0.75rem 0.9rem;
+    cursor: pointer;
+    display: grid;
+    gap: 0.2rem;
+    font: inherit;
+}
+.admin-estimator-saved__item:hover,
+.admin-estimator-saved__item:focus-visible {
+    border-color: rgba(183, 28, 28, 0.45);
+    box-shadow: 0 6px 18px rgba(183, 28, 28, 0.12);
+}
+.admin-estimator-saved__item strong {
+    font-size: 0.95rem;
+    color: #111;
+}
+.admin-estimator-saved__item span {
+    font-size: 0.8rem;
+    color: rgba(0, 0, 0, 0.52);
+}
+.admin-estimator-gallery {
+    margin-top: 2rem;
+}
+.admin-estimator-gallery__title {
+    margin: 0 0 0.85rem;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    letter-spacing: var(--title-tracking);
+}
+.admin-estimator-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+.admin-estimator-gallery__grid img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 14px;
+    display: block;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+}
+@media (min-width: 768px) {
+    .admin-estimator-gallery__grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .admin-estimator-gallery__grid img {
+        height: 180px;
+    }
+}
+@media (max-width: 700px) {
+    .admin-estimator-hero__mosaic {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .admin-estimator-hero {
+        min-height: 280px;
+    }
 }
 
 @media (max-width: 768px) {

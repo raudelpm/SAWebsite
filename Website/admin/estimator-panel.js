@@ -4,39 +4,51 @@
 (function () {
   var PANEL_PATH = "/admin/estimator-panel.html";
   var LOGIN_PATH = "/admin/estimator-panel.html";
+  var CALCULATOR_PATH = "/admin/porch-calculator.html";
 
   var estimatorTools = [
     {
       name: "Front / Back Porch Calculator",
       description:
         "Create porch estimates, calculate framing materials, optimize cut plans, calculate worker pay and generate project layouts.",
-      href: "/admin/porch-calculator.html",
+      href: CALCULATOR_PATH,
       status: "active",
       actionLabel: "Open Calculator",
+      image: "../public/Photo%208.webp",
+      imageAlt: "Screened porch enclosure",
+      savedEstimates: true,
     },
     {
       name: "Pool Cage Repair",
       description: "Coming soon",
       href: "",
       status: "coming-soon",
+      image: "../public/screenholes2.webp",
+      imageAlt: "Pool cage screen repair",
     },
     {
       name: "Full Rescreen",
       description: "Coming soon",
       href: "",
       status: "coming-soon",
+      image: "../public/screentype.webp",
+      imageAlt: "Pool cage rescreen",
     },
     {
       name: "Pool Cage Restoration",
       description: "Coming soon",
       href: "",
       status: "coming-soon",
+      image: "../public/restoration.webp",
+      imageAlt: "Pool cage restoration",
     },
     {
       name: "Clearview Conversion",
       description: "Coming soon",
       href: "",
       status: "coming-soon",
+      image: "../public/Photo%2017.webp",
+      imageAlt: "Clearview conversion",
     },
   ];
 
@@ -49,6 +61,7 @@
   var logoutBtn = document.getElementById("adminLogoutBtn");
   var userLabel = document.getElementById("adminUserLabel");
   var toolGrid = document.getElementById("estimatorToolGrid");
+  var savedLoaded = false;
 
   if (!loginPanel || !toolPanel || !loginForm) return;
 
@@ -64,6 +77,21 @@
     return tool && tool.status === "active" && tool.href;
   }
 
+  function formatModifiedDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
+  function projectTypeLabel(value) {
+    return value === "back" ? "Back porch" : "Front porch";
+  }
+
   function renderTools() {
     if (!toolGrid) return;
     toolGrid.innerHTML = estimatorTools
@@ -71,27 +99,49 @@
         var active = isActiveTool(tool);
         var name = escapeHtml(tool.name);
         var description = escapeHtml(tool.description || "Coming soon");
+        var image = tool.image
+          ? '<div class="admin-estimator-card__photo"><img src="' +
+            escapeHtml(tool.image) +
+            '" alt="' +
+            escapeHtml(tool.imageAlt || "") +
+            '" loading="lazy" decoding="async"></div>'
+          : "";
         if (active) {
           var href = escapeHtml(tool.href);
           var label = escapeHtml(tool.actionLabel || "Open");
+          var savedToggle = tool.savedEstimates
+            ? '<button type="button" class="btn btn-secondary admin-estimator-card__action" data-saved-toggle aria-expanded="false">Saved Estimates</button>'
+            : "";
+          var savedList = tool.savedEstimates
+            ? '<div class="admin-estimator-saved" data-saved-list hidden>' +
+              '<p class="admin-estimator-saved__status" data-saved-status>Click Saved Estimates to load the list.</p>' +
+              '<ul class="admin-estimator-saved__items" data-saved-items></ul>' +
+              "</div>"
+            : "";
           return (
-            '<article class="admin-porch-card admin-estimator-card">' +
+            '<article class="admin-porch-card admin-estimator-card admin-estimator-card--featured">' +
+            image +
             "<h2 class=\"admin-estimator-card__name\">" +
             name +
             "</h2>" +
             "<p class=\"admin-estimator-card__desc\">" +
             description +
             "</p>" +
+            '<div class="admin-estimator-card__actions">' +
             '<a class="btn btn-quote admin-estimator-card__action" href="' +
             href +
             '">' +
             label +
             "</a>" +
+            savedToggle +
+            "</div>" +
+            savedList +
             "</article>"
           );
         }
         return (
           '<article class="admin-porch-card admin-estimator-card admin-estimator-card--soon" aria-disabled="true">' +
+          image +
           "<h2 class=\"admin-estimator-card__name\">" +
           name +
           "</h2>" +
@@ -102,19 +152,97 @@
         );
       })
       .join("");
+    bindSavedEstimates();
+  }
+
+  function bindSavedEstimates() {
+    if (!toolGrid) return;
+    var toggle = toolGrid.querySelector("[data-saved-toggle]");
+    var wrap = toolGrid.querySelector("[data-saved-list]");
+    if (!toggle || !wrap) return;
+    toggle.addEventListener("click", function () {
+      var opening = wrap.hasAttribute("hidden");
+      if (opening) {
+        wrap.removeAttribute("hidden");
+        toggle.setAttribute("aria-expanded", "true");
+        loadSavedEstimates();
+      } else {
+        wrap.setAttribute("hidden", "");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  function setSavedStatus(message) {
+    var statusEl = toolGrid && toolGrid.querySelector("[data-saved-status]");
+    if (statusEl) statusEl.textContent = message || "";
+  }
+
+  async function loadSavedEstimates() {
+    var listEl = toolGrid && toolGrid.querySelector("[data-saved-items]");
+    if (!listEl) return;
+    if (savedLoaded && listEl.children.length) return;
+    setSavedStatus("Loading saved estimates…");
+    try {
+      var res = await fetch("/api/admin/estimates", {
+        method: "GET",
+        credentials: "same-origin",
+      });
+      var data = await res.json().catch(function () {
+        return {};
+      });
+      if (!res.ok || !data.ok) {
+        setSavedStatus(data.error || "Could not load saved estimates.");
+        return;
+      }
+      var items = Array.isArray(data.estimates) ? data.estimates : [];
+      listEl.innerHTML = "";
+      if (!items.length) {
+        setSavedStatus("No saved estimates yet. Open the calculator to create one.");
+        savedLoaded = true;
+        return;
+      }
+      setSavedStatus("Select an estimate to open layouts and downloads.");
+      items.forEach(function (item) {
+        var li = document.createElement("li");
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "admin-estimator-saved__item";
+        var title = document.createElement("strong");
+        title.textContent = item.name || item.title || item.id;
+        var meta = document.createElement("span");
+        meta.textContent =
+          projectTypeLabel(item.projectType) +
+          (item.sectionCount ? " · " + item.sectionCount + " section" + (item.sectionCount === 1 ? "" : "s") : "") +
+          (formatModifiedDate(item.updatedAt) ? " · " + formatModifiedDate(item.updatedAt) : "");
+        btn.appendChild(title);
+        btn.appendChild(meta);
+        btn.addEventListener("click", function () {
+          window.location.href = CALCULATOR_PATH + "?id=" + encodeURIComponent(item.id);
+        });
+        li.appendChild(btn);
+        listEl.appendChild(li);
+      });
+      savedLoaded = true;
+    } catch (err) {
+      setSavedStatus("Network error loading saved estimates.");
+    }
   }
 
   function showLogin() {
+    document.body.classList.add("estimator-is-login");
     if (bootStatus) bootStatus.hidden = true;
     loginPanel.hidden = false;
     toolPanel.hidden = true;
   }
 
   function showPanel(username) {
+    document.body.classList.remove("estimator-is-login");
     if (bootStatus) bootStatus.hidden = true;
     loginPanel.hidden = true;
     toolPanel.hidden = false;
     if (userLabel) userLabel.textContent = "Signed in as " + username;
+    savedLoaded = false;
     renderTools();
   }
 

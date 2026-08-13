@@ -9,7 +9,7 @@
     <link rel="preload" href="../styles.css" as="style">
     <link rel="stylesheet" href="../styles.css">
 </head>
-<body class="page-admin-porch">
+<body class="page-admin-porch page-estimator-panel">
     <nav>
         <div class="nav-container">
             <a href="../index.html" class="logo">
@@ -27,9 +27,25 @@
         </div>
     </nav>
 
-    <main class="container admin-porch-main">
+    <section class="admin-estimator-hero" aria-label="Estimator Panel">
+        <div class="admin-estimator-hero__mosaic" aria-hidden="true">
+            <img src="../public/Photo%201.webp" alt="">
+            <img src="../public/Photo%208.webp" alt="">
+            <img src="../public/cages1.webp" alt="">
+            <img src="../public/restoration.webp" alt="">
+        </div>
+        <div class="admin-estimator-hero__overlay"></div>
+        <div class="admin-estimator-hero__inner">
+            <img class="admin-estimator-hero__logo" src="../public/Logo White No Background .png" alt="SCREEN ARMORS" width="180" height="180">
+            <p class="admin-porch-eyebrow">Internal tools</p>
+            <h1 class="admin-estimator-hero__title">Estimator Panel</h1>
+            <p class="admin-estimator-hero__lead">Screen Armors estimating and project management tools.</p>
+        </div>
+    </section>
+
+    <main class="container admin-porch-main admin-estimator-main">
         <section id="adminLoginPanel" class="admin-porch-card admin-estimator-login" hidden>
-            <h1 class="admin-porch-title">Admin Access</h1>
+            <h2 class="admin-porch-title">Admin Access</h2>
             <p class="admin-porch-lead">Sign in to open Screen Armors estimating and project management tools.</p>
             <form id="adminLoginForm" class="admin-porch-form" autocomplete="on">
                 <div class="form-field">
@@ -48,9 +64,9 @@
         <section id="adminToolPanel" class="admin-estimator-panel" hidden>
             <div class="admin-porch-toolbar">
                 <div>
-                    <p class="admin-porch-eyebrow">Internal tools</p>
-                    <h1 class="admin-porch-title">Estimator Panel</h1>
-                    <p class="admin-porch-lead">Screen Armors estimating and project management tools.</p>
+                    <p class="admin-porch-eyebrow">Choose a tool</p>
+                    <h2 class="admin-porch-title">Estimating tools</h2>
+                    <p class="admin-porch-lead">Open a calculator or pick up a saved porch estimate.</p>
                 </div>
                 <div class="admin-porch-user">
                     <span id="adminUserLabel"></span>
@@ -59,6 +75,16 @@
             </div>
 
             <div id="estimatorToolGrid" class="admin-estimator-grid" aria-label="Estimating tools"></div>
+
+            <section class="admin-estimator-gallery" aria-label="Field photos">
+                <h2 class="admin-estimator-gallery__title">From the field</h2>
+                <div class="admin-estimator-gallery__grid">
+                    <img src="../public/enclosure1.webp" alt="Finished screen enclosure">
+                    <img src="../public/Photo%2017.webp" alt="Pool cage project">
+                    <img src="../public/Photo%2011.webp" alt="Lanai screening">
+                    <img src="../public/cages2.webp" alt="Aluminum cage framing">
+                </div>
+            </section>
         </section>
 
         <p id="adminBootStatus" class="admin-porch-boot" role="status">Checking access…</p>
@@ -66,7 +92,57 @@
 
     <footer>
         <div class="footer-content">
-            <div class="footer-bottom">&copy; SCREEN ARMORS — internal estimate tools</div>
+            <div class="footer-brand">
+                <img src="../public/Logo%20White%20No%20Background%20-mobile.webp" alt="SCREEN ARMORS" class="footer-logo" width="220" height="220" loading="lazy" decoding="async">
+                <p class="footer-title">SCREEN ARMORS</p>
+                <p class="footer-subtitle">Professional Screen Enclosure Specialists</p>
+                <p class="footer-service-area">Serving Sarasota, Manatee &amp; Charlotte Counties</p>
+                <div class="footer-social-links" aria-label="Social links">
+                    <a class="footer-social-link footer-social-link--facebook" href="https://www.facebook.com/profile.php?id=61579752359204&locale=es_LA" target="_blank" rel="noopener noreferrer" aria-label="Visit us on Facebook">
+                        <img src="../public/facebooklogo.webp" alt="" width="26" height="26" loading="lazy" decoding="async">
+                    </a>
+                    <a class="footer-social-link footer-social-link--instagram" href="https://www.instagram.com/screen_armors/" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram">
+                        <img src="../public/instagramlogowhite.webp" alt="" width="24" height="24" loading="lazy" decoding="async">
+                    </a>
+                    <a class="footer-social-link footer-social-link--yelp" href="https://www.yelp.com/biz/screen-armors-nokomis?osq=screen+armors" target="_blank" rel="noopener noreferrer" aria-label="Read our Yelp reviews">
+                        <img src="../public/logoyelp2.webp" alt="" width="26" height="26" loading="lazy" decoding="async">
+                    </a>
+                    <a class="footer-social-link footer-social-link--whatsapp" href="https://wa.me/19414049699" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
+                        <img src="../public/%E2%80%94Pngtree%E2%80%94white%20whatsapp%20icon%20png%20vector_3562063.webp" alt="" width="26" height="26" loading="lazy" decoding="async">
+                    </a>
+                </div>
+            </div>
+            <div class="footer-grid" aria-label="Contact information">
+                <a class="footer-item" href="tel:941-404-9699">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.07 21 3 13.93 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Phone</p>
+                    <p class="footer-item-value">(941) 404-9699</p>
+                </a>
+                <a class="footer-item" href="mailto:info@screenarmors.com">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v.01L12 13 22 6.01V6a2 2 0 0 0-2-2zm2 6.25-9.42 6.6a1 1 0 0 1-1.16 0L2 10.25V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7.75z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Email</p>
+                    <p class="footer-item-value">info@screenarmors.com</p>
+                </a>
+                <a class="footer-item" href="../areas-we-serve.html">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Location</p>
+                    <p class="footer-item-value">2366 Laurel Rd E, Nokomis, FL 34275</p>
+                </a>
+                <a class="footer-item" href="../quote.html">
+                    <div class="footer-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10 10 10 0 0 1-10 10zm1-10.41V6a1 1 0 1 0-2 0v6a1 1 0 0 0 .29.71l3.5 3.5a1 1 0 0 0 1.42-1.42z"/></svg>
+                    </div>
+                    <p class="footer-item-label">Get Quote</p>
+                    <p class="footer-item-value">Request a free quote</p>
+                </a>
+            </div>
+            <div class="footer-bottom">&copy; 2024 SCREEN ARMORS. All rights reserved.</div>
         </div>
     </footer>
 
@@ -78,7 +154,6 @@
         (function() {
             const navEl = document.querySelector('nav');
             if (!navEl) return;
-            const TOP_REVEAL_PX = 8;
             function setSpacer() {
                 const h = navEl.offsetHeight;
                 document.body.style.paddingTop = h + 'px';
@@ -87,14 +162,6 @@
             window.addEventListener('load', setSpacer);
             window.addEventListener('resize', setSpacer);
             setSpacer();
-            window.addEventListener('scroll', function() {
-                const currentY = window.scrollY;
-                const navLinks = document.getElementById('navLinks');
-                const menuOpen = navLinks && navLinks.classList.contains('active');
-                if (menuOpen) return;
-                if (currentY <= TOP_REVEAL_PX) navEl.classList.remove('nav-compact');
-                else navEl.classList.add('nav-compact');
-            }, { passive: true });
         })();
     </script>
     <script src="../nav-menu.js"></script>

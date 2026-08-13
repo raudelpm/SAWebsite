@@ -1908,7 +1908,13 @@
     loginPanel.hidden = true;
     toolPanel.hidden = false;
     if (userLabel) userLabel.textContent = "Signed in as " + username;
-    if (!sectionsEl.querySelector("[data-section]")) {
+    var openId = "";
+    try {
+      openId = new URLSearchParams(window.location.search).get("id") || "";
+    } catch (err) {
+      openId = "";
+    }
+    if (!openId && !sectionsEl.querySelector("[data-section]")) {
       addSection({
         widthFt: 12,
         widthIn: 10,
@@ -1930,6 +1936,7 @@
     refreshLayout();
     refreshSavedList();
     markClean();
+    if (openId) openEstimate(openId);
   }
 
   function renumberSections() {
