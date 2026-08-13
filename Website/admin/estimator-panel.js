@@ -18,30 +18,6 @@
       imageAlt: "Front porch screen enclosure",
       savedEstimates: true,
     },
-    {
-      name: "Pool Cage Repair",
-      description: "Coming soon",
-      href: "",
-      status: "coming-soon",
-    },
-    {
-      name: "Full Rescreen",
-      description: "Coming soon",
-      href: "",
-      status: "coming-soon",
-    },
-    {
-      name: "Pool Cage Restoration",
-      description: "Coming soon",
-      href: "",
-      status: "coming-soon",
-    },
-    {
-      name: "Clearview Conversion",
-      description: "Coming soon",
-      href: "",
-      status: "coming-soon",
-    },
   ];
 
   var bootStatus = document.getElementById("adminBootStatus");
