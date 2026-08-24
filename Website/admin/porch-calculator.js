@@ -4,6 +4,8 @@
 (function () {
   var PRICE_1X2_STICK = 37;
   var PRICE_2X2_STICK = 60;
+  var PRICE_2X3_STICK = 75;
+  var PRICE_2X4_STICK = 90;
   var PRICE_1X1_STICK = 28;
   var PRICE_FLEX_STICK = 30;
   var STICK_FT = 24;
@@ -241,7 +243,7 @@
     var v = String(value == null ? "" : value)
       .trim()
       .toLowerCase();
-    if (v === "1x2" || v === "2x2" || v === MEMBER_NONE) return v;
+    if (v === "1x2" || v === "2x2" || v === "2x3" || v === "2x4" || v === MEMBER_NONE) return v;
     return MEMBER_DEFAULT;
   }
 
@@ -255,6 +257,8 @@
   var MEMBER_FLEX = "1x1/2";
 
   function memberStrokeWidth(size) {
+    if (size === "2x4") return 6.4;
+    if (size === "2x3") return 5.6;
     if (size === "2x2") return 4.8;
     if (size === "1x2") return 2.6;
     if (size === "1x1") return 1.5;
@@ -359,7 +363,7 @@
     if (t === "1x1/2" || t === "1x1/2 flexible" || t === "flex") {
       return compact ? "FLEX" : "1x1/2 FLEXIBLE";
     }
-    if (t === "1x2" || t === "2x2") return t;
+    if (t === "1x2" || t === "2x2" || t === "2x3" || t === "2x4") return t;
     return t.toUpperCase();
   }
 
@@ -540,6 +544,8 @@
         cuts1x1: [],
         cuts1x2: [],
         cuts2x2: [],
+        cuts2x3: [],
+        cuts2x4: [],
         cutsFlex: [],
         archRiseFt: 0,
         flexLf: 0,
@@ -549,7 +555,9 @@
     function addCut(index, size, length) {
       if (!size || size === MEMBER_NONE || !(length > 0)) return;
       var len = roundLf(length);
-      if (size === "2x2") out[index].cuts2x2.push(len);
+      if (size === "2x4") out[index].cuts2x4.push(len);
+      else if (size === "2x3") out[index].cuts2x3.push(len);
+      else if (size === "2x2") out[index].cuts2x2.push(len);
       else if (size === "1x1") out[index].cuts1x1.push(len);
       else out[index].cuts1x2.push(len);
     }
@@ -1794,6 +1802,8 @@
       date: meta.date,
       sticks1x2: totals.track1x2Sticks || 0,
       sticks2x2: totals.track2x2Sticks || 0,
+      sticks2x3: totals.track2x3Sticks || 0,
+      sticks2x4: totals.track2x4Sticks || 0,
       sticksFlex: totals.flexSticks || 0,
       doors: totals.doorCount || 0,
       zBar: totals.zBarCount || 0,
@@ -1816,6 +1826,14 @@
     var rows = [
       { material: "1x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks1x2) },
       { material: "2x2 Aluminum (24 ft)", quantity: stickLabel(data.sticks2x2) },
+    ];
+    if ((data.sticks2x3 || 0) > 0) {
+      rows.push({ material: "2x3 Aluminum (24 ft)", quantity: stickLabel(data.sticks2x3) });
+    }
+    if ((data.sticks2x4 || 0) > 0) {
+      rows.push({ material: "2x4 Aluminum (24 ft)", quantity: stickLabel(data.sticks2x4) });
+    }
+    rows = rows.concat([
       { material: "1x1/2 Flexible Aluminum (20 ft)", quantity: stickLabel(data.sticksFlex) },
       { material: "Screen Door", quantity: String(data.doors) },
       { material: "Z-Bar", quantity: String(data.zBar) },
@@ -1829,7 +1847,7 @@
       },
       { material: "Screen", quantity: num(data.netScreenSqFt, 2) + " sqft (" + (data.screenType || DEFAULT_SCREEN_TYPE) + ")" },
       { material: "Screws & Misc", quantity: "1 project set" },
-    ];
+    ]);
 
     var ops = [];
 
@@ -2335,6 +2353,8 @@
     var cuts1x1 = [];
     var cuts1x2 = [];
     var cuts2x2 = [];
+    var cuts2x3 = [];
+    var cuts2x4 = [];
     var cutsFlex = [];
     var totalArea = 0;
     var doorCount = 0;
@@ -2359,6 +2379,8 @@
         cuts1x1: [],
         cuts1x2: [],
         cuts2x2: [],
+        cuts2x3: [],
+        cuts2x4: [],
         cutsFlex: [],
         archRiseFt: 0,
         flexLf: 0,
@@ -2367,6 +2389,8 @@
       var section1x1Cuts = frame.cuts1x1.slice();
       var section1x2Cuts = frame.cuts1x2.slice();
       var frame2x2Cuts = frame.cuts2x2.slice();
+      var frame2x3Cuts = (frame.cuts2x3 || []).slice();
+      var frame2x4Cuts = (frame.cuts2x4 || []).slice();
       var door2x2Cuts = [];
       var kick2x2Cuts = [];
       var kickSegments = [];
@@ -2427,6 +2451,8 @@
         });
         if (chairMember === "1x2") section1x2Cuts = section1x2Cuts.concat(chairLens);
         else if (chairMember === "1x1") section1x1Cuts = section1x1Cuts.concat(chairLens);
+        else if (chairMember === "2x3") frame2x3Cuts = frame2x3Cuts.concat(chairLens);
+        else if (chairMember === "2x4") frame2x4Cuts = frame2x4Cuts.concat(chairLens);
         else chair2x2Cuts = chairLens;
       }
 
@@ -2436,6 +2462,8 @@
       cuts1x1 = cuts1x1.concat(section1x1Cuts);
       cuts1x2 = cuts1x2.concat(section1x2Cuts);
       cuts2x2 = cuts2x2.concat(section2x2Cuts);
+      cuts2x3 = cuts2x3.concat(frame2x3Cuts);
+      cuts2x4 = cuts2x4.concat(frame2x4Cuts);
       cutsFlex = cutsFlex.concat(sectionFlexCuts);
       totalArea += areaSqft;
 
@@ -2455,6 +2483,8 @@
       var frame1x1Lf = sumCuts(section1x1Cuts);
       var frame1x2Lf = sumCuts(section1x2Cuts);
       var frame2x2Lf = sumCuts(frame2x2Cuts);
+      var frame2x3Lf = sumCuts(frame2x3Cuts);
+      var frame2x4Lf = sumCuts(frame2x4Cuts);
       var door2x2Lf = sumCuts(door2x2Cuts);
       var kick2x2Lf = sumCuts(kick2x2Cuts);
       var chair2x2Lf = sumCuts(chair2x2Cuts);
@@ -2485,7 +2515,11 @@
         cuts1x1: section1x1Cuts,
         cuts1x2: section1x2Cuts,
         frame2x2Cuts: frame2x2Cuts,
+        frame2x3Cuts: frame2x3Cuts,
+        frame2x4Cuts: frame2x4Cuts,
         cuts2x2: section2x2Cuts,
+        cuts2x3: frame2x3Cuts,
+        cuts2x4: frame2x4Cuts,
         cutsFlex: sectionFlexCuts,
         kick2x2Cuts: kick2x2Cuts,
         kickPlateSegments: kickSegments,
@@ -2494,6 +2528,8 @@
         track1x1Lf: frame1x1Lf,
         track1x2Lf: frame1x2Lf,
         frame2x2Lf: frame2x2Lf,
+        frame2x3Lf: frame2x3Lf,
+        frame2x4Lf: frame2x4Lf,
         door2x2Lf: door2x2Lf,
         kick2x2Lf: kick2x2Lf,
         chair2x2Lf: chair2x2Lf,
@@ -2512,6 +2548,8 @@
     var pack1x1 = packCuts(cuts1x1, STICK_FT);
     var pack1x2 = packCuts(cuts1x2, STICK_FT);
     var pack2x2 = packCuts(cuts2x2, STICK_FT);
+    var pack2x3 = packCuts(cuts2x3, STICK_FT);
+    var pack2x4 = packCuts(cuts2x4, STICK_FT);
     var flexLfTotal = roundLf(
       cutsFlex.reduce(function (sum, c) {
         return sum + c;
@@ -2525,6 +2563,10 @@
     var track1x2Cost = track1x2Sticks * PRICE_1X2_STICK;
     var track2x2Sticks = pack2x2.stickCount;
     var track2x2Cost = track2x2Sticks * PRICE_2X2_STICK;
+    var track2x3Sticks = pack2x3.stickCount;
+    var track2x3Cost = track2x3Sticks * PRICE_2X3_STICK;
+    var track2x4Sticks = pack2x4.stickCount;
+    var track2x4Cost = track2x4Sticks * PRICE_2X4_STICK;
     var zBarCount = doorCount;
     var kickPlateCost = kickPlateLf * PRICE_KICK_PLATE_PER_FT;
     var kickMoldingCost = kickPlateLf * PRICE_KICK_MOLDING_PER_FT;
@@ -2533,6 +2575,8 @@
       track1x1Cost +
       track1x2Cost +
       track2x2Cost +
+      track2x3Cost +
+      track2x4Cost +
       flexCost +
       doorCost +
       kickPlateCost +
@@ -2554,9 +2598,13 @@
       cuts1x1: pack1x1.cuts,
       cuts1x2: pack1x2.cuts,
       cuts2x2: pack2x2.cuts,
+      cuts2x3: pack2x3.cuts,
+      cuts2x4: pack2x4.cuts,
       pack1x1: pack1x1,
       pack1x2: pack1x2,
       pack2x2: pack2x2,
+      pack2x3: pack2x3,
+      pack2x4: pack2x4,
       track1x1Lf: pack1x1.totalLf,
       track1x1Sticks: track1x1Sticks,
       track1x1Cost: track1x1Cost,
@@ -2566,6 +2614,12 @@
       track2x2Lf: pack2x2.totalLf,
       track2x2Sticks: track2x2Sticks,
       track2x2Cost: track2x2Cost,
+      track2x3Lf: pack2x3.totalLf,
+      track2x3Sticks: track2x3Sticks,
+      track2x3Cost: track2x3Cost,
+      track2x4Lf: pack2x4.totalLf,
+      track2x4Sticks: track2x4Sticks,
+      track2x4Cost: track2x4Cost,
       flexLf: flexLfTotal,
       flexCuts: cutsFlex,
       flexSticks: flexSticks,
@@ -2594,7 +2648,12 @@
       payPerWorker: payPerWorker,
       costPlusLabor: costPlusLabor,
       calculatedPrice: calculatedPrice,
-      hasOversizedCuts: pack1x1.exceedsStock || pack1x2.exceedsStock || pack2x2.exceedsStock,
+      hasOversizedCuts:
+        pack1x1.exceedsStock ||
+        pack1x2.exceedsStock ||
+        pack2x2.exceedsStock ||
+        pack2x3.exceedsStock ||
+        pack2x4.exceedsStock,
     };
   }
 
@@ -2770,6 +2829,18 @@
           formatCutList(s.frame2x2Cuts) + " (" + num(s.frame2x2Lf, 1) + " LF)"
         );
       }
+      if (s.frame2x3Cuts && s.frame2x3Cuts.length) {
+        add(
+          "2x3 frame cuts",
+          formatCutList(s.frame2x3Cuts) + " (" + num(s.frame2x3Lf, 1) + " LF)"
+        );
+      }
+      if (s.frame2x4Cuts && s.frame2x4Cuts.length) {
+        add(
+          "2x4 frame cuts",
+          formatCutList(s.frame2x4Cuts) + " (" + num(s.frame2x4Lf, 1) + " LF)"
+        );
+      }
       if (s.door) {
         add(
           "Door",
@@ -2845,6 +2916,12 @@
     }
     appendCutPlan(total, "1x2 CUT PLAN", r.pack1x2, PRICE_1X2_STICK);
     appendCutPlan(total, "2x2 CUT PLAN", r.pack2x2, PRICE_2X2_STICK);
+    if (r.pack2x3 && r.pack2x3.cuts && r.pack2x3.cuts.length) {
+      appendCutPlan(total, "2x3 CUT PLAN", r.pack2x3, PRICE_2X3_STICK);
+    }
+    if (r.pack2x4 && r.pack2x4.cuts && r.pack2x4.cuts.length) {
+      appendCutPlan(total, "2x4 CUT PLAN", r.pack2x4, PRICE_2X4_STICK);
+    }
     if (r.flexLf > 0) {
       var flexNote = document.createElement("div");
       flexNote.className = "admin-porch-cutplan";
@@ -2909,6 +2986,28 @@
         money(r.track2x2Cost) +
         " (no splicing)"
     );
+    if ((r.track2x3Lf || 0) > 0 || (r.track2x3Sticks || 0) > 0) {
+      trow(
+        "2x3 track",
+        num(r.track2x3Lf, 1) +
+          " LF · " +
+          r.track2x3Sticks +
+          " stick(s) · " +
+          money(r.track2x3Cost) +
+          " (no splicing)"
+      );
+    }
+    if ((r.track2x4Lf || 0) > 0 || (r.track2x4Sticks || 0) > 0) {
+      trow(
+        "2x4 track",
+        num(r.track2x4Lf, 1) +
+          " LF · " +
+          r.track2x4Sticks +
+          " stick(s) · " +
+          money(r.track2x4Cost) +
+          " (no splicing)"
+      );
+    }
     if (r.flexLf > 0) {
       trow(
         "1x1/2 Flexible Aluminum (20 ft)",

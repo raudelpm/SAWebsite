@@ -46,7 +46,7 @@ function normalizeSection(raw) {
   if (doorPosition !== "left" && doorPosition !== "center" && doorPosition !== "right") {
     doorPosition = "";
   }
-  const members = ["none", "1x2", "2x2"];
+  const members = ["none", "1x2", "2x2", "2x3", "2x4"];
   function member(value, fallback) {
     const v = String(value || "")
       .trim()
