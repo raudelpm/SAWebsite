@@ -105,8 +105,8 @@
       screenTypeLabel: normalizeScreenType(screenType),
       pricePerSqFt: 0.2,
       grossSqFt: 0,
-      doorSqFt: 0,
       kickPlateSqFt: 0,
+      nonScreenSqFt: 0,
       deductionsSqFt: 0,
       netSqFt: 0,
       materialCost: 0,
@@ -2286,7 +2286,6 @@
       var chairSegments = [];
       var zBarCount = 0;
       var openings = s.door || s.kickPlate || s.chairRail ? getDoorOpenings(s, width) : [];
-      var sectionDoorSqFt = 0;
       var sectionKickSqFt = 0;
       var sectionKickLf = 0;
 
@@ -2306,12 +2305,7 @@
           else if (door.header === "1x2") section1x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
           else if (door.header === "1x1") section1x1Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
         });
-        if (openings.length) {
-          // Door unit replaces enclosure screen in its opening (standard or custom size).
-          sectionDoorSqFt = roundLf(
-            Math.min(getDoorWidthFt(s), width) * Math.min(getDoorHeightFt(s), height)
-          );
-        }
+        // Screen doors still use mesh — door opening is NOT deducted from screen sqft.
       }
       if (s.kickPlate) {
         // Kick plate never runs under doors — each wall run is a separate continuous cut.
@@ -2325,7 +2319,7 @@
           }, 0)
         );
         kickPlateLf += sectionKickLf;
-        // Solid kick plate band is not screen; openings already excluded from LF.
+        // Solid kick plate band is not screen; LF already excludes door openings.
         sectionKickSqFt = roundLf(sectionKickLf * getKickPlateHeightFt(s));
       }
       if (s.chairRail) {
@@ -2351,7 +2345,6 @@
 
       screenSectionMetrics.push({
         grossSqFt: areaSqft,
-        doorSqFt: sectionDoorSqFt,
         kickPlateSqFt: sectionKickSqFt,
       });
 
@@ -2380,7 +2373,6 @@
         straightAngle2x2: isStraightAngle2x2(s),
         areaSqft: areaSqft,
         screenGrossSqFt: areaSqft,
-        screenDoorSqFt: sectionDoorSqFt,
         screenKickPlateSqFt: sectionKickSqFt,
         door: s.door,
         customDoor: isCustomDoor(s),
@@ -2494,8 +2486,8 @@
       screenPricePerSqFt: screenCalc.pricePerSqFt,
       grossScreenSqFt: screenCalc.grossSqFt,
       netScreenSqFt: screenCalc.netSqFt,
-      screenDoorSqFt: screenCalc.doorSqFt,
       screenKickPlateSqFt: screenCalc.kickPlateSqFt,
+      screenNonScreenSqFt: screenCalc.nonScreenSqFt,
       screenDeductionsSqFt: screenCalc.deductionsSqFt,
       screenMaterialCost: screenCalc.materialCost,
       screenCost: screenCost,
@@ -2863,16 +2855,14 @@
       screenDl.appendChild(dd);
     }
     srow("Type", r.screenTypeLabel || r.screenType || DEFAULT_SCREEN_TYPE);
-    srow("Screen area", num(r.netScreenSqFt || 0, 2) + " sqft");
-    if ((r.screenDeductionsSqFt || 0) > 0) {
+    srow("Gross area", num(r.grossScreenSqFt || 0, 2) + " sqft");
+    if ((r.screenNonScreenSqFt || r.screenDeductionsSqFt || 0) > 0) {
       srow(
-        "Gross area",
-        num(r.grossScreenSqFt || 0, 2) +
-          " sqft (−" +
-          num(r.screenDeductionsSqFt || 0, 2) +
-          " openings)"
+        "Non-screen area",
+        "−" + num(r.screenNonScreenSqFt || r.screenDeductionsSqFt || 0, 2) + " sqft"
       );
     }
+    srow("Screen area", num(r.netScreenSqFt || 0, 2) + " sqft");
     srow(
       "Price per sqft",
       "$" +

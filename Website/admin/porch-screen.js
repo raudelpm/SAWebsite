@@ -58,18 +58,20 @@
 
   /**
    * Deterministic screen material calculation from per-section metrics.
-   * Door and kick-plate areas must already exclude overlapping regions
-   * (kick plate LF excludes door openings in the porch calculator).
    *
-   * @param {Array<{grossSqFt:number, doorSqFt?:number, kickPlateSqFt?:number}>} sectionMetrics
+   * Screen doors (standard and custom) still use screen mesh — do NOT deduct
+   * door openings. Only subtract solid non-screen areas such as kick plate.
+   * Kick plate LF already excludes door openings in the porch calculator.
+   *
+   * @param {Array<{grossSqFt:number, kickPlateSqFt?:number, nonScreenSqFt?:number}>} sectionMetrics
    * @param {string} screenType
    * @returns {{
    *   screenType: string,
    *   screenTypeLabel: string,
    *   pricePerSqFt: number,
    *   grossSqFt: number,
-   *   doorSqFt: number,
    *   kickPlateSqFt: number,
+   *   nonScreenSqFt: number,
    *   deductionsSqFt: number,
    *   netSqFt: number,
    *   materialCost: number
@@ -78,21 +80,21 @@
   function calculateScreenMaterial(sectionMetrics, screenType) {
     var config = getScreenTypeConfig(screenType);
     var gross = 0;
-    var door = 0;
     var kick = 0;
+    var otherNonScreen = 0;
 
     (sectionMetrics || []).forEach(function (m) {
       if (!m) return;
       gross += Math.max(0, Number(m.grossSqFt) || 0);
-      door += Math.max(0, Number(m.doorSqFt) || 0);
       kick += Math.max(0, Number(m.kickPlateSqFt) || 0);
+      otherNonScreen += Math.max(0, Number(m.nonScreenSqFt) || 0);
     });
 
     gross = roundSqFt(gross);
-    door = roundSqFt(door);
     kick = roundSqFt(kick);
-    var deductions = roundSqFt(door + kick);
-    var net = Math.max(0, roundSqFt(gross - deductions));
+    otherNonScreen = roundSqFt(otherNonScreen);
+    var nonScreen = roundSqFt(kick + otherNonScreen);
+    var net = Math.max(0, roundSqFt(gross - nonScreen));
     var materialCost = roundMoney(net * config.pricePerSqFt);
 
     return {
@@ -100,9 +102,9 @@
       screenTypeLabel: config.label,
       pricePerSqFt: config.pricePerSqFt,
       grossSqFt: gross,
-      doorSqFt: door,
       kickPlateSqFt: kick,
-      deductionsSqFt: deductions,
+      nonScreenSqFt: nonScreen,
+      deductionsSqFt: nonScreen,
       netSqFt: net,
       materialCost: materialCost,
     };
