@@ -8,7 +8,7 @@
   var PRICE_FLEX_STICK = 30;
   var STICK_FT = 24;
   var STICK_FLEX_FT = 20;
-  var PRICE_DOOR = 150;
+  var PRICE_DOOR = 110;
   var PRICE_KICK_PLATE_PER_FT = 10;
   var PRICE_KICK_MOLDING_PER_FT = 1;
   var PRICE_SCREWS = 100;
@@ -66,6 +66,8 @@
   var lastSavedSnapshot = "";
   var applyingSaved = false;
   var dirtyTimer = null;
+  var estimateScrewsAndMisc = PRICE_SCREWS;
+  var estimateOverhead = PRICE_OVERHEAD;
   var SECTION_EXTRA_KEYS = [
     "kickPlateHeightIn",
     "chairRailMember",
@@ -144,6 +146,38 @@
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+  }
+
+  function normalizeMoneyAmount(value, fallback) {
+    var fb = fallback == null ? 0 : fallback;
+    var n = Number(value);
+    if (!Number.isFinite(n) || n < 0) return Math.round(Number(fb) * 100) / 100 || 0;
+    return Math.round(n * 100) / 100;
+  }
+
+  function parseMoneyInputRaw(raw) {
+    var s = String(raw == null ? "" : raw)
+      .trim()
+      .replace(/[$,\s]/g, "");
+    if (s === "") return { empty: true, value: null };
+    var n = Number(s);
+    if (!Number.isFinite(n) || n < 0) return { empty: false, invalid: true, value: null };
+    return { empty: false, invalid: false, value: Math.round(n * 100) / 100 };
+  }
+
+  function setScrewsAndMisc(value) {
+    estimateScrewsAndMisc = normalizeMoneyAmount(value, PRICE_SCREWS);
+    return estimateScrewsAndMisc;
+  }
+
+  function setOverhead(value) {
+    estimateOverhead = normalizeMoneyAmount(value, PRICE_OVERHEAD);
+    return estimateOverhead;
+  }
+
+  function resetEstimateCosts() {
+    estimateScrewsAndMisc = PRICE_SCREWS;
+    estimateOverhead = PRICE_OVERHEAD;
   }
 
   function num(n, digits) {
@@ -2244,6 +2278,8 @@
       projectType: projectTypeInput ? projectTypeInput.value : "front",
       notes: notesInput ? notesInput.value.trim() : "",
       screenType: readScreenType(),
+      screwsAndMisc: estimateScrewsAndMisc,
+      overhead: estimateOverhead,
       sections: readSections(),
     });
   }
@@ -2501,8 +2537,8 @@
       doorCost +
       kickPlateCost +
       kickMoldingCost +
-      PRICE_SCREWS +
-      PRICE_OVERHEAD +
+      estimateScrewsAndMisc +
+      estimateOverhead +
       screenCost;
 
     // Worker pay is included inside the final price: (Material + Total Worker Pay) / 0.70
@@ -2540,8 +2576,9 @@
       kickPlateLf: roundLf(kickPlateLf),
       kickPlateCost: kickPlateCost,
       kickMoldingCost: kickMoldingCost,
-      screws: PRICE_SCREWS,
-      overhead: PRICE_OVERHEAD,
+      screws: estimateScrewsAndMisc,
+      overhead: estimateOverhead,
+      screwsAndMisc: estimateScrewsAndMisc,
       screenType: screenCalc.screenType,
       screenTypeLabel: screenCalc.screenTypeLabel,
       screenPricePerSqFt: screenCalc.pricePerSqFt,
@@ -2646,7 +2683,7 @@
     parent.appendChild(wrap);
   }
 
-  function renderResults(r) {
+  function renderResults(r, options) {
     resultsBody.innerHTML = "";
 
     if (r.hasOversizedCuts) {
@@ -2897,8 +2934,8 @@
         ? num(r.kickPlateLf, 2) + " LF × $1 = " + money(r.kickMoldingCost)
         : money(0)
     );
-    trow("Screws & misc", money(r.screws));
-    trow("Overhead", money(r.overhead));
+    trowMoneyInputInto(tdl, "Screws & misc", r.screwsAndMisc != null ? r.screwsAndMisc : r.screws, "screwsAndMisc");
+    trowMoneyInputInto(tdl, "Overhead", r.overhead, "overhead");
     total.appendChild(tdl);
 
     var screenNote = document.createElement("div");
@@ -2946,26 +2983,92 @@
 
     var tdl2 = document.createElement("dl");
     tdl2.className = "admin-porch-dl";
-    function trow2(label, value, strong) {
+    tdl2.setAttribute("data-pricing-totals", "1");
+    function trow2(label, value, strong, pricingKey) {
       var dt = document.createElement("dt");
       dt.textContent = label;
       if (strong) dt.className = "is-strong";
       var dd = document.createElement("dd");
       dd.textContent = value;
       if (strong) dd.className = "is-strong";
+      if (pricingKey) dd.setAttribute("data-pricing", pricingKey);
       tdl2.appendChild(dt);
       tdl2.appendChild(dd);
     }
-    trow2("Material Cost", money(r.materialCost), true);
-    trow2("Worker Pay — Total (2 workers)", money(r.workerPay), true);
-    trow2("Pay Per Worker", money(r.payPerWorker), true);
-    trow2("Cost + Labor", money(r.costPlusLabor), true);
-    trow2("Calculated Price (÷ 0.70)", money(r.calculatedPrice), true);
+    trow2("Material Cost", money(r.materialCost), true, "materialCost");
+    trow2("Worker Pay — Total (2 workers)", money(r.workerPay), true, "workerPay");
+    trow2("Pay Per Worker", money(r.payPerWorker), true, "payPerWorker");
+    trow2("Cost + Labor", money(r.costPlusLabor), true, "costPlusLabor");
+    trow2("Calculated Price (÷ 0.70)", money(r.calculatedPrice), true, "calculatedPrice");
     total.appendChild(tdl2);
     resultsBody.appendChild(total);
 
-    resultsEl.hidden = false;
-    resultsEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (!options || options.scroll !== false) {
+      resultsEl.hidden = false;
+      resultsEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    } else {
+      resultsEl.hidden = false;
+    }
+  }
+
+  function trowMoneyInputInto(tdl, label, amount, fieldKey) {
+    var dt = document.createElement("dt");
+    dt.textContent = label;
+    var dd = document.createElement("dd");
+    dd.className = "admin-porch-money-dd";
+    var input = document.createElement("input");
+    input.type = "text";
+    input.inputMode = "decimal";
+    input.className = "admin-porch-money-input";
+    input.setAttribute("data-cost-field", fieldKey);
+    input.setAttribute("aria-label", label);
+    input.value = money(amount);
+    dd.appendChild(input);
+    tdl.appendChild(dt);
+    tdl.appendChild(dd);
+  }
+
+  function updatePricingTotalsDisplay(r) {
+    if (!resultsBody || !r) return;
+    var map = {
+      materialCost: money(r.materialCost),
+      workerPay: money(r.workerPay),
+      payPerWorker: money(r.payPerWorker),
+      costPlusLabor: money(r.costPlusLabor),
+      calculatedPrice: money(r.calculatedPrice),
+    };
+    Object.keys(map).forEach(function (key) {
+      var el = resultsBody.querySelector('[data-pricing="' + key + '"]');
+      if (el) el.textContent = map[key];
+    });
+  }
+
+  function applyCostFieldFromInput(input, commitEmpty) {
+    if (!input) return false;
+    var field = input.getAttribute("data-cost-field");
+    var parsed = parseMoneyInputRaw(input.value);
+    if (parsed.empty) {
+      if (!commitEmpty) return false;
+      if (field === "screwsAndMisc") setScrewsAndMisc(PRICE_SCREWS);
+      else if (field === "overhead") setOverhead(PRICE_OVERHEAD);
+      else return false;
+      input.value = money(field === "overhead" ? estimateOverhead : estimateScrewsAndMisc);
+      return true;
+    }
+    if (parsed.invalid || parsed.value == null) return false;
+    if (field === "screwsAndMisc") setScrewsAndMisc(parsed.value);
+    else if (field === "overhead") setOverhead(parsed.value);
+    else return false;
+    return true;
+  }
+
+  function recalculatePricingFromCostEdits() {
+    var sections = readSections();
+    var err = validateSections(sections);
+    if (!sections.length || err) return;
+    lastTotals = calculateProject(sections, readScreenType());
+    updatePricingTotalsDisplay(lastTotals);
+    scheduleDirtyCheck();
   }
 
   function validateSections(sections) {
@@ -3009,6 +3112,7 @@
     projectTypeInput.value = "front";
     notesInput.value = "";
     setScreenType(DEFAULT_SCREEN_TYPE);
+    resetEstimateCosts();
     clearSections();
     addSection({
       widthFt: 12,
@@ -3043,6 +3147,10 @@
     projectTypeInput.value = estimate.projectType === "back" ? "back" : "front";
     notesInput.value = estimate.notes || "";
     setScreenType(estimate.screenType || DEFAULT_SCREEN_TYPE);
+    setScrewsAndMisc(
+      estimate.screwsAndMisc != null ? estimate.screwsAndMisc : PRICE_SCREWS
+    );
+    setOverhead(estimate.overhead != null ? estimate.overhead : PRICE_OVERHEAD);
     clearSections();
     var sections = Array.isArray(estimate.sections) ? estimate.sections : [];
     if (!sections.length) {
@@ -3053,7 +3161,7 @@
       });
     }
     lastTotals = calculateProject(readSections(), readScreenType());
-    renderResults(lastTotals);
+    renderResults(lastTotals, { scroll: false });
     refreshLayout();
     setSaveStatus("Loaded “" + (estimate.title || estimate.name || estimate.id) + "”");
     applyingSaved = false;
@@ -3072,6 +3180,8 @@
       notes: notesInput.value.trim(),
       screenType: screenType,
       screenCost: totals.screenMaterialCost,
+      screwsAndMisc: estimateScrewsAndMisc,
+      overhead: estimateOverhead,
       sections: sections,
     };
   }
@@ -3244,6 +3354,9 @@
         notes: source.notes || "",
         screenType: source.screenType || DEFAULT_SCREEN_TYPE,
         screenCost: source.screenCost || 0,
+        screwsAndMisc:
+          source.screwsAndMisc != null ? source.screwsAndMisc : PRICE_SCREWS,
+        overhead: source.overhead != null ? source.overhead : PRICE_OVERHEAD,
         sections: source.sections || [],
       };
       var saveRes = await fetch("/api/admin/estimates", {
@@ -3381,6 +3494,51 @@
     saveEstimate(true);
   });
   if (deleteBtn) deleteBtn.addEventListener("click", deleteCurrentEstimate);
+
+  if (resultsBody) {
+    resultsBody.addEventListener("focusin", function (e) {
+      var input = e.target && e.target.closest ? e.target.closest("[data-cost-field]") : null;
+      if (!input) return;
+      var field = input.getAttribute("data-cost-field");
+      var current =
+        field === "overhead" ? estimateOverhead : estimateScrewsAndMisc;
+      input.value = String(current);
+      try {
+        input.select();
+      } catch (err) {
+        /* ignore */
+      }
+    });
+    resultsBody.addEventListener("input", function (e) {
+      var input = e.target && e.target.closest ? e.target.closest("[data-cost-field]") : null;
+      if (!input) return;
+      if (applyCostFieldFromInput(input, false)) {
+        recalculatePricingFromCostEdits();
+      }
+    });
+    resultsBody.addEventListener("change", function (e) {
+      var input = e.target && e.target.closest ? e.target.closest("[data-cost-field]") : null;
+      if (!input) return;
+      applyCostFieldFromInput(input, true);
+      input.value = money(
+        input.getAttribute("data-cost-field") === "overhead"
+          ? estimateOverhead
+          : estimateScrewsAndMisc
+      );
+      recalculatePricingFromCostEdits();
+    });
+    resultsBody.addEventListener("blur", function (e) {
+      var input = e.target && e.target.closest ? e.target.closest("[data-cost-field]") : null;
+      if (!input) return;
+      applyCostFieldFromInput(input, true);
+      input.value = money(
+        input.getAttribute("data-cost-field") === "overhead"
+          ? estimateOverhead
+          : estimateScrewsAndMisc
+      );
+      recalculatePricingFromCostEdits();
+    }, true);
+  }
 
   calcForm.addEventListener("submit", function (e) {
     e.preventDefault();

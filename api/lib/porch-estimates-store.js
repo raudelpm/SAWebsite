@@ -173,6 +173,18 @@ export function normalizeEstimateInput(body, { existing, username } = {}) {
     .trim();
   if (!SCREEN_TYPE_IDS.includes(screenType)) screenType = DEFAULT_SCREEN_TYPE;
 
+  function normalizeCostField(raw, fallback) {
+    let n = Number(raw);
+    if (!Number.isFinite(n) || n < 0) n = fallback;
+    return Math.round(n * 100) / 100;
+  }
+
+  const screwsRaw =
+    body?.screwsAndMisc != null ? body.screwsAndMisc : existing?.screwsAndMisc;
+  const overheadRaw = body?.overhead != null ? body.overhead : existing?.overhead;
+  const screwsAndMisc = normalizeCostField(screwsRaw, 100);
+  const overhead = normalizeCostField(overheadRaw, 300);
+
   const owner = String(existing?.userId || existing?.createdBy || username || "")
     .trim()
     .toLowerCase();
@@ -187,6 +199,8 @@ export function normalizeEstimateInput(body, { existing, username } = {}) {
     notes,
     screenType,
     screenCost,
+    screwsAndMisc,
+    overhead,
     sections,
     createdAt: existing?.createdAt || now,
     updatedAt: now,

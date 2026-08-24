@@ -7957,6 +7957,29 @@ body.page-blog-post .nav-compact {
     padding-top: 0.55rem;
     margin-top: 0.15rem;
 }
+.admin-porch-money-dd {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.admin-porch-money-input {
+    width: 6.5rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 8px;
+    padding: 0.28rem 0.45rem;
+    font: inherit;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    background: #fff;
+    color: #111;
+}
+.admin-porch-money-input:focus {
+    outline: 2px solid rgba(183, 28, 28, 0.35);
+    outline-offset: 1px;
+}
 .admin-porch-aside-right .admin-porch-card,
 .admin-porch-saved.admin-porch-card {
     margin-bottom: 0;
