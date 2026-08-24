@@ -16,7 +16,8 @@
   var PRICE_OVERHEAD = 300;
   var MARKUP_DIVISOR = 0.7;
   // Calibrated so $860 materials → $400 total labor (2×$200) → $1,800 final (labor included).
-  // Total Worker Pay = Material Cost × (20/43)
+  // Total Worker Pay = (Material Cost + Overhead) × (20/43)
+  // which keeps Worker Pay at 400/1800 ≈ 22.222% of the final selling price after ÷0.70 markup.
   var WORKER_RATE = 20 / 43;
   var DOOR_WIDTH_FT = 3; // 36"
   var DOOR_OPENING_HEIGHT_FT = 80 / 12; // 80"
@@ -2659,15 +2660,17 @@
       kickPlateCost +
       kickMoldingCost +
       estimateScrewsAndMisc +
-      estimateOverhead +
       screenCost;
 
-    // Worker pay is included inside the final price: (Material + Total Worker Pay) / 0.70
-    // Total covers 2 workers (e.g. $1,800 final → $200 each / $400 total).
-    var workerPay = materialCost * WORKER_RATE;
+    var overhead = estimateOverhead;
+    // Worker Pay stays 22.222% of final sale: apply rate to (materials + overhead),
+    // then Calculated Price = (materials + labor + overhead) / 0.70.
+    // Mathematically identical to the previous formula where overhead lived inside Material Cost.
+    var workerPay = (materialCost + overhead) * WORKER_RATE;
     var payPerWorker = workerPay / 2;
     var costPlusLabor = materialCost + workerPay;
-    var calculatedPrice = costPlusLabor / MARKUP_DIVISOR;
+    var totalCost = materialCost + workerPay + overhead;
+    var calculatedPrice = totalCost / MARKUP_DIVISOR;
 
     return {
       sections: sectionResults,
@@ -2725,6 +2728,7 @@
       workerPay: workerPay,
       payPerWorker: payPerWorker,
       costPlusLabor: costPlusLabor,
+      totalCost: totalCost,
       calculatedPrice: calculatedPrice,
       hasOversizedCuts:
         pack1x1.exceedsStock ||
@@ -3124,7 +3128,6 @@
         : money(0)
     );
     trowMoneyInputInto(tdl, "Screws & misc", r.screwsAndMisc != null ? r.screwsAndMisc : r.screws, "screwsAndMisc");
-    trowMoneyInputInto(tdl, "Overhead", r.overhead, "overhead");
     total.appendChild(tdl);
 
     var screenNote = document.createElement("div");
@@ -3187,7 +3190,14 @@
     trow2("Material Cost", money(r.materialCost), true, "materialCost");
     trow2("Worker Pay — Total (2 workers)", money(r.workerPay), true, "workerPay");
     trow2("Pay Per Worker", money(r.payPerWorker), true, "payPerWorker");
+    trowMoneyInputInto(tdl2, "Overhead", r.overhead, "overhead");
     trow2("Cost + Labor", money(r.costPlusLabor), true, "costPlusLabor");
+    trow2(
+      "Cost + Labor + Overhead",
+      money(r.totalCost != null ? r.totalCost : r.costPlusLabor),
+      true,
+      "totalCost"
+    );
     trow2("Calculated Price (÷ 0.70)", money(r.calculatedPrice), true, "calculatedPrice");
     total.appendChild(tdl2);
     resultsBody.appendChild(total);
@@ -3224,6 +3234,7 @@
       workerPay: money(r.workerPay),
       payPerWorker: money(r.payPerWorker),
       costPlusLabor: money(r.costPlusLabor),
+      totalCost: money(r.totalCost != null ? r.totalCost : r.costPlusLabor),
       calculatedPrice: money(r.calculatedPrice),
     };
     Object.keys(map).forEach(function (key) {
