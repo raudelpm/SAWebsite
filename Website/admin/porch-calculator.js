@@ -11,7 +11,7 @@
   var STICK_FT = 24;
   var STICK_FLEX_FT = 20;
   var PRICE_DOOR = 110;
-  var PRICE_KICK_PLATE_PER_FT = 10;
+  var PRICE_KICK_PLATE_PER_FT = 4;
   var PRICE_KICK_MOLDING_PER_FT = 1;
   var PRICE_SCREWS = 100;
   var PRICE_OVERHEAD = 300;
@@ -3024,13 +3024,21 @@
     trow(
       "Kick plate",
       r.kickPlateLf > 0
-        ? num(r.kickPlateLf, 2) + " LF × $10 = " + money(r.kickPlateCost)
+        ? num(r.kickPlateLf, 2) +
+            " LF × $" +
+            PRICE_KICK_PLATE_PER_FT +
+            " = " +
+            money(r.kickPlateCost)
         : money(0)
     );
     trow(
       "Kick plate molding",
       r.kickPlateLf > 0
-        ? num(r.kickPlateLf, 2) + " LF × $1 = " + money(r.kickMoldingCost)
+        ? num(r.kickPlateLf, 2) +
+            " LF × $" +
+            PRICE_KICK_MOLDING_PER_FT +
+            " = " +
+            money(r.kickMoldingCost)
         : money(0)
     );
     trowMoneyInputInto(tdl, "Screws & misc", r.screwsAndMisc != null ? r.screwsAndMisc : r.screws, "screwsAndMisc");
