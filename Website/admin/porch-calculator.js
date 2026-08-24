@@ -11,7 +11,6 @@
   var STICK_FT = 24;
   var STICK_FLEX_FT = 20;
   var PRICE_DOOR = 110;
-  var PRICE_KICK_PLATE_PER_FT = 4;
   var PRICE_KICK_MOLDING_PER_FT = 1;
   var PRICE_SCREWS = 100;
   var PRICE_OVERHEAD = 300;
@@ -22,7 +21,12 @@
   var DOOR_WIDTH_FT = 3; // 36"
   var DOOR_OPENING_HEIGHT_FT = 80 / 12; // 80"
   var DOOR_HEADER_FT = 3; // 36" header above door opening
-  var KICK_PLATE_HEIGHT_FT = 16 / 12;
+  var DEFAULT_KICK_PLATE_HEIGHT_IN = 16;
+  var KICK_PLATE_OPTIONS = {
+    8: { label: '8"', pricePerLf: 2.5 },
+    16: { label: '16"', pricePerLf: 4 },
+    36: { label: '36"', pricePerLf: 5.5 },
+  };
   var CHAIR_RAIL_HEIGHT_FT = 36 / 12;
   var MIN_KICK_SEGMENT_FT = 0.05;
 
@@ -295,14 +299,39 @@
   var DOOR_HEADER_INSERT_DEFAULT = MEMBER_ZBAR;
   var CHAIR_RAIL_MEMBER_DEFAULT = "2x2";
 
+  function normalizeKickPlateHeightIn(value) {
+    var n = Math.round(Number(value));
+    if (n === 8 || n === 36) return n;
+    return DEFAULT_KICK_PLATE_HEIGHT_IN;
+  }
+
+  function getKickPlateOption(heightIn) {
+    var key = normalizeKickPlateHeightIn(heightIn);
+    return {
+      heightIn: key,
+      label: KICK_PLATE_OPTIONS[key].label,
+      pricePerLf: KICK_PLATE_OPTIONS[key].pricePerLf,
+    };
+  }
+
   function getKickPlateHeightIn(section) {
-    var custom = Number(section && section.kickPlateHeightIn);
-    if (Number.isFinite(custom) && custom > 0) return custom;
-    return Math.round(KICK_PLATE_HEIGHT_FT * 12 * 100) / 100;
+    if (!section || !section.kickPlate) return DEFAULT_KICK_PLATE_HEIGHT_IN;
+    return normalizeKickPlateHeightIn(section.kickPlateHeightIn);
   }
 
   function getKickPlateHeightFt(section) {
     return roundLf(getKickPlateHeightIn(section) / 12);
+  }
+
+  function getKickPlatePricePerLf(section) {
+    return getKickPlateOption(getKickPlateHeightIn(section)).pricePerLf;
+  }
+
+  function formatKickPrice(n) {
+    return Number(n).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   }
 
   function getChairRailMember(section) {
@@ -368,9 +397,8 @@
   }
 
   function formatKickPlateLabel(section, compact) {
-    var inches = getKickPlateHeightIn(section);
-    var inchStr = Number.isInteger(inches) ? String(inches) : String(inches);
-    return compact ? 'KP ' + inchStr + '"' : 'KICK PLATE — ' + inchStr + '"';
+    var opt = getKickPlateOption(getKickPlateHeightIn(section));
+    return compact ? "KP " + opt.label : "KICK PLATE — " + opt.label;
   }
 
   function formatChairRailLabel(section, compact) {
@@ -966,7 +994,8 @@
       ? getKickPlateSegments(widthFt, doorOpenings)
       : [];
     if (section.kickPlate && kickSegments.length) {
-      var kickH = Math.min(getKickPlateHeightFt(section), heightFt * 0.35);
+      // Draw true kick height proportionally (clamped only so it stays inside the opening).
+      var kickH = Math.min(getKickPlateHeightFt(section), Math.max(0.25, heightFt - 0.35));
       var kickTopY = syFromBottom(kickH);
       var largest = kickSegments[0];
       kickSegments.forEach(function (seg) {
@@ -2125,6 +2154,11 @@
       doorHeightIn: d.doorHeightIn != null ? d.doorHeightIn : 8,
       customDoorPrice: d.customDoorPrice != null && d.customDoorPrice !== "" ? d.customDoorPrice : "",
       kickPlate: d.kickPlate ? "yes" : "no",
+      kickPlateHeightIn: String(
+        normalizeKickPlateHeightIn(
+          d.kickPlateHeightIn != null ? d.kickPlateHeightIn : DEFAULT_KICK_PLATE_HEIGHT_IN
+        )
+      ),
       chairRail: d.chairRail ? "yes" : "no",
       leftMember: memberFromData(d, "leftMember"),
       rightMember: memberFromData(d, "rightMember"),
@@ -2147,7 +2181,20 @@
     });
     writeSectionExtras(card, d);
     syncDoorPositionVisibility(card);
+    syncKickPlateVisibility(card);
     syncOpeningShapeVisibility(card);
+  }
+
+  function syncKickPlateVisibility(card) {
+    var kickEl = card.querySelector('[data-field="kickPlate"]');
+    var heightWrap = card.querySelector("[data-kick-plate-height-wrap]");
+    var heightEl = card.querySelector('[data-field="kickPlateHeightIn"]');
+    if (!kickEl) return;
+    var on = kickEl.value === "yes";
+    if (heightWrap) heightWrap.hidden = !on;
+    if (on && heightEl) {
+      heightEl.value = String(normalizeKickPlateHeightIn(heightEl.value));
+    }
   }
 
   function syncDoorPositionVisibility(card) {
@@ -2239,6 +2286,10 @@
       doorHeightIn: Number(val("doorHeightIn")) || 0,
       customDoorPrice: val("customDoorPrice") === "" ? "" : Number(val("customDoorPrice")),
       kickPlate: val("kickPlate") === "yes",
+      kickPlateHeightIn:
+        val("kickPlate") === "yes"
+          ? normalizeKickPlateHeightIn(val("kickPlateHeightIn"))
+          : 0,
       chairRail: val("chairRail") === "yes",
       leftMember: normalizeMember(val("leftMember") || MEMBER_DEFAULT),
       rightMember: normalizeMember(val("rightMember") || MEMBER_DEFAULT),
@@ -2360,6 +2411,8 @@
     var doorCount = 0;
     var doorCost = 0;
     var kickPlateLf = 0;
+    var kickPlateCost = 0;
+    var kickPlateByHeight = {};
     var screenType = normalizeScreenType(screenTypeInputValue);
     var frameBySection = getSectionFrameCuts(sectionsInput);
 
@@ -2439,6 +2492,23 @@
           }, 0)
         );
         kickPlateLf += sectionKickLf;
+        var kickOpt = getKickPlateOption(getKickPlateHeightIn(s));
+        var sectionKickCost = Math.round(sectionKickLf * kickOpt.pricePerLf * 100) / 100;
+        kickPlateCost += sectionKickCost;
+        if (!kickPlateByHeight[kickOpt.heightIn]) {
+          kickPlateByHeight[kickOpt.heightIn] = {
+            heightIn: kickOpt.heightIn,
+            label: kickOpt.label,
+            pricePerLf: kickOpt.pricePerLf,
+            lf: 0,
+            cost: 0,
+          };
+        }
+        kickPlateByHeight[kickOpt.heightIn].lf = roundLf(
+          kickPlateByHeight[kickOpt.heightIn].lf + sectionKickLf
+        );
+        kickPlateByHeight[kickOpt.heightIn].cost =
+          Math.round((kickPlateByHeight[kickOpt.heightIn].cost + sectionKickCost) * 100) / 100;
         // Solid kick plate band is not screen; LF already excludes door openings.
         sectionKickSqFt = roundLf(sectionKickLf * getKickPlateHeightFt(s));
       }
@@ -2507,6 +2577,8 @@
         doorSizeLabel: s.door ? formatDoorSizeLabel(s) : "",
         doorPosition: normalizeDoorPosition(s.doorPosition) || "",
         kickPlate: s.kickPlate,
+        kickPlateHeightIn: s.kickPlate ? getKickPlateHeightIn(s) : 0,
+        kickPlatePricePerLf: s.kickPlate ? getKickPlatePricePerLf(s) : 0,
         chairRail: s.chairRail,
         leftMember: frame.leftMember,
         rightMember: frame.rightMember,
@@ -2537,7 +2609,6 @@
         flexLf: flexLf,
         zBarCount: zBarCount,
         doorConstruction: s.door ? getDoorConstruction(s) : null,
-        kickPlateHeightIn: s.kickPlate ? getKickPlateHeightIn(s) : 0,
         chairRailMember: s.chairRail ? getChairRailMember(s) : "",
       });
     });
@@ -2568,8 +2639,14 @@
     var track2x4Sticks = pack2x4.stickCount;
     var track2x4Cost = track2x4Sticks * PRICE_2X4_STICK;
     var zBarCount = doorCount;
-    var kickPlateCost = kickPlateLf * PRICE_KICK_PLATE_PER_FT;
-    var kickMoldingCost = kickPlateLf * PRICE_KICK_MOLDING_PER_FT;
+    kickPlateCost = Math.round(kickPlateCost * 100) / 100;
+    var kickMoldingCost =
+      Math.round(kickPlateLf * PRICE_KICK_MOLDING_PER_FT * 100) / 100;
+    var kickPlateRows = [8, 16, 36]
+      .map(function (h) {
+        return kickPlateByHeight[h];
+      })
+      .filter(Boolean);
 
     var materialCost =
       track1x1Cost +
@@ -2629,6 +2706,7 @@
       zBarCount: zBarCount,
       kickPlateLf: roundLf(kickPlateLf),
       kickPlateCost: kickPlateCost,
+      kickPlateRows: kickPlateRows,
       kickMoldingCost: kickMoldingCost,
       screws: estimateScrewsAndMisc,
       overhead: estimateOverhead,
@@ -3021,22 +3099,26 @@
     }
     trow("Doors", r.doorCount + " · " + money(r.doorCost));
     trow("Z-Bar", (r.zBarCount || 0) + " pc");
-    trow(
-      "Kick plate",
-      r.kickPlateLf > 0
-        ? num(r.kickPlateLf, 2) +
+    if (r.kickPlateLf > 0 && r.kickPlateRows && r.kickPlateRows.length) {
+      r.kickPlateRows.forEach(function (row) {
+        trow(
+          "Kick plate — " + row.label,
+          num(row.lf, 2) +
             " LF × $" +
-            PRICE_KICK_PLATE_PER_FT +
+            formatKickPrice(row.pricePerLf) +
             " = " +
-            money(r.kickPlateCost)
-        : money(0)
-    );
+            money(row.cost)
+        );
+      });
+    } else {
+      trow("Kick plate", money(0));
+    }
     trow(
       "Kick plate molding",
       r.kickPlateLf > 0
         ? num(r.kickPlateLf, 2) +
             " LF × $" +
-            PRICE_KICK_MOLDING_PER_FT +
+            formatKickPrice(PRICE_KICK_MOLDING_PER_FT) +
             " = " +
             money(r.kickMoldingCost)
         : money(0)
@@ -3547,6 +3629,10 @@
         if (target.value === "yes" && customEl) customEl.value = "no";
         syncDoorPositionVisibility(card);
       }
+    }
+    if (target.getAttribute("data-field") === "kickPlate") {
+      var kickCard = target.closest("[data-section]");
+      if (kickCard) syncKickPlateVisibility(kickCard);
     }
     if (target.getAttribute("data-field") === "customDoor") {
       var customCard = target.closest("[data-section]");

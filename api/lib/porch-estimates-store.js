@@ -94,7 +94,11 @@ function normalizeSection(raw) {
     doorHeaderInsert: door ? zBarLike(s.doorHeaderInsert, "z-bar") : "",
     kickPlate: Boolean(s.kickPlate),
     kickPlateHeightIn: Boolean(s.kickPlate)
-      ? Math.max(0, Number(s.kickPlateHeightIn) || 16)
+      ? (() => {
+          const n = Math.round(Number(s.kickPlateHeightIn));
+          if (n === 8 || n === 36) return n;
+          return 16;
+        })()
       : 0,
     chairRail: Boolean(s.chairRail),
     chairRailMember: Boolean(s.chairRail) ? member(s.chairRailMember, "2x2") : "",
