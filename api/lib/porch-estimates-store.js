@@ -81,6 +81,7 @@ function normalizeSection(raw) {
     door,
     doorPosition: door ? doorPosition : "",
     customDoor,
+    panelAboveDoor: door ? yesNo(s.panelAboveDoor, true) : true,
     doorWidthFt: Math.max(0, Number(s.doorWidthFt) || 0),
     doorWidthIn: Math.max(0, Number(s.doorWidthIn) || 0),
     doorHeightFt: Math.max(0, Number(s.doorHeightFt) || 0),

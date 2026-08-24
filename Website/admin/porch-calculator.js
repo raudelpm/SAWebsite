@@ -347,6 +347,14 @@
     return section && section.door ? 1 : 0;
   }
 
+  /** Default Yes when a door is present. Missing value → true (legacy estimates). */
+  function isPanelAboveDoor(section) {
+    if (!section || !section.door) return true;
+    var v = section.panelAboveDoor;
+    if (v === false || v === "no" || v === "false") return false;
+    return true;
+  }
+
   function appendShopLabel(parts, x, y, text, options) {
     if (!text) return;
     var o = options || {};
@@ -453,6 +461,9 @@
   }
 
   function getDoorPostHeightFt(section, widthFt, xFt, fallbackHeight) {
+    if (!isPanelAboveDoor(section)) {
+      return roundLf(Math.min(getDoorHeightFt(section), Number(fallbackHeight) || getDoorHeightFt(section)));
+    }
     if (isArchSection(section) && !isStraightAngle2x2(section)) {
       return getArchHeightAtX(section, xFt);
     }
@@ -1004,8 +1015,9 @@
       }
     }
 
-    // Door — vertical 2x2 posts, Z-Bar door frame, 2x2 + Z-Bar header.
+    // Door — vertical 2x2 posts, Z-Bar door frame; above-door panel OR door-height rail.
     if (doorOpenings.length) {
+      var panelAbove = isPanelAboveDoor(section);
       doorOpenings.forEach(function (op) {
         var dx0 = sx(op.left);
         var dx1 = sx(op.right);
@@ -1015,12 +1027,16 @@
         var doorCompact = compact || doorPx < 78;
         var postStroke = memberStrokeWidth(doorConstr.leftPost);
         var headerStroke = memberStrokeWidth(doorConstr.header);
-        var leftPostTopY = isArch && !isStraightAngle2x2(section)
-          ? syFromBottom(getArchHeightAtX(section, op.left))
-          : yFrameTop;
-        var rightPostTopY = isArch && !isStraightAngle2x2(section)
-          ? syFromBottom(getArchHeightAtX(section, op.right))
-          : yFrameTop;
+        var leftPostTopY = panelAbove
+          ? isArch && !isStraightAngle2x2(section)
+            ? syFromBottom(getArchHeightAtX(section, op.left))
+            : yFrameTop
+          : headerY;
+        var rightPostTopY = panelAbove
+          ? isArch && !isStraightAngle2x2(section)
+            ? syFromBottom(getArchHeightAtX(section, op.right))
+            : yFrameTop
+          : headerY;
         parts.push(
           '<line x1="' +
             dx0 +
@@ -1047,19 +1063,46 @@
             postStroke +
             '"/>'
         );
-        parts.push(
-          '<line x1="' +
-            dx0 +
-            '" y1="' +
-            headerY +
-            '" x2="' +
-            dx1 +
-            '" y2="' +
-            headerY +
-            '" stroke="#1a1a1a" stroke-width="' +
-            headerStroke +
-            '"/>'
-        );
+        if (panelAbove) {
+          // Door header across the opening only (small above-door panel above it).
+          parts.push(
+            '<line x1="' +
+              dx0 +
+              '" y1="' +
+              headerY +
+              '" x2="' +
+              dx1 +
+              '" y2="' +
+              headerY +
+              '" stroke="#1a1a1a" stroke-width="' +
+              headerStroke +
+              '"/>'
+          );
+        } else {
+          // Continuous 2x2 at door height across the full section (no above-door panel).
+          parts.push(
+            '<line x1="' +
+              x0 +
+              '" y1="' +
+              headerY +
+              '" x2="' +
+              x1 +
+              '" y2="' +
+              headerY +
+              '" stroke="#1a1a1a" stroke-width="' +
+              memberStrokeWidth("2x2") +
+              '"/>'
+          );
+          if (drawW >= 48) {
+            appendShopLabel(
+              parts,
+              (x0 + x1) / 2,
+              headerY - 6,
+              formatMemberLabel("2x2", compact),
+              { size: 8 }
+            );
+          }
+        }
         var inset = 3.5;
         parts.push(
           '<rect x="' +
@@ -1105,7 +1148,7 @@
             formatMemberLabel("z-bar-door", doorCompact)
           );
         }
-        if (headerY - yFrameTop > 20) {
+        if (panelAbove && headerY - yFrameTop > 20) {
           appendShopLabel(
             parts,
             (dx0 + dx1) / 2,
@@ -1114,7 +1157,7 @@
             { size: 8 }
           );
         }
-        if (doorPx >= 52) {
+        if (panelAbove && doorPx >= 52) {
           appendShopLabel(
             parts,
             (dx0 + dx1) / 2,
@@ -1143,7 +1186,8 @@
         }
         addLegend(doorConstr.leftPost, "door post");
         addLegend("z-bar-door", "door frame");
-        addLegend(MEMBER_2X2_ZBAR, "above door");
+        if (panelAbove) addLegend(MEMBER_2X2_ZBAR, "above door");
+        else addLegend("2x2", "at door height");
       });
     }
 
@@ -2021,6 +2065,7 @@
       heightIn: d.heightIn != null ? d.heightIn : 0,
       door: d.door ? "yes" : "no",
       doorPosition: normalizeDoorPosition(d.doorPosition) || "",
+      panelAboveDoor: d.door && !isPanelAboveDoor(d) ? "no" : "yes",
       customDoor: d.door && isCustomDoor(d) ? "yes" : "no",
       doorWidthFt: d.doorWidthFt != null ? d.doorWidthFt : 3,
       doorWidthIn: d.doorWidthIn != null ? d.doorWidthIn : 0,
@@ -2057,12 +2102,15 @@
     var doorEl = card.querySelector('[data-field="door"]');
     var wrap = card.querySelector("[data-door-position-wrap]");
     var posEl = card.querySelector('[data-field="doorPosition"]');
+    var panelWrap = card.querySelector("[data-panel-above-door-wrap]");
+    var panelEl = card.querySelector('[data-field="panelAboveDoor"]');
     var customWrap = card.querySelector("[data-custom-door-wrap]");
     var customFields = card.querySelector("[data-custom-door-fields]");
     var customEl = card.querySelector('[data-field="customDoor"]');
     if (!doorEl) return;
     var on = doorEl.value === "yes";
     if (wrap) wrap.hidden = !on;
+    if (panelWrap) panelWrap.hidden = !on;
     if (customWrap) customWrap.hidden = !on;
     var customOn = on && customEl && customEl.value === "yes";
     if (customFields) customFields.hidden = !customOn;
@@ -2071,6 +2119,9 @@
     }
     if (!on && customEl) {
       customEl.value = "no";
+    }
+    if (on && panelEl && !panelEl.value) {
+      panelEl.value = "yes";
     }
     if (customOn) {
       var wFt = card.querySelector('[data-field="doorWidthFt"]');
@@ -2128,6 +2179,7 @@
       centerHeightIn: Number(val("centerHeightIn")) || 0,
       door: doorOn,
       doorPosition: doorOn ? normalizeDoorPosition(val("doorPosition")) : "",
+      panelAboveDoor: doorOn ? val("panelAboveDoor") !== "no" : true,
       customDoor: doorOn && val("customDoor") === "yes",
       doorWidthFt: Number(val("doorWidthFt")) || 0,
       doorWidthIn: Number(val("doorWidthIn")) || 0,
@@ -2291,6 +2343,7 @@
 
       if (s.door) {
         var door = getDoorConstruction(s);
+        var panelAbove = isPanelAboveDoor(s);
         doorCount += 1;
         doorCost += getDoorPrice(s);
         zBarCount = doorZBarCount(s);
@@ -2301,10 +2354,17 @@
           if (roundLf(width - op.right) > 0.05) {
             door2x2Cuts.push(getDoorPostHeightFt(s, width, op.right, height));
           }
-          if (door.header === "2x2") door2x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
-          else if (door.header === "1x2") section1x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
-          else if (door.header === "1x1") section1x1Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
+          if (panelAbove) {
+            // Small above-door panel: header spans the door opening only.
+            if (door.header === "2x2") door2x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
+            else if (door.header === "1x2") section1x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
+            else if (door.header === "1x1") section1x1Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
+          }
         });
+        if (!panelAbove && openings.length) {
+          // No above-door panel: continuous 2x2 at door height across the full section.
+          door2x2Cuts.push(width);
+        }
         // Screen doors still use mesh — door opening is NOT deducted from screen sqft.
       }
       if (s.kickPlate) {
@@ -2376,6 +2436,7 @@
         screenKickPlateSqFt: sectionKickSqFt,
         door: s.door,
         customDoor: isCustomDoor(s),
+        panelAboveDoor: s.door ? isPanelAboveDoor(s) : true,
         doorPrice: s.door ? getDoorPrice(s) : 0,
         doorSizeLabel: s.door ? formatDoorSizeLabel(s) : "",
         doorPosition: normalizeDoorPosition(s.doorPosition) || "",
@@ -2691,7 +2752,11 @@
             " right"
         );
         add("Door frame", formatMemberLabel("z-bar-door", false));
-        add("Above door", formatMemberLabel(MEMBER_2X2_ZBAR, false));
+        if (s.panelAboveDoor !== false) {
+          add("Above door", formatMemberLabel(MEMBER_2X2_ZBAR, false));
+        } else {
+          add("Panel above door", "No — 2x2 rail at door height across section");
+        }
         if (s.door2x2Cuts && s.door2x2Cuts.length) {
           add("Door 2x2 cuts", formatCutList(s.door2x2Cuts) + " (" + num(s.door2x2Lf, 1) + " LF)");
         }
