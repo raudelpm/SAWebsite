@@ -166,6 +166,12 @@ export function normalizeEstimateInput(body, { existing, username } = {}) {
   if (!Number.isFinite(screenCost) || screenCost < 0) screenCost = 0;
   screenCost = Math.round(screenCost * 100) / 100;
 
+  const SCREEN_TYPE_IDS = ["18/14", "20/20", "16/14", "17/20"];
+  const DEFAULT_SCREEN_TYPE = "18/14";
+  let screenType = String(body?.screenType ?? existing?.screenType ?? DEFAULT_SCREEN_TYPE)
+    .trim();
+  if (!SCREEN_TYPE_IDS.includes(screenType)) screenType = DEFAULT_SCREEN_TYPE;
+
   const owner = String(existing?.userId || existing?.createdBy || username || "")
     .trim()
     .toLowerCase();
@@ -178,6 +184,7 @@ export function normalizeEstimateInput(body, { existing, username } = {}) {
     title,
     projectType,
     notes,
+    screenType,
     screenCost,
     sections,
     createdAt: existing?.createdAt || now,

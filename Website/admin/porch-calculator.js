@@ -42,7 +42,8 @@
   var titleInput = document.getElementById("porchEstimateTitle");
   var projectTypeInput = document.getElementById("porchProjectType");
   var notesInput = document.getElementById("porchNotes");
-  var screenCostInput = document.getElementById("porchScreenCost");
+  var screenTypeInput = document.getElementById("porchScreenType");
+  var screenTypeHint = document.getElementById("porchScreenTypeHint");
   var saveBtn = document.getElementById("porchSaveBtn");
   var saveAsBtn = document.getElementById("porchSaveAsBtn");
   var deleteBtn = document.getElementById("porchDeleteBtn");
@@ -76,7 +77,67 @@
     "doorHeaderInsert",
   ];
 
+  var PorchScreenApi =
+    typeof window !== "undefined" && window.PorchScreen ? window.PorchScreen : null;
+  var DEFAULT_SCREEN_TYPE =
+    (PorchScreenApi && PorchScreenApi.DEFAULT_SCREEN_TYPE) || "18/14";
+
+  function normalizeScreenType(value) {
+    if (PorchScreenApi && typeof PorchScreenApi.normalizeScreenType === "function") {
+      return PorchScreenApi.normalizeScreenType(value);
+    }
+    return value ? String(value).trim() || DEFAULT_SCREEN_TYPE : DEFAULT_SCREEN_TYPE;
+  }
+
+  function getScreenTypeConfig(type) {
+    if (PorchScreenApi && typeof PorchScreenApi.getScreenTypeConfig === "function") {
+      return PorchScreenApi.getScreenTypeConfig(type);
+    }
+    return { id: DEFAULT_SCREEN_TYPE, label: DEFAULT_SCREEN_TYPE, pricePerSqFt: 0.2 };
+  }
+
+  function calculateScreenMaterialFromMetrics(sectionMetrics, screenType) {
+    if (PorchScreenApi && typeof PorchScreenApi.calculateScreenMaterial === "function") {
+      return PorchScreenApi.calculateScreenMaterial(sectionMetrics, screenType);
+    }
+    return {
+      screenType: normalizeScreenType(screenType),
+      screenTypeLabel: normalizeScreenType(screenType),
+      pricePerSqFt: 0.2,
+      grossSqFt: 0,
+      doorSqFt: 0,
+      kickPlateSqFt: 0,
+      deductionsSqFt: 0,
+      netSqFt: 0,
+      materialCost: 0,
+    };
+  }
+
+  function readScreenType() {
+    return normalizeScreenType(screenTypeInput ? screenTypeInput.value : DEFAULT_SCREEN_TYPE);
+  }
+
+  function setScreenType(value) {
+    if (!screenTypeInput) return;
+    screenTypeInput.value = normalizeScreenType(value);
+    updateScreenTypeHint();
+  }
+
+  function updateScreenTypeHint() {
+    if (!screenTypeHint) return;
+    var cfg = getScreenTypeConfig(readScreenType());
+    screenTypeHint.textContent =
+      "$" +
+      Number(cfg.pricePerSqFt).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }) +
+      " / sqft";
+  }
+
   if (!loginPanel || !toolPanel || !calcForm || !sectionsEl || !sectionTemplate) return;
+
+  updateScreenTypeHint();
 
   function money(n) {
     return "$" + Number(n).toLocaleString("en-US", {
@@ -1645,7 +1706,7 @@
     var sections = readSections();
     var err = validateSections(sections);
     if (err) return { ok: false, error: err };
-    var totals = calculateProject(sections, readScreenCost());
+    var totals = calculateProject(sections, readScreenType());
     lastTotals = totals;
     var meta = getLayoutMeta();
     return {
@@ -1660,6 +1721,8 @@
       zBar: totals.zBarCount || 0,
       kickPlateLf: totals.kickPlateLf || 0,
       kickMoldingLf: totals.kickPlateLf || 0,
+      screenType: totals.screenType || readScreenType(),
+      netScreenSqFt: totals.netScreenSqFt || 0,
     };
   }
 
@@ -1686,7 +1749,7 @@
         material: "Kick Plate Molding",
         quantity: num(data.kickMoldingLf, 2) + " LF",
       },
-      { material: "Screen", quantity: "Verify manually" },
+      { material: "Screen", quantity: num(data.netScreenSqFt, 2) + " sqft (" + (data.screenType || DEFAULT_SCREEN_TYPE) + ")" },
       { material: "Screws & Misc", quantity: "1 project set" },
     ];
 
@@ -2128,7 +2191,7 @@
       title: titleInput ? titleInput.value.trim() : "",
       projectType: projectTypeInput ? projectTypeInput.value : "front",
       notes: notesInput ? notesInput.value.trim() : "",
-      screenCost: readScreenCost(),
+      screenType: readScreenType(),
       sections: readSections(),
     });
   }
@@ -2178,23 +2241,9 @@
     });
   }
 
-  function readScreenCost() {
-    var raw = screenCostInput ? screenCostInput.value : "0";
-    if (raw === "" || raw == null) return 0;
-    var n = Number(raw);
-    if (!Number.isFinite(n) || n < 0) return 0;
-    return Math.round(n * 100) / 100;
-  }
-
-  function setScreenCost(value) {
-    if (!screenCostInput) return;
-    var n = Number(value);
-    if (!Number.isFinite(n) || n < 0) n = 0;
-    screenCostInput.value = String(Math.round(n * 100) / 100);
-  }
-
-  function calculateProject(sectionsInput, screenCostInputValue) {
+  function calculateProject(sectionsInput, screenTypeInputValue) {
     var sectionResults = [];
+    var screenSectionMetrics = [];
     var cuts1x1 = [];
     var cuts1x2 = [];
     var cuts2x2 = [];
@@ -2203,8 +2252,7 @@
     var doorCount = 0;
     var doorCost = 0;
     var kickPlateLf = 0;
-    var screenCost = Math.max(0, Number(screenCostInputValue) || 0);
-    screenCost = Math.round(screenCost * 100) / 100;
+    var screenType = normalizeScreenType(screenTypeInputValue);
     var frameBySection = getSectionFrameCuts(sectionsInput);
 
     sectionsInput.forEach(function (s, index) {
@@ -2238,6 +2286,9 @@
       var chairSegments = [];
       var zBarCount = 0;
       var openings = s.door || s.kickPlate || s.chairRail ? getDoorOpenings(s, width) : [];
+      var sectionDoorSqFt = 0;
+      var sectionKickSqFt = 0;
+      var sectionKickLf = 0;
 
       if (s.door) {
         var door = getDoorConstruction(s);
@@ -2255,6 +2306,12 @@
           else if (door.header === "1x2") section1x2Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
           else if (door.header === "1x1") section1x1Cuts.push(roundLf(op.width) || DOOR_HEADER_FT);
         });
+        if (openings.length) {
+          // Door unit replaces enclosure screen in its opening (standard or custom size).
+          sectionDoorSqFt = roundLf(
+            Math.min(getDoorWidthFt(s), width) * Math.min(getDoorHeightFt(s), height)
+          );
+        }
       }
       if (s.kickPlate) {
         // Kick plate never runs under doors — each wall run is a separate continuous cut.
@@ -2262,12 +2319,14 @@
         kick2x2Cuts = kickSegments.map(function (seg) {
           return seg.length;
         });
-        var sectionKickLf = roundLf(
+        sectionKickLf = roundLf(
           kickSegments.reduce(function (sum, seg) {
             return sum + seg.length;
           }, 0)
         );
         kickPlateLf += sectionKickLf;
+        // Solid kick plate band is not screen; openings already excluded from LF.
+        sectionKickSqFt = roundLf(sectionKickLf * getKickPlateHeightFt(s));
       }
       if (s.chairRail) {
         // Chair rail never runs through doors — each wall run is a separate continuous cut.
@@ -2289,6 +2348,12 @@
       cuts2x2 = cuts2x2.concat(section2x2Cuts);
       cutsFlex = cutsFlex.concat(sectionFlexCuts);
       totalArea += areaSqft;
+
+      screenSectionMetrics.push({
+        grossSqFt: areaSqft,
+        doorSqFt: sectionDoorSqFt,
+        kickPlateSqFt: sectionKickSqFt,
+      });
 
       function sumCuts(arr) {
         return roundLf(
@@ -2314,6 +2379,9 @@
         openingShape: isArch ? "arch" : "rectangle",
         straightAngle2x2: isStraightAngle2x2(s),
         areaSqft: areaSqft,
+        screenGrossSqFt: areaSqft,
+        screenDoorSqFt: sectionDoorSqFt,
+        screenKickPlateSqFt: sectionKickSqFt,
         door: s.door,
         customDoor: isCustomDoor(s),
         doorPrice: s.door ? getDoorPrice(s) : 0,
@@ -2348,6 +2416,9 @@
         chairRailMember: s.chairRail ? getChairRailMember(s) : "",
       });
     });
+
+    var screenCalc = calculateScreenMaterialFromMetrics(screenSectionMetrics, screenType);
+    var screenCost = screenCalc.materialCost;
 
     var pack1x1 = packCuts(cuts1x1, STICK_FT);
     var pack1x2 = packCuts(cuts1x2, STICK_FT);
@@ -2418,6 +2489,15 @@
       kickMoldingCost: kickMoldingCost,
       screws: PRICE_SCREWS,
       overhead: PRICE_OVERHEAD,
+      screenType: screenCalc.screenType,
+      screenTypeLabel: screenCalc.screenTypeLabel,
+      screenPricePerSqFt: screenCalc.pricePerSqFt,
+      grossScreenSqFt: screenCalc.grossSqFt,
+      netScreenSqFt: screenCalc.netSqFt,
+      screenDoorSqFt: screenCalc.doorSqFt,
+      screenKickPlateSqFt: screenCalc.kickPlateSqFt,
+      screenDeductionsSqFt: screenCalc.deductionsSqFt,
+      screenMaterialCost: screenCalc.materialCost,
       screenCost: screenCost,
       materialCost: materialCost,
       workerPay: workerPay,
@@ -2762,13 +2842,71 @@
     );
     trow("Screws & misc", money(r.screws));
     trow("Overhead", money(r.overhead));
-    trow("Screen cost", money(r.screenCost || 0));
-    trow("Material Cost", money(r.materialCost), true);
-    trow("Worker Pay — Total (2 workers)", money(r.workerPay), true);
-    trow("Pay Per Worker", money(r.payPerWorker), true);
-    trow("Cost + Labor", money(r.costPlusLabor), true);
-    trow("Calculated Price (÷ 0.70)", money(r.calculatedPrice), true);
     total.appendChild(tdl);
+
+    var screenNote = document.createElement("div");
+    screenNote.className = "admin-porch-cutplan";
+    var screenH = document.createElement("h4");
+    screenH.className = "admin-porch-cutplan__title";
+    screenH.textContent = "SCREEN";
+    screenNote.appendChild(screenH);
+    var screenDl = document.createElement("dl");
+    screenDl.className = "admin-porch-dl";
+    function srow(label, value, strong) {
+      var dt = document.createElement("dt");
+      dt.textContent = label;
+      if (strong) dt.className = "is-strong";
+      var dd = document.createElement("dd");
+      dd.textContent = value;
+      if (strong) dd.className = "is-strong";
+      screenDl.appendChild(dt);
+      screenDl.appendChild(dd);
+    }
+    srow("Type", r.screenTypeLabel || r.screenType || DEFAULT_SCREEN_TYPE);
+    srow("Screen area", num(r.netScreenSqFt || 0, 2) + " sqft");
+    if ((r.screenDeductionsSqFt || 0) > 0) {
+      srow(
+        "Gross area",
+        num(r.grossScreenSqFt || 0, 2) +
+          " sqft (−" +
+          num(r.screenDeductionsSqFt || 0, 2) +
+          " openings)"
+      );
+    }
+    srow(
+      "Price per sqft",
+      "$" +
+        Number(r.screenPricePerSqFt || 0).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+    );
+    srow(
+      "Screen material",
+      money(r.screenMaterialCost != null ? r.screenMaterialCost : r.screenCost || 0),
+      true
+    );
+    screenNote.appendChild(screenDl);
+    total.appendChild(screenNote);
+
+    var tdl2 = document.createElement("dl");
+    tdl2.className = "admin-porch-dl";
+    function trow2(label, value, strong) {
+      var dt = document.createElement("dt");
+      dt.textContent = label;
+      if (strong) dt.className = "is-strong";
+      var dd = document.createElement("dd");
+      dd.textContent = value;
+      if (strong) dd.className = "is-strong";
+      tdl2.appendChild(dt);
+      tdl2.appendChild(dd);
+    }
+    trow2("Material Cost", money(r.materialCost), true);
+    trow2("Worker Pay — Total (2 workers)", money(r.workerPay), true);
+    trow2("Pay Per Worker", money(r.payPerWorker), true);
+    trow2("Cost + Labor", money(r.costPlusLabor), true);
+    trow2("Calculated Price (÷ 0.70)", money(r.calculatedPrice), true);
+    total.appendChild(tdl2);
     resultsBody.appendChild(total);
 
     resultsEl.hidden = false;
@@ -2815,7 +2953,7 @@
     titleInput.value = "";
     projectTypeInput.value = "front";
     notesInput.value = "";
-    setScreenCost(0);
+    setScreenType(DEFAULT_SCREEN_TYPE);
     clearSections();
     addSection({
       widthFt: 12,
@@ -2849,11 +2987,7 @@
     titleInput.value = estimate.title || estimate.name || "";
     projectTypeInput.value = estimate.projectType === "back" ? "back" : "front";
     notesInput.value = estimate.notes || "";
-    var savedScreen =
-      estimate.screenCost != null
-        ? estimate.screenCost
-        : 0;
-    setScreenCost(savedScreen);
+    setScreenType(estimate.screenType || DEFAULT_SCREEN_TYPE);
     clearSections();
     var sections = Array.isArray(estimate.sections) ? estimate.sections : [];
     if (!sections.length) {
@@ -2863,7 +2997,7 @@
         addSection(s);
       });
     }
-    lastTotals = calculateProject(readSections(), readScreenCost());
+    lastTotals = calculateProject(readSections(), readScreenType());
     renderResults(lastTotals);
     refreshLayout();
     setSaveStatus("Loaded “" + (estimate.title || estimate.name || estimate.id) + "”");
@@ -2873,15 +3007,16 @@
 
   function buildPayload() {
     var sections = readSections();
-    var screenCost = readScreenCost();
-    var totals = calculateProject(sections, screenCost);
+    var screenType = readScreenType();
+    var totals = calculateProject(sections, screenType);
     lastTotals = totals;
     return {
       title: titleInput.value.trim(),
       name: titleInput.value.trim(),
       projectType: projectTypeInput.value,
       notes: notesInput.value.trim(),
-      screenCost: screenCost,
+      screenType: screenType,
+      screenCost: totals.screenMaterialCost,
       sections: sections,
     };
   }
@@ -3052,6 +3187,7 @@
         name: "Copy of " + (source.title || source.name || "estimate"),
         projectType: source.projectType,
         notes: source.notes || "",
+        screenType: source.screenType || DEFAULT_SCREEN_TYPE,
         screenCost: source.screenCost || 0,
         sections: source.sections || [],
       };
@@ -3161,7 +3297,12 @@
     scheduleDirtyCheck();
   });
   if (notesInput) notesInput.addEventListener("input", scheduleDirtyCheck);
-  if (screenCostInput) screenCostInput.addEventListener("input", scheduleDirtyCheck);
+  if (screenTypeInput) {
+    screenTypeInput.addEventListener("change", function () {
+      updateScreenTypeHint();
+      scheduleDirtyCheck();
+    });
+  }
 
   if (addSectionBtn) {
     addSectionBtn.addEventListener("click", function () {
@@ -3197,7 +3338,7 @@
         "</p>";
       return;
     }
-    lastTotals = calculateProject(sections, readScreenCost());
+    lastTotals = calculateProject(sections, readScreenType());
     renderResults(lastTotals);
     refreshLayout();
     setSaveStatus("");

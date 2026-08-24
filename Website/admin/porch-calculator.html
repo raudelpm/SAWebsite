@@ -96,8 +96,14 @@
                                 </select>
                             </div>
                             <div class="form-field">
-                                <label for="porchScreenCost">Screen Cost ($)</label>
-                                <input id="porchScreenCost" name="screenCost" type="number" min="0" step="0.01" inputmode="decimal" value="0" placeholder="0.00">
+                                <label for="porchScreenType">Screen Type</label>
+                                <select id="porchScreenType" name="screenType">
+                                    <option value="18/14" selected>18/14</option>
+                                    <option value="20/20">20/20</option>
+                                    <option value="16/14">16/14</option>
+                                    <option value="17/20">17/20</option>
+                                </select>
+                                <p id="porchScreenTypeHint" class="admin-porch-field-hint">$0.20 / sqft</p>
                             </div>
                             <div class="form-field form-field--full">
                                 <label for="porchNotes">Notes</label>
@@ -363,6 +369,7 @@
         })();
     </script>
     <script src="../nav-menu.js"></script>
+    <script src="porch-screen.js"></script>
     <script src="porch-calculator.js"></script>
 </body>
 </html>

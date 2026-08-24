@@ -7388,6 +7388,11 @@ body.page-blog-post .nav-compact {
     font-weight: 600;
     margin-bottom: 0.35rem;
 }
+.admin-porch-field-hint {
+    margin: 0.35rem 0 0;
+    font-size: 0.8rem;
+    color: rgba(0, 0, 0, 0.55);
+}
 .admin-porch-form input,
 .admin-porch-form select {
     width: 100%;
