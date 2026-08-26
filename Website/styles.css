@@ -8421,7 +8421,7 @@ nav.local-crumbs [aria-current="page"] {
     position: absolute;
     inset: 0;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr;
     z-index: 0;
 }
 .page-mosaic-hero__mosaic img {
@@ -8471,9 +8471,6 @@ nav.local-crumbs [aria-current="page"] {
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
 @media (max-width: 700px) {
-    .page-mosaic-hero__mosaic {
-        grid-template-columns: repeat(2, 1fr);
-    }
     .page-mosaic-hero {
         min-height: 32rem;
     }
