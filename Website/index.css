@@ -580,16 +580,16 @@ nav {
 /* Home hero: keep title on one centered line when there is room */
 
 /* Home hero: long headline — centered, wraps (replaces single-line for long titles) */
-.hero-title--wrap {
+.hero h1.hero-title--wrap {
     display: block;
     width: 100%;
-    max-width: min(36rem, 92vw);
+    max-width: min(42rem, 94vw);
     margin-left: auto;
     margin-right: auto;
     text-align: center;
     white-space: normal;
     line-height: 1.18;
-    font-size: clamp(1.2rem, 2.2vw + 0.75rem, 2.35rem);
+    font-size: clamp(1.05rem, 1.8vw + 0.65rem, 2.15rem);
     padding-left: 0.75rem;
     padding-right: 0.75rem;
     box-sizing: border-box;
@@ -2451,6 +2451,16 @@ footer {
         font-size: 2rem;
         padding: 0.5rem 1rem 0;
         margin: 0 0 1rem;
+    }
+
+    .hero h1.hero-title--wrap {
+        font-size: clamp(1.05rem, 4.6vw, 1.45rem);
+        padding: 0 0.35rem;
+        margin: 0 0 1rem;
+        white-space: normal;
+        display: block;
+        width: 100%;
+        max-width: 100%;
     }
 
     /* Show subtitle but hide description on mobile */
