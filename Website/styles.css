@@ -4295,7 +4295,7 @@ body.nav-menu-open::before {
 	height: 100%;
 	min-height: 72px;
 	z-index: 1;
-	/* Wave colors come from inline SVG (aligned with #b10f2e); no filter */
+	/* Wave colors come from inline SVG (aligned with brand red #b71c1c); no filter */
 	filter: none;
 }
 
@@ -4305,12 +4305,12 @@ body.nav-menu-open::before {
 	width: 100%;
 	box-sizing: border-box;
 	padding: clamp(1.5rem, 3.5vw, 2.35rem) clamp(1.15rem, 4vw, 2.75rem) clamp(1.6rem, 3.8vw, 2.5rem);
-	/* Gradient centered on requested swatch #b10f2e */
+	/* Screen Armors brand red (Get Quote / logo) */
 	background: linear-gradient(
 		180deg,
-		#c43d52 0%,
-		#b10f2e 44%,
-		#8f0c25 100%
+		#d32f2f 0%,
+		var(--color-brand-red) 46%,
+		#8e161c 100%
 	);
 	color: #fff;
 }
@@ -8272,3 +8272,249 @@ body.page-estimator-panel footer {
         right: calc(0.5rem + env(safe-area-inset-right, 0px));
     }
 }
+
+/* Local city pages: breadcrumbs overlay the hero (do not sit in-flow — that
+   creates a white strip because the main nav is position:fixed). */
+nav.local-crumbs {
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    z-index: 4;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.35rem 1.25rem !important;
+    margin: 0;
+    pointer-events: none;
+}
+nav.local-crumbs ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.88);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+nav.local-crumbs a,
+nav.local-crumbs [aria-current="page"] {
+    pointer-events: auto;
+}
+nav.local-crumbs li:not(:last-child)::after {
+    content: ">";
+    margin-left: 0.5rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+nav.local-crumbs a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+nav.local-crumbs a:hover {
+    text-decoration: underline;
+}
+nav.local-crumbs [aria-current="page"] {
+    color: #fff;
+    font-weight: 700;
+}
+
+.local-prose p {
+    margin-bottom: 1rem;
+    line-height: 1.65;
+}
+.local-nearby-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
+}
+.local-nearby-list a,
+.local-nearby-list span {
+    display: inline-block;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid rgba(143, 12, 37, 0.22);
+    border-radius: 999px;
+    text-decoration: none;
+    color: #8f0c25;
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+.local-nearby-list a:hover {
+    background: rgba(143, 12, 37, 0.08);
+}
+.local-related {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 0.75rem;
+}
+@media (min-width: 720px) {
+    .local-related {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+.local-related a {
+    color: #8f0c25;
+    font-weight: 700;
+    text-decoration: none;
+}
+.local-related a:hover {
+    text-decoration: underline;
+}
+
+.local-projects {
+    margin-top: 0.5rem;
+}
+.local-projects__grid {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1rem;
+}
+@media (min-width: 720px) {
+    .local-projects__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+.local-project {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+.local-project img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+.local-project__body {
+    padding: 1rem 1.1rem 1.15rem;
+}
+.local-project__meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 0.75rem;
+    margin: 0 0 0.65rem;
+    font-size: 0.88rem;
+}
+.local-project__meta dt {
+    font-weight: 800;
+    color: #444;
+}
+.local-project__meta dd {
+    margin: 0;
+    color: #333;
+}
+.local-project__note {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: #444;
+}
+
+/* Public mosaic hero (Estimator Panel collage). Tested on services.html first. */
+.page-mosaic-hero {
+    --mosaic-wave-overlap: clamp(74px, 20vw, 128px);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    margin-top: calc(-1 * var(--nav-height));
+    padding-top: var(--nav-height);
+    min-height: max(460px, 52vh);
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: #0b0c0f;
+    box-sizing: border-box;
+}
+.page-mosaic-hero__mosaic {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    z-index: 0;
+}
+.page-mosaic-hero__mosaic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.page-mosaic-hero__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        linear-gradient(180deg, rgba(11, 12, 15, 0.42) 0%, rgba(11, 12, 15, 0.68) 52%, rgba(11, 12, 15, 0.86) 100%),
+        radial-gradient(80% 80% at 50% 40%, rgba(183, 28, 28, 0.26), transparent 70%);
+}
+.page-mosaic-hero__inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 1.25rem 1.25rem 0.35rem;
+    max-width: 42rem;
+    width: 100%;
+}
+.page-mosaic-hero__logo {
+    width: min(180px, 44vw);
+    height: auto;
+    margin: 0 auto 0.75rem;
+    display: block;
+    filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45));
+}
+.page-mosaic-hero__title {
+    margin: 0 0 0.45rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.85rem, 1.2rem + 2.2vw, 2.7rem);
+    font-weight: 800;
+    letter-spacing: var(--title-tracking);
+    line-height: 1.1;
+    color: #fff;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+}
+.page-mosaic-hero__lead {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+    line-height: 1.45;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+@media (max-width: 700px) {
+    .page-mosaic-hero__mosaic {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .page-mosaic-hero {
+        min-height: 32rem;
+    }
+    .page-mosaic-hero__logo {
+        width: min(132px, 38vw);
+    }
+    .page-mosaic-hero__lead {
+        font-size: clamp(0.92rem, 0.85rem + 0.5vw, 1.05rem);
+        padding: 0 0.35rem;
+    }
+}
+
+/* Pull red CTA waves over the collage so the transparent wave tops sit on the photos */
+.page-mosaic-hero + .hero-cta-after {
+    margin-top: calc(-1 * clamp(74px, 20vw, 128px));
+}
+.page-mosaic-hero:has(+ .hero-cta-after) {
+    overflow: visible;
+    z-index: 1;
+    /* Keep logo/title/lead above the wave overlap at every viewport width */
+    padding-bottom: calc(var(--mosaic-wave-overlap) + 2.75rem);
+}
+.page-mosaic-hero:has(+ .hero-cta-after) .page-mosaic-hero__mosaic,
+.page-mosaic-hero:has(+ .hero-cta-after) .page-mosaic-hero__overlay {
+    bottom: calc(-1 * var(--mosaic-wave-overlap) - 12px);
+}
+.page-mosaic-hero:has(+ .hero-cta-after) .page-mosaic-hero__mosaic {
+    overflow: hidden;
+}
+

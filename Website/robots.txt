@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /public/20x20.html
 
 Sitemap: https://www.screenarmors.com/sitemap.xml

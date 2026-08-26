@@ -23,6 +23,7 @@
           { "@type": "City", "name": "Sarasota, FL" },
           { "@type": "City", "name": "Bradenton, FL" },
           { "@type": "City", "name": "Venice, FL" },
+          { "@type": "City", "name": "Lakewood Ranch, FL" },
           { "@type": "City", "name": "North Port, FL" },
           { "@type": "City", "name": "Port Charlotte, FL" }
         ]
@@ -31,6 +32,7 @@
         { "@type": "City", "name": "Sarasota, FL" },
         { "@type": "City", "name": "Bradenton, FL" },
         { "@type": "City", "name": "Venice, FL" },
+        { "@type": "City", "name": "Lakewood Ranch, FL" },
         { "@type": "City", "name": "North Port, FL" },
         { "@type": "City", "name": "Port Charlotte, FL" }
       ],
@@ -61,8 +63,8 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css" as="style">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preload" href="styles.css?v=mosaic-site-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-1">
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -92,15 +94,18 @@
 	</nav>
 
     <!-- Hero Section -->
-    <section class="hero hero--repair-landing" style="height: 34vh;">
-        <div class="hero-bg-container">
-            <img src="public/image%20%286%29.jpg" alt="Custom aluminum screen enclosure on a home patio" class="hero-bg-image" fetchpriority="high" decoding="async">
-            <div class="screen-mesh-overlay"></div>
+        <section class="page-mosaic-hero" aria-label="Custom aluminum screen enclosures">
+        <div class="page-mosaic-hero__mosaic" aria-hidden="true">
+            <img src="public/Photo%201.webp" alt="" width="800" height="1200" fetchpriority="high" decoding="async">
+            <img src="public/Photo%208.webp" alt="" width="800" height="1200" decoding="async">
+            <img src="public/cages1.webp" alt="" width="800" height="1200" decoding="async">
+            <img src="public/IMG_0018.jpg" alt="" width="800" height="1200" decoding="async">
         </div>
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <h2 class="hero-content__visual-title">Custom aluminum screen enclosures</h2>
-            <p>Durability, Comfort &amp; Style Outdoors</p>
+        <div class="page-mosaic-hero__overlay"></div>
+        <div class="page-mosaic-hero__inner">
+            <img class="page-mosaic-hero__logo" src="public/Logo%20White%20No%20Background%20.png" alt="SCREEN ARMORS" width="180" height="180" decoding="async">
+            <h2 class="page-mosaic-hero__title">Custom aluminum screen enclosures</h2>
+            <p class="page-mosaic-hero__lead">Durability, Comfort &amp; Style Outdoors</p>
         </div>
     </section>
 
@@ -111,13 +116,13 @@
                 <svg class="hero-cta-after__svg" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
                     <defs>
                         <linearGradient id="heroCtaCustomEnclosuresWaveGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#b10f2e" stop-opacity="0"/>
-                            <stop offset="42%" stop-color="#b10f2e" stop-opacity="0.34"/>
-                            <stop offset="100%" stop-color="#8f0c25" stop-opacity="1"/>
+                            <stop offset="0%" stop-color="#b71c1c" stop-opacity="0"/>
+                            <stop offset="42%" stop-color="#b71c1c" stop-opacity="0.34"/>
+                            <stop offset="100%" stop-color="#8e161c" stop-opacity="1"/>
                         </linearGradient>
                     </defs>
-                    <path d="M0,120 L0,52 C160,118 320,18 480,88 C640,122 800,28 960,98 C1120,118 1280,38 1440,78 L1440,120 L0,120 Z" fill="#b10f2e" opacity="0.22"/>
-                    <path d="M0,120 L0,68 C200,115 400,22 600,92 C780,125 960,32 1140,102 C1260,118 1360,48 1440,72 L1440,120 L0,120 Z" fill="#c43d52" opacity="0.32"/>
+                    <path d="M0,120 L0,52 C160,118 320,18 480,88 C640,122 800,28 960,98 C1120,118 1280,38 1440,78 L1440,120 L0,120 Z" fill="#b71c1c" opacity="0.22"/>
+                    <path d="M0,120 L0,68 C200,115 400,22 600,92 C780,125 960,32 1140,102 C1260,118 1360,48 1440,72 L1440,120 L0,120 Z" fill="#e53935" opacity="0.32"/>
                     <path d="M0,120 L0,42 C240,108 480,12 720,85 C900,118 1080,26 1260,95 C1340,112 1400,55 1440,68 L1440,120 L0,120 Z" fill="url(#heroCtaCustomEnclosuresWaveGrad)" opacity="0.9"/>
                 </svg>
             </div>
@@ -144,8 +149,13 @@
                 <p class="service-showcase__deck">Pools, patios &amp; lanais—designed for durability, comfort, and curb appeal.</p>
                 <p class="service-showcase__pull" role="note">Florida-built aluminum framing with clean lines—designed to look right and last.</p>
                 <p class="service-showcase__body">
-                    We build <strong>front porch</strong> and <strong>back porch</strong> screen enclosures across <strong>Sarasota</strong>, <strong>Bradenton</strong>,
-                    <strong>Venice</strong>, <strong>North Port</strong>, and <strong>Port Charlotte</strong>. See our full coverage list on
+                    We build <strong>front porch</strong> and <strong>back porch</strong> screen enclosures across
+                    <a href="sarasota.html">Sarasota</a>,
+                    <a href="bradenton.html">Bradenton</a>,
+                    <a href="venice.html">Venice</a>,
+                    <a href="north-port.html">North Port</a>,
+                    <a href="port-charlotte.html">Port Charlotte</a>, and
+                    <a href="lakewood-ranch.html">Lakewood Ranch</a>. See our full coverage list on
                     <a href="areas-we-serve.html">Areas We Serve</a>.
                 </p>
                 <div class="service-showcase__columns service-showcase__columns--intro service-showcase__columns--stack">

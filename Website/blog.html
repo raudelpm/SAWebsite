@@ -66,8 +66,8 @@
     }
     </script>
 
-    <link rel="preload" href="styles.css" as="style">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preload" href="styles.css?v=mosaic-site-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-1">
 </head>
 <body class="page-blog">
     <!-- Floating Get Quote Button -->
@@ -97,12 +97,20 @@
         </div>
     </nav>
 
-    <header class="blog-hero" role="banner">
-        <div class="blog-hero-inner">
-            <h1 class="blog-hero-title">Blog</h1>
-            <p class="blog-hero-subtitle">Guides and tips for pool cages, screen enclosures, and lanais in Florida.</p>
+    <section class="page-mosaic-hero" aria-label="Blog">
+        <div class="page-mosaic-hero__mosaic" aria-hidden="true">
+            <img src="public/Photo%201.webp" alt="" width="800" height="1200" fetchpriority="high" decoding="async">
+            <img src="public/Photo%208.webp" alt="" width="800" height="1200" decoding="async">
+            <img src="public/cages1.webp" alt="" width="800" height="1200" decoding="async">
+            <img src="public/IMG_0018.jpg" alt="" width="800" height="1200" decoding="async">
         </div>
-    </header>
+        <div class="page-mosaic-hero__overlay"></div>
+        <div class="page-mosaic-hero__inner">
+            <img class="page-mosaic-hero__logo" src="public/Logo%20White%20No%20Background%20.png" alt="SCREEN ARMORS" width="180" height="180" decoding="async">
+            <h1 class="page-mosaic-hero__title">Blog</h1>
+            <p class="page-mosaic-hero__lead">Guides and tips for pool cages, screen enclosures, and lanais in Florida.</p>
+        </div>
+    </section>
 
     <main class="container blog-main">
         <section class="blog-results" aria-label="Blog posts" data-blog-results>

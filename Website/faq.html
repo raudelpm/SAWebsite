@@ -32,8 +32,8 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css" as="style">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preload" href="styles.css?v=mosaic-site-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-1">
 </head>
 <body>
     <a href="quote.html#quote-form" class="floating-quote-btn">Get Quote Now</a>
@@ -58,15 +58,18 @@
 		</div>
 	</nav>
 
-    <section class="hero" style="height: 40vh; min-height: 400px;">
-        <div class="hero-bg-container">
-            <img src="public/IMG_0018.jpg" alt="Screened pool and brick patio" class="hero-bg-image" fetchpriority="high" decoding="async">
-            <div class="screen-mesh-overlay"></div>
+        <section class="page-mosaic-hero" aria-label="FAQ">
+        <div class="page-mosaic-hero__mosaic" aria-hidden="true">
+            <img src="public/Photo%201.webp" alt="" width="800" height="1200" fetchpriority="high" decoding="async">
+            <img src="public/Photo%208.webp" alt="" width="800" height="1200" decoding="async">
+            <img src="public/cages1.webp" alt="" width="800" height="1200" decoding="async">
+            <img src="public/IMG_0018.jpg" alt="" width="800" height="1200" decoding="async">
         </div>
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <h1>FAQ</h1>
-            <p>Frequently Asked Questions</p>
+        <div class="page-mosaic-hero__overlay"></div>
+        <div class="page-mosaic-hero__inner">
+            <img class="page-mosaic-hero__logo" src="public/Logo%20White%20No%20Background%20.png" alt="SCREEN ARMORS" width="180" height="180" decoding="async">
+            <h1 class="page-mosaic-hero__title">FAQ</h1>
+            <p class="page-mosaic-hero__lead">Frequently Asked Questions</p>
         </div>
     </section>
 
@@ -77,13 +80,13 @@
                 <svg class="hero-cta-after__svg" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
                     <defs>
                         <linearGradient id="heroCtaBrandWaveGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#b10f2e" stop-opacity="0"/>
-                            <stop offset="42%" stop-color="#b10f2e" stop-opacity="0.34"/>
-                            <stop offset="100%" stop-color="#8f0c25" stop-opacity="1"/>
+                            <stop offset="0%" stop-color="#b71c1c" stop-opacity="0"/>
+                            <stop offset="42%" stop-color="#b71c1c" stop-opacity="0.34"/>
+                            <stop offset="100%" stop-color="#8e161c" stop-opacity="1"/>
                         </linearGradient>
                     </defs>
-                    <path d="M0,120 L0,52 C160,118 320,18 480,88 C640,122 800,28 960,98 C1120,118 1280,38 1440,78 L1440,120 L0,120 Z" fill="#b10f2e" opacity="0.22"/>
-                    <path d="M0,120 L0,68 C200,115 400,22 600,92 C780,125 960,32 1140,102 C1260,118 1360,48 1440,72 L1440,120 L0,120 Z" fill="#c43d52" opacity="0.32"/>
+                    <path d="M0,120 L0,52 C160,118 320,18 480,88 C640,122 800,28 960,98 C1120,118 1280,38 1440,78 L1440,120 L0,120 Z" fill="#b71c1c" opacity="0.22"/>
+                    <path d="M0,120 L0,68 C200,115 400,22 600,92 C780,125 960,32 1140,102 C1260,118 1360,48 1440,72 L1440,120 L0,120 Z" fill="#e53935" opacity="0.32"/>
                     <path d="M0,120 L0,42 C240,108 480,12 720,85 C900,118 1080,26 1260,95 C1340,112 1400,55 1440,68 L1440,120 L0,120 Z" fill="url(#heroCtaBrandWaveGrad)" opacity="0.9"/>
                 </svg>
             </div>
@@ -169,7 +172,7 @@
                 </div>
                 <div class="faq-item">
                     <h3 class="faq-question">What areas do you serve?</h3>
-                    <p class="faq-answer">We serve Sarasota, Manatee, and Charlotte counties, including Parrish, Ellenton, Bradenton, Sarasota, Gulf Gate, Osprey, Nokomis, Venice, North Port, Port Charlotte, Punta Gorda, Englewood, and surrounding communities.</p>
+                    <p class="faq-answer">We serve Sarasota, Manatee, and Charlotte counties, including Parrish, Ellenton, <a href="bradenton.html">Bradenton</a>, <a href="sarasota.html">Sarasota</a>, <a href="lakewood-ranch.html">Lakewood Ranch</a>, Gulf Gate, Osprey, Nokomis, <a href="venice.html">Venice</a>, <a href="north-port.html">North Port</a>, <a href="port-charlotte.html">Port Charlotte</a>, Punta Gorda, Englewood, and surrounding communities.</p>
                 </div>
             </div>
             <p class="faq-window-back">
