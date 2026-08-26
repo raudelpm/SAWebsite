@@ -32,8 +32,10 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -65,7 +67,10 @@
     <!-- Hero: full photo + title centered (height unchanged) -->
         <section class="page-mosaic-hero" aria-label="Customer Reviews">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -155,13 +160,13 @@
                 <p class="review-author">— M K Ortega</p>
             </div>
             <div class="review-card">
-                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Felice Tannen"><img src="public/felice.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Felice Tannen"><img src="public/felice.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="Verified" width="18" height="18" loading="lazy" decoding="async"><img class="review-google-mark" src="public/GooglePNGLOGO.png" alt="" width="16" height="16" loading="lazy" decoding="async" aria-hidden="true"></div>
                 <p class="review-text">"I have a brand new big puppy who keeps ripping my screen on my lanai. I have had to repair these screens three times. So after this last time which was a big rip I called this company and they were able to come out the very next day and put kickbacks on which are metal walls on the bottom of the screen to protect it from things like dogs. They were very nice, punctual and very willing to help. They even covered more of the screen than I thought they were going to, which was great. I would recommend this company highly. They are awesome!"</p>
                 <p class="review-author">— Felice Tannen</p>
             </div>
             <div class="review-card">
-                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Danial Hinshaw"><img src="public/danielx.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Danial Hinshaw"><img src="public/danielx.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="Verified" width="18" height="18" loading="lazy" decoding="async"><img class="review-google-mark" src="public/GooglePNGLOGO.png" alt="" width="16" height="16" loading="lazy" decoding="async" aria-hidden="true"></div>
                 <p class="review-text">"These guys are super quick, charge a fair price, and do excellent work. I will do business with them again."</p>
                 <p class="review-author">— Danial Hinshaw</p>
@@ -179,19 +184,19 @@
                 <p class="review-author">— Leo</p>
             </div>
             <div class="review-card">
-                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Joe Kobriger"><img src="public/Joe%20Kobriger.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Joe Kobriger"><img src="public/Joe%20Kobriger.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="Verified" width="18" height="18" loading="lazy" decoding="async"><img class="review-google-mark" src="public/GooglePNGLOGO.png" alt="" width="16" height="16" loading="lazy" decoding="async" aria-hidden="true"></div>
                 <p class="review-text">"Rau is very professional and knowledgeable. He gave us different options for replacing our screen and gave us a great…"</p>
                 <p class="review-author">— Joe Kobriger</p>
             </div>
             <div class="review-card">
-                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Michael Antinucci"><img src="public/michael%20antinucci.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Michael Antinucci"><img src="public/michael%20antinucci.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="Verified" width="18" height="18" loading="lazy" decoding="async"><img class="review-google-mark" src="public/GooglePNGLOGO.png" alt="" width="16" height="16" loading="lazy" decoding="async" aria-hidden="true"></div>
                 <p class="review-text">"Amazing work for a complex project! I had nearly half dozen companies come out and say they could not help me. I took…"</p>
                 <p class="review-author">— Michael Antinucci</p>
             </div>
             <div class="review-card">
-                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Justin Bingham"><img src="public/Justin%20bingham.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Justin Bingham"><img src="public/Justin%20bingham.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="Verified" width="18" height="18" loading="lazy" decoding="async"><img class="review-google-mark" src="public/GooglePNGLOGO.png" alt="" width="16" height="16" loading="lazy" decoding="async" aria-hidden="true"></div>
                 <p class="review-text">"I am very fortunate that I came across Raul Perez and Screen Armors for my new construction lanai project. Raul was…"</p>
                 <p class="review-author">— Justin Bingham</p>
@@ -215,13 +220,13 @@
                 <p class="review-author">— Manouch Ghafouri</p>
             </div>
             <div class="review-card">
-                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, alex mollanazar"><img src="public/alex%20mollanazar.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, alex mollanazar"><img src="public/alex%20mollanazar.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="Verified" width="18" height="18" loading="lazy" decoding="async"><img class="review-google-mark" src="public/GooglePNGLOGO.png" alt="" width="16" height="16" loading="lazy" decoding="async" aria-hidden="true"></div>
                 <p class="review-text">"Professional, quick, and affordable. Very happy with Screen Armor's service of repairing our screen."</p>
                 <p class="review-author">— alex mollanazar</p>
             </div>
             <div class="review-card">
-                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Cristi Butnaru"><img src="public/Cristi%20Butnaru.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Cristi Butnaru"><img src="public/Cristi%20Butnaru.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="Verified" width="18" height="18" loading="lazy" decoding="async"><img class="review-google-mark" src="public/GooglePNGLOGO.png" alt="" width="16" height="16" loading="lazy" decoding="async" aria-hidden="true"></div>
                 <p class="review-text">"Quick &amp; professional, they have screened our lanai and it's looking awesome."</p>
                 <p class="review-author">— Cristi Butnaru</p>
@@ -275,13 +280,13 @@
                 <p class="review-author">— elizabeth schalk</p>
             </div>
             <div class="review-card">
-                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Ryan Jiloca"><img src="public/Ryan%20Jiloca.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, Ryan Jiloca"><img src="public/Ryan%20Jiloca.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="Verified" width="18" height="18" loading="lazy" decoding="async"><img class="review-google-mark" src="public/GooglePNGLOGO.png" alt="" width="16" height="16" loading="lazy" decoding="async" aria-hidden="true"></div>
                 <p class="review-text">"Couldn&apos;t be more pleased working with Screen Armors to repair a broken screen panel on our lanai. Response was very fast, super friendly service and had my repair done next day after first calling. Would definitely recommend and work with Screen Armors again in the future. Great job!! Thank you!!"</p>
                 <p class="review-author">— Ryan Jiloca</p>
             </div>
             <div class="review-card">
-                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, John Klein"><img src="public/John%20Klein.png" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
+                <div class="review-avatar review-avatar--photo" role="img" aria-label="Profile photo, John Klein"><img src="public/John%20Klein.webp" alt="" width="48" height="48" loading="lazy" decoding="async"></div>
                 <div class="review-stars"><span class="review-stars__text">★★★★★</span><img class="review-verified" src="public/Illustration-of-check-mark-icon-in-blue-color-on-transparent-background-PNG.png" alt="Verified" width="18" height="18" loading="lazy" decoding="async"><img class="review-google-mark" src="public/GooglePNGLOGO.png" alt="" width="16" height="16" loading="lazy" decoding="async" aria-hidden="true"></div>
                 <p class="review-text">"Raul is very easy to work with…. Price was better than some other estimates. Their work was spot on and they installed early!! All good things to say about … Screen Armors"</p>
                 <p class="review-author">— John Klein</p>
@@ -453,8 +458,8 @@
         return false;
       }
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="call-tracking.js" defer></script>
 </body>
 </html>

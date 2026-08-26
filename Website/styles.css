@@ -2958,7 +2958,7 @@ body.nav-menu-open::before {
 .home-welcome-photo-band {
     position: relative;
     padding: 2.5rem 0 3rem;
-    background: #e5eaee url('public/Photo%2029.jpeg') center / cover no-repeat;
+    background: #e5eaee url('public/Photo%2029.webp') center / cover no-repeat;
 }
 
 .home-welcome-photo-band::before {
@@ -4606,24 +4606,30 @@ body.nav-menu-open::before {
 		font-size: 0.82rem;
 	}
 
-	.hero-cta-after--repair-lp .hero-cta-after__lead--repair-lp a.hero-cta-after__repair-call-btn {
-		min-height: 44px;
-		padding: 0.35rem 0.85rem;
-		font-size: 0.78rem;
-		white-space: normal;
+	.hero-cta-after--repair-lp .hero-cta-after__lead--repair-lp a.hero-cta-after__repair-call-btn,
+	.hero-cta-after--repair-lp .hero-cta-after__repair-ctas .hero-cta-after__repair-btn {
+		width: 100%;
+		max-width: none;
+		min-height: 0;
+		padding: 0.72rem 0.45rem;
+		font-size: clamp(1.14rem, 5.4vw, 1.38rem);
+		font-weight: 800;
+		letter-spacing: 0.015em;
+		line-height: 1.12;
+		white-space: nowrap;
 		text-align: center;
-		width: min(100%, 22rem);
 	}
 
 	.hero-cta-after--repair-lp .hero-cta-after__repair-ctas {
 		margin-top: 0;
-		gap: 0.38rem;
+		gap: 0.5rem;
+		width: 100%;
 	}
 
 	.hero-cta-after--repair-lp .hero-cta-after__repair-btn {
-		padding: 0.55rem 0.65rem;
-		min-height: 44px;
-		font-size: 0.74rem;
+		padding: 0.72rem 0.45rem;
+		min-height: 0;
+		font-size: clamp(1.14rem, 5.4vw, 1.38rem);
 	}
 }
 
@@ -6851,7 +6857,7 @@ body.page-blog-post .nav-compact {
     background-color: #0b0c0f;
     background-image:
         linear-gradient(135deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0.62) 100%),
-        url('public/Photo%201.jpeg');
+        url('public/Photo%201.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -7027,7 +7033,7 @@ body.page-blog-post .nav-compact {
     background-color: #0b0c0f;
     background-image:
         linear-gradient(135deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0.62) 100%),
-        url('public/Photo%201.jpeg');
+        url('public/Photo%201.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -8423,6 +8429,11 @@ nav.local-crumbs [aria-current="page"] {
     display: grid;
     grid-template-columns: 1fr;
     z-index: 0;
+}
+.page-mosaic-hero__mosaic picture {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 .page-mosaic-hero__mosaic img {
     width: 100%;

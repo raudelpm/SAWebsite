@@ -32,8 +32,10 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -65,7 +67,10 @@
     <!-- Hero Section -->
         <section class="page-mosaic-hero" aria-label="Hurricane Cables">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -87,7 +92,7 @@
                         Protect your enclosure with cables designed for Florida’s wind loads. <strong>SCREEN ARMORS</strong> installs systems that link key structural members so your cage resists flex, uplift, and debris strikes far better than hardware alone.
                     </p>
                     <figure class="service-showcase__photo">
-                        <img src="public/IMG_0078.jpg" alt="Hurricane cables installed to reinforce a screen enclosure" loading="lazy" decoding="async">
+                        <img src="public/IMG_0078-sm.webp" alt="Hurricane cables installed to reinforce a screen enclosure" width="800" height="640" loading="lazy" decoding="async">
                     </figure>
                     <p class="service-showcase__body">
                         Every run is tensioned and anchored with clean routing so performance doesn’t come at the expense of appearance. Don’t wait for a named storm to wish you’d reinforced—this upgrade is one of the smartest insurance policies you can buy for a pool cage.
@@ -118,7 +123,7 @@
                 </section>
             </div>
             <figure class="service-showcase__photo">
-                <img src="public/IMG_0007.jpg" alt="Screen enclosure reinforced for storm readiness" loading="lazy" decoding="async">
+                <img src="public/IMG_0007-sm.webp" alt="Screen enclosure reinforced for storm readiness" width="800" height="1091" loading="lazy" decoding="async">
             </figure>
         </article>
     </div>
@@ -293,8 +298,8 @@
         return false;
       }
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="call-tracking.js" defer></script>
 </body>
 </html>

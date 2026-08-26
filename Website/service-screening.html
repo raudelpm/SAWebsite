@@ -64,8 +64,10 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -97,7 +99,10 @@
     <!-- Hero Section -->
         <section class="page-mosaic-hero" aria-label="Screen repair and screening">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -160,7 +165,7 @@
                     </p>
                 </div>
                 <figure class="scr-intro__visual">
-                    <img src="public/IMG_0042.webp" alt="Screen enclosure project with wide outdoor view" width="900" height="600" loading="lazy" decoding="async">
+                    <img src="public/IMG_0042-sm.webp" alt="Screen enclosure project with wide outdoor view" width="800" height="1063" loading="lazy" decoding="async">
                     <figcaption class="scr-intro__badge">Panel &amp; partial repairs welcome</figcaption>
                 </figure>
             </div>
@@ -171,7 +176,7 @@
                     <p>From standard fiberglass to pet-resistant, solar, and privacy options, we help you choose the right product—then we install for a clean, lasting seal that keeps insects out without sacrificing comfort.</p>
                 </div>
                 <figure class="scr-story__aside">
-                    <img src="public/IMG_0072.jpg" alt="Pool cage screening enclosure with aluminum framing" width="640" height="480" loading="lazy" decoding="async">
+                    <img src="public/IMG_0072-sm.webp" alt="Pool cage screening enclosure with aluminum framing" width="960" height="578" loading="lazy" decoding="async">
                 </figure>
             </div>
 
@@ -225,7 +230,7 @@
             <section class="scr-text-estimate" aria-labelledby="estimate-by-text-title">
                 <div class="scr-text-estimate__grid">
                     <figure class="scr-text-estimate__media">
-                        <img src="public/overthephone.webp" alt="Customer texting a photo of pool cage screen damage to SCREEN ARMORS for a quick repair estimate" width="560" height="640" loading="lazy" decoding="async">
+                        <img src="public/overthephone-sm.webp" alt="Customer texting a photo of pool cage screen damage to SCREEN ARMORS for a quick repair estimate" width="800" height="436" loading="lazy" decoding="async">
                     </figure>
                     <div class="scr-text-estimate__copy">
                         <p class="scr-text-estimate__eyebrow">Fast estimate</p>
@@ -273,7 +278,7 @@
                 <article class="mesh-card" role="listitem">
                     <div class="mesh-card__media">
                         <span class="mesh-card__badge" aria-label="Most popular">★ Most popular</span>
-                        <img src="public/Photo%2027.webp" alt="18/14 Standard Screen mesh close-up" loading="lazy" decoding="async">
+                        <img src="public/Photo%2027-sm.webp" alt="18/14 Standard Screen mesh close-up" width="800" height="562" loading="lazy" decoding="async">
                     </div>
                     <div class="mesh-card__body">
                         <h3 class="mesh-card__title">18/14 Standard Screen</h3>
@@ -284,7 +289,7 @@
                 <article class="mesh-card" role="listitem">
                     <div class="mesh-card__media">
                         <span class="mesh-card__badge" aria-label="Most popular">★ Most popular</span>
-                        <img src="public/20x20screen.webp" alt="20/20 No-See-Um Screen mesh close-up" loading="lazy" decoding="async">
+                        <img src="public/20x20screen-sm.webp" alt="20/20 No-See-Um Screen mesh close-up" width="800" height="600" loading="lazy" decoding="async">
                     </div>
                     <div class="mesh-card__body">
                         <h3 class="mesh-card__title">20/20 No-See-Um Screen</h3>
@@ -294,7 +299,7 @@
 
                 <article class="mesh-card" role="listitem">
                     <div class="mesh-card__media">
-                        <img src="public/petscreen.webp" alt="PetScreen heavy-duty mesh close-up" loading="lazy" decoding="async">
+                        <img src="public/petscreen-sm.webp" alt="PetScreen heavy-duty mesh close-up" width="800" height="800" loading="lazy" decoding="async">
                     </div>
                     <div class="mesh-card__body">
                         <h3 class="mesh-card__title">PetScreen</h3>
@@ -304,7 +309,7 @@
 
                 <article class="mesh-card" role="listitem">
                     <div class="mesh-card__media">
-                        <img src="public/Screenshot%202026-04-29%20153629.webp" alt="Florida Glass privacy screen mesh close-up" loading="lazy" decoding="async">
+                        <img src="public/Screenshot%202026-04-29%20153629-sm.webp" alt="Florida Glass privacy screen mesh close-up" width="800" height="511" loading="lazy" decoding="async">
                     </div>
                     <div class="mesh-card__body">
                         <h3 class="mesh-card__title">Florida Glass</h3>
@@ -501,8 +506,8 @@
         return false;
       }
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="call-tracking.js" defer></script>
 </body>
 </html>

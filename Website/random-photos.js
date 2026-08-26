@@ -1,20 +1,20 @@
 // Inserts 4 random "View more photos" images above the bottom CTA section.
-// Runs on interior pages that have `.container .cta-buttons`.
+// Strip uses 720px thumbs; lightbox uses the full-size WebP.
 (function () {
   const PHOTO_POOL = [
-    "public/Photo%206.webp",
-    "public/Photo%207.webp",
-    "public/Photo%208.webp",
-    "public/Photo%209.webp",
-    "public/Photo%2010.webp",
-    "public/Photo%2017.webp",
-    "public/Photo%2018.webp",
-    "public/Photo%2019.webp",
-    "public/Photo%2023.webp",
-    "public/Photo%2028.webp",
-    "public/Photo%2046.webp",
-    "public/Photo%2052.webp",
-    "public/photopool.webp",
+    { thumb: "public/thumbs/Photo%206.webp", full: "public/Photo%206.webp" },
+    { thumb: "public/thumbs/Photo%207.webp", full: "public/Photo%207.webp" },
+    { thumb: "public/thumbs/Photo%208.webp", full: "public/Photo%208.webp" },
+    { thumb: "public/thumbs/Photo%209.webp", full: "public/Photo%209.webp" },
+    { thumb: "public/thumbs/Photo%2010.webp", full: "public/Photo%2010.webp" },
+    { thumb: "public/thumbs/Photo%2017.webp", full: "public/Photo%2017.webp" },
+    { thumb: "public/thumbs/Photo%2018.webp", full: "public/Photo%2018.webp" },
+    { thumb: "public/thumbs/Photo%2019.webp", full: "public/Photo%2019.webp" },
+    { thumb: "public/thumbs/Photo%2023.webp", full: "public/Photo%2023.webp" },
+    { thumb: "public/thumbs/Photo%2028.webp", full: "public/Photo%2028.webp" },
+    { thumb: "public/thumbs/Photo%2046.webp", full: "public/Photo%2046.webp" },
+    { thumb: "public/thumbs/Photo%2052.webp", full: "public/Photo%2052.webp" },
+    { thumb: "public/thumbs/photopool.webp", full: "public/photopool.webp" },
   ];
 
   function pickUnique(arr, count) {
@@ -28,7 +28,7 @@
     return copy.slice(0, Math.min(count, copy.length));
   }
 
-  function buildSection(urls) {
+  function buildSection(photos) {
     const section = document.createElement("section");
     section.className = "random-photos-strip";
     section.setAttribute("aria-label", "More project photos");
@@ -36,7 +36,7 @@
     const grid = document.createElement("div");
     grid.className = "random-photos-strip__grid";
 
-    urls.forEach((src) => {
+    photos.forEach((photo) => {
       const card = document.createElement("div");
       card.className = "random-photos-strip__card";
       const btn = document.createElement("button");
@@ -45,7 +45,7 @@
       btn.setAttribute("aria-label", "Open photo");
 
       const img = document.createElement("img");
-      img.src = src;
+      img.src = photo.thumb;
       img.alt = "";
       img.width = 400;
       img.height = 400;
@@ -53,7 +53,7 @@
       img.decoding = "async";
 
       btn.appendChild(img);
-      btn.addEventListener("click", () => openLightbox(src));
+      btn.addEventListener("click", () => openLightbox(photo.full));
       card.appendChild(btn);
       grid.appendChild(card);
     });
@@ -117,35 +117,31 @@
     const path = (window.location.pathname || "").replace(/\\/g, "/").toLowerCase();
     if (path.endsWith("/thank-you.html") || path.endsWith("thank-you.html")) return;
 
-    // Default interior pages: insert above the bottom CTA section inside `.container`.
     const buttonsInContainer = document.querySelector(".container .cta-buttons");
     if (buttonsInContainer) {
       const contentSection = buttonsInContainer.closest(".content-section");
       if (!contentSection || !contentSection.parentNode) return;
 
-      // Avoid double-insert if multiple scripts run.
       if (contentSection.parentNode.querySelector(":scope > .random-photos-strip")) return;
 
-      const urls = pickUnique(PHOTO_POOL, 4);
-      if (urls.length < 4) return;
+      const photos = pickUnique(PHOTO_POOL, 4);
+      if (photos.length < 4) return;
 
-      const section = buildSection(urls);
+      const section = buildSection(photos);
       contentSection.parentNode.insertBefore(section, contentSection);
       return;
     }
 
-    // Quote page: CTA buttons live inside `.quote-why-band`, not `.container`.
     const quoteBand = document.querySelector(".quote-why-band");
     const buttonsInQuoteBand = quoteBand ? quoteBand.querySelector(".cta-buttons") : null;
     if (!quoteBand || !buttonsInQuoteBand || !quoteBand.parentNode) return;
 
-    // Avoid double-insert.
     if (quoteBand.parentNode.querySelector(":scope > .random-photos-strip")) return;
 
-    const urls = pickUnique(PHOTO_POOL, 4);
-    if (urls.length < 4) return;
+    const photos = pickUnique(PHOTO_POOL, 4);
+    if (photos.length < 4) return;
 
-    const section = buildSection(urls);
+    const section = buildSection(photos);
     quoteBand.parentNode.insertBefore(section, quoteBand);
   }
 

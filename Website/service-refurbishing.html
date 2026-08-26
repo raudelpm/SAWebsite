@@ -64,8 +64,10 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -97,7 +99,10 @@
     <!-- Hero Section -->
         <section class="page-mosaic-hero" aria-label="Complete Pool Cage &amp; Lanai Restoration">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -160,7 +165,7 @@
                         At <strong>SCREEN ARMORS</strong>, we specialize in restoring aging enclosures through a complete refinishing process that improves appearance, durability, and functionality — while helping homeowners save thousands compared to a full rebuild.
                     </p>
                     <figure class="service-showcase__photo">
-                        <img src="public/IMG_3891.jpg" alt="Enclosure refurbishing in progress with prep work before painting" loading="lazy" decoding="async">
+                        <img src="public/IMG_3891-sm.webp" alt="Enclosure refurbishing in progress with prep work before painting" width="800" height="450" loading="lazy" decoding="async">
                     </figure>
                     <p class="service-showcase__body">
                         Many older pool cages still have a solid structural foundation. A professional refurbishment can <strong>extend the life of the enclosure for many more years</strong>, restore faded aluminum to a modern appearance, and improve functionality and structural integrity — all while spending significantly less than a complete rebuild.
@@ -214,7 +219,7 @@
                 </section>
             </div>
             <figure class="service-showcase__photo">
-                <img src="public/IMG_3827.jpg" alt="Refurbished pool cage with dark screens and freshly painted aluminum frame" loading="lazy" decoding="async">
+                <img src="public/IMG_3827-sm.webp" alt="Refurbished pool cage with dark screens and freshly painted aluminum frame" width="800" height="449" loading="lazy" decoding="async">
             </figure>
 
             <!-- Results / timeline block -->
@@ -409,8 +414,8 @@
         return false;
       }
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="call-tracking.js" defer></script>
 </body>
 </html>

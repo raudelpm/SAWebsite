@@ -14,14 +14,14 @@
     <meta property="og:url" content="https://www.screenarmors.com/service-construction.html">
     <meta property="og:title" content="Screen Armors | New Screen Enclosures &amp; Pool Cages">
     <meta property="og:description" content="New screen enclosures, pool cages and lanais in Sarasota and Bradenton. Custom construction, engineered framing and clean installs. Free estimate.">
-    <meta property="og:image" content="https://www.screenarmors.com/public/meta.png">
+    <meta property="og:image" content="https://www.screenarmors.com/public/meta.webp">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://www.screenarmors.com/service-construction.html">
     <meta property="twitter:title" content="Screen Armors | New Screen Enclosures &amp; Pool Cages">
     <meta property="twitter:description" content="New screen enclosures, pool cages and lanais in Sarasota and Bradenton. Custom construction, engineered framing and clean installs. Free estimate.">
-    <meta property="twitter:image" content="https://www.screenarmors.com/public/meta.png">
+    <meta property="twitter:image" content="https://www.screenarmors.com/public/meta.webp">
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -46,8 +46,10 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -79,7 +81,10 @@
     <!-- Hero Section -->
         <section class="page-mosaic-hero" aria-label="Construction Services">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -135,21 +140,21 @@
             <div class="before-after-pair">
                 <div class="before-after-card">
                     <span class="before-after-label">Before</span>
-                    <img src="public/Photo 47.jpeg" alt="Construction project before" loading="lazy" decoding="async">
+                    <img src="public/Photo 47-sm.webp" alt="Construction project before" width="800" height="599" loading="lazy" decoding="async">
                 </div>
                 <div class="before-after-card">
                     <span class="before-after-label">After</span>
-                    <img src="public/Photo 52.jpeg" alt="Construction project after" loading="lazy" decoding="async">
+                    <img src="public/Photo 52-sm.webp" alt="Construction project after" width="800" height="599" loading="lazy" decoding="async">
                 </div>
             </div>
             <div class="before-after-pair">
                 <div class="before-after-card">
                     <span class="before-after-label">Before</span>
-                    <img src="public/Photo 37.jpeg" alt="Screen enclosure before" loading="lazy" decoding="async">
+                    <img src="public/Photo 37-sm.webp" alt="Screen enclosure before" width="800" height="599" loading="lazy" decoding="async">
                 </div>
                 <div class="before-after-card">
                     <span class="before-after-label">After</span>
-                    <img src="public/Photo 46.jpeg" alt="Screen enclosure after" loading="lazy" decoding="async">
+                    <img src="public/Photo 46-sm.webp" alt="Screen enclosure after" width="800" height="514" loading="lazy" decoding="async">
                 </div>
             </div>
         </div>
@@ -158,22 +163,22 @@
         <h2 class="section-title">Our Construction Work</h2>
         <div class="image-gallery">
             <div class="image-card">
-                <img src="public/Photo 1.jpeg" alt="Pool cage construction" loading="lazy" decoding="async">
+                <img src="public/Photo 1-sm.webp" alt="Pool cage construction" width="800" height="534" loading="lazy" decoding="async">
             </div>
             <div class="image-card">
-                <img src="public/Photo 6.jpg" alt="Screen enclosure construction" loading="lazy" decoding="async">
+                <img src="public/Photo 6-sm.webp" alt="Screen enclosure construction" width="800" height="599" loading="lazy" decoding="async">
             </div>
             <div class="image-card">
-                <img src="public/Photo 4.jpg" alt="Custom screen enclosure" loading="lazy" decoding="async">
+                <img src="public/Photo 4-sm.webp" alt="Custom screen enclosure" width="800" height="1067" loading="lazy" decoding="async">
             </div>
             <div class="image-card">
-                <img src="public/Photo 5.jpg" alt="Professional construction work" loading="lazy" decoding="async">
+                <img src="public/Photo 5-sm.webp" alt="Professional construction work" width="800" height="1066" loading="lazy" decoding="async">
             </div>
             <div class="image-card">
-                <img src="public/Photo 20.jpg" alt="Screen enclosure construction project" loading="lazy" decoding="async">
+                <img src="public/Photo 20-sm.webp" alt="Screen enclosure construction project" width="800" height="640" loading="lazy" decoding="async">
             </div>
             <div class="image-card">
-                <img src="public/Photo 28.jpeg" alt="Custom screen enclosure build" loading="lazy" decoding="async">
+                <img src="public/Photo 28-sm.webp" alt="Custom screen enclosure build" width="800" height="442" loading="lazy" decoding="async">
             </div>
         </div>
     </div>
@@ -349,8 +354,8 @@
         return false;
       }
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="call-tracking.js" defer></script>
 </body>
 </html>

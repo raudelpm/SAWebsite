@@ -62,8 +62,10 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -95,7 +97,10 @@
     <!-- Hero Section -->
         <section class="page-mosaic-hero" aria-label="New Pool Cage Construction">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -153,7 +158,7 @@
                         Build a brand-new pool cage designed for Florida living. At <strong>SCREEN ARMORS</strong>, we design and construct custom aluminum pool enclosures from the ground up, tailored to your home, layout, and outdoor lifestyle. From open panoramic designs to large screened lanais and patio enclosures, our team delivers durable structures engineered to withstand Florida weather while enhancing comfort, protection, and curb appeal.
                     </p>
                     <figure class="service-showcase__photo">
-                        <img src="public/cages2.webp" alt="New pool cage construction in progress—aluminum framing built from scratch" loading="lazy" decoding="async">
+                        <img src="public/cages2-sm.webp" alt="New pool cage construction in progress—aluminum framing built from scratch" width="800" height="1066" loading="lazy" decoding="async">
                     </figure>
                     <p class="service-showcase__body">
                         In addition to new construction, we also provide <strong>existing pool cage extensions</strong> and structural additions. Whether you want to expand your current enclosure, add more covered space, extend around a new pool area, or connect an existing lanai to another section of your home, we can design seamless additions that blend naturally with your current structure.
@@ -208,7 +213,7 @@
                 </section>
             </div>
             <figure class="service-showcase__photo">
-                <img src="public/cages1.webp" alt="Existing pool cage extension—seamless aluminum addition over a screened pool" loading="lazy" decoding="async">
+                <img src="public/cages1-sm.webp" alt="Existing pool cage extension—seamless aluminum addition over a screened pool" width="800" height="1066" loading="lazy" decoding="async">
             </figure>
 
             <!-- Quality / materials block -->
@@ -403,8 +408,8 @@
         return false;
       }
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="call-tracking.js" defer></script>
 </body>
 </html>

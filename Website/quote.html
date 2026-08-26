@@ -25,8 +25,10 @@
     <title>Screen Armors | Free Quote for Screen Enclosures (Sarasota &amp; Bradenton)</title>
     <meta name="description" content="Request a free quote for screen enclosures, pool cages and lanais in Sarasota and Bradenton. Fast response during business hours.">
     <link rel="canonical" href="https://www.screenarmors.com/quote.html">
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
     <!-- Analytics loads after page so form gets full bandwidth -->
 </head>
 <body>
@@ -102,7 +104,10 @@
     <!-- Hero (same visual pattern as Services and interior pages) -->
         <section class="page-mosaic-hero" aria-label="Instant Free Quote Get Yours Now">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -630,9 +635,9 @@
         return false;
       }
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="call-tracking.js" defer></script>
     <!-- Load analytics after page (and form) so form gets full bandwidth -->
     <script>
       window.addEventListener('load', function() {

@@ -32,8 +32,10 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 </head>
 <body class="page-services">
     <!-- Floating Get Quote Button -->
@@ -65,7 +67,10 @@
     <!-- Single-image hero (logo stays centered over the photo) -->
     <section class="page-mosaic-hero" aria-label="Our Services">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -138,7 +143,7 @@
             <a href="service-custom-enclosures.html" class="service-card-link">
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="public/image%20%286%29.jpg" alt="Custom aluminum screen enclosure" loading="lazy" decoding="async">
+                        <img src="public/image%20%286%29.webp" alt="Custom aluminum screen enclosure" loading="lazy" decoding="async">
                     </div>
                     <h3>Custom Aluminum Screen Enclosures</h3>
                     <p>
@@ -153,7 +158,7 @@
             <a href="service-screening.html" class="service-card-link">
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="public/Photo%2017.jpg" alt="Screening service" loading="lazy" decoding="async">
+                        <img src="public/Photo%2017.webp" alt="Screening service" loading="lazy" decoding="async">
                     </div>
                     <h3>Screening</h3>
                     <p>
@@ -168,7 +173,7 @@
             <a href="service-refurbishing.html" class="service-card-link">
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="public/paintcage.jpg" alt="Refurbishing and painting—spray coating a pool enclosure frame" loading="lazy" decoding="async">
+                        <img src="public/paintcage.webp" alt="Refurbishing and painting—spray coating a pool enclosure frame" loading="lazy" decoding="async">
                     </div>
                     <h3>Refurbishing and Painting</h3>
                     <p>
@@ -183,7 +188,7 @@
             <a href="service-pressure-wash.html" class="service-card-link">
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="public/pressurewash.jpg" alt="Pressure washing pool cage screens and aluminum frame" loading="lazy" decoding="async">
+                        <img src="public/pressurewash.webp" alt="Pressure washing pool cage screens and aluminum frame" loading="lazy" decoding="async">
                     </div>
                     <h3>Pressure Wash</h3>
                     <p>
@@ -198,7 +203,7 @@
             <a href="service-dog-door.html" class="service-card-link">
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="public/dog%20door.jpg" alt="Dog door installed in a screened pool enclosure" loading="lazy" decoding="async">
+                        <img src="public/dog%20door.webp" alt="Dog door installed in a screened pool enclosure" loading="lazy" decoding="async">
                     </div>
                     <h3>Dog Door</h3>
                     <p>
@@ -213,7 +218,7 @@
             <a href="service-hurricane-cables.html" class="service-card-link">
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="public/hurricanecables.jpg" alt="Hurricane cable reinforcement on a pool cage frame" loading="lazy" decoding="async">
+                        <img src="public/hurricanecables.webp" alt="Hurricane cable reinforcement on a pool cage frame" loading="lazy" decoding="async">
                     </div>
                     <h3>Hurricane Cables</h3>
                     <p>
@@ -228,7 +233,7 @@
             <a href="service-screw-replacement.html" class="service-card-link">
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="public/screws.jpg" alt="Rusted pool cage screws at an aluminum frame joint" loading="lazy" decoding="async">
+                        <img src="public/screws.webp" alt="Rusted pool cage screws at an aluminum frame joint" loading="lazy" decoding="async">
                     </div>
                     <h3>Screw Replacement</h3>
                     <p>
@@ -243,7 +248,7 @@
             <a href="service-gutter.html" class="service-card-link">
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="public/suppergutter.jpg" alt="Super gutter profile cross-section at a luxury home with pool" loading="lazy" decoding="async">
+                        <img src="public/suppergutter.webp" alt="Super gutter profile cross-section at a luxury home with pool" loading="lazy" decoding="async">
                     </div>
                     <h3>Gutter Services</h3>
                     <p>
@@ -477,8 +482,8 @@
         return false;
       }
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="call-tracking.js" defer></script>
 </body>
 </html>

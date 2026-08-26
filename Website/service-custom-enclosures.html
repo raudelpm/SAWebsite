@@ -63,8 +63,10 @@
     src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 </head>
 <body>
     <!-- Floating Get Quote Button -->
@@ -96,7 +98,10 @@
     <!-- Hero Section -->
         <section class="page-mosaic-hero" aria-label="Custom aluminum screen enclosures">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -160,7 +165,7 @@
                         Upgrade your outdoor space with a professionally built aluminum screen enclosure. At <strong>SCREEN ARMORS</strong>, we specialize in custom screen enclosures for pools, patios, and lanais, providing long-lasting protection while enhancing the look and value of your home.
                     </p>
                     <figure class="service-showcase__photo">
-                        <img src="public/IMG_3901.jpg" alt="Custom aluminum screen enclosure with dark mesh screens" loading="lazy" decoding="async">
+                        <img src="public/IMG_3901-sm.webp" alt="Custom aluminum screen enclosure with dark mesh screens" width="800" height="450" loading="lazy" decoding="async">
                     </figure>
                     <p class="service-showcase__body">
                         Our aluminum enclosures are engineered to withstand Florida’s weather—strong sun, heavy rain, and humidity. Whether you need a brand-new enclosure or want to upgrade your existing structure, we deliver clean, precise, high-quality results every time.
@@ -210,7 +215,7 @@
                 </ul>
             </div>
             <figure class="service-showcase__photo">
-                <img src="public/enclosure1.jpg" alt="Aluminum screen enclosure attached to a home" loading="lazy" decoding="async">
+                <img src="public/enclosure1-sm.webp" alt="Aluminum screen enclosure attached to a home" width="800" height="1107" loading="lazy" decoding="async">
             </figure>
         </article>
     </div>
@@ -384,8 +389,8 @@
         return false;
       }
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="call-tracking.js" defer></script>
 </body>
 </html>

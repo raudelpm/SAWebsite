@@ -43,13 +43,13 @@
     <meta property="og:url" content="https://www.screenarmors.com/blog.html">
     <meta property="og:title" content="Blog | SCREEN ARMORS">
     <meta property="og:description" content="Screen enclosure, pool cage, and lanai tips for Florida homeowners.">
-    <meta property="og:image" content="https://www.screenarmors.com/public/meta.png">
+    <meta property="og:image" content="https://www.screenarmors.com/public/meta.webp">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:title" content="Blog | SCREEN ARMORS">
     <meta property="twitter:description" content="Screen enclosure, pool cage, and lanai tips for Florida homeowners.">
-    <meta property="twitter:image" content="https://www.screenarmors.com/public/meta.png">
+    <meta property="twitter:image" content="https://www.screenarmors.com/public/meta.webp">
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -66,8 +66,10 @@
     }
     </script>
 
-    <link rel="preload" href="styles.css?v=mosaic-site-5" as="style">
-    <link rel="stylesheet" href="styles.css?v=mosaic-site-5">
+    <link rel="preload" href="styles.css?v=mosaic-site-8" as="style">
+    <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
+    <link rel="preload" as="image" href="public/hero-mobile.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+    <link rel="preload" as="image" href="public/hero.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 </head>
 <body class="page-blog">
     <!-- Floating Get Quote Button -->
@@ -99,7 +101,10 @@
 
     <section class="page-mosaic-hero" aria-label="Blog">
         <div class="page-mosaic-hero__mosaic" aria-hidden="true">
-            <img src="public/hero.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <picture>
+                <source media="(max-width: 700px)" srcset="public/hero-mobile.webp" type="image/webp" width="900" height="367">
+                <img src="public/hero.webp" alt="" width="1962" height="802" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="page-mosaic-hero__overlay"></div>
         <div class="page-mosaic-hero__inner">
@@ -203,10 +208,10 @@
             }, { passive: true });
         })();
     </script>
-    <script src="random-photos.js"></script>
-    <script src="nav-menu.js"></script>
-    <script src="blog-search.js"></script>
-    <script src="call-tracking.js"></script>
+    <script src="random-photos.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="blog-search.js" defer></script>
+    <script src="call-tracking.js" defer></script>
 </body>
 </html>
 
