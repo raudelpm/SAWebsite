@@ -4489,27 +4489,20 @@ body.nav-menu-open::before {
 		box-shadow 0.2s ease;
 }
 
-/* Request quote — orange */
+/* Request quote — same green as the call button */
 .hero-cta-after__repair-btn--quote {
 	color: #fff;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-	background: linear-gradient(180deg, #fb923c 0%, #f97316 45%, #c2410c 100%);
-	border: 1px solid rgba(255, 255, 255, 0.32);
-	box-shadow:
-		0 2px 0 rgba(0, 0, 0, 0.15) inset,
-		0 1px 0 rgba(255, 255, 255, 0.22) inset,
-		0 4px 18px rgba(194, 65, 12, 0.55),
-		0 2px 6px rgba(0, 0, 0, 0.2);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	background: var(--btn-bg-green);
+	border: 1px solid rgba(255, 255, 255, 0.28);
+	box-shadow: var(--btn-relief-green);
 }
 
 .hero-cta-after__repair-btn--quote:hover {
 	color: #fff;
-	background: linear-gradient(180deg, #fdba74 0%, #fb923c 50%, #9a3412 100%);
-	border-color: rgba(255, 255, 255, 0.48);
-	box-shadow:
-		0 2px 0 rgba(255, 255, 255, 0.12) inset,
-		0 6px 22px rgba(234, 88, 12, 0.5),
-		0 3px 8px rgba(0, 0, 0, 0.15);
+	background: var(--btn-bg-green-hover);
+	border-color: rgba(255, 255, 255, 0.45);
+	box-shadow: var(--btn-relief-green-hover);
 	transform: translateY(-2px);
 }
 
@@ -4780,7 +4773,7 @@ body.nav-menu-open::before {
 	flex-shrink: 0;
 }
 
-/* Estimate CTA in red band: orange (paired with green call button) */
+/* Estimate CTA in red band: same green as the call button */
 .hero-cta-after__ghost-btn {
 	display: inline-flex;
 	align-items: center;
@@ -4794,15 +4787,11 @@ body.nav-menu-open::before {
 	text-transform: uppercase;
 	text-decoration: none;
 	color: #fff;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-	border: 1px solid rgba(255, 255, 255, 0.32);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	border: 1px solid rgba(255, 255, 255, 0.28);
 	border-radius: 8px;
-	background: linear-gradient(180deg, #fb923c 0%, #f97316 45%, #c2410c 100%);
-	box-shadow:
-		0 2px 0 rgba(0, 0, 0, 0.15) inset,
-		0 1px 0 rgba(255, 255, 255, 0.22) inset,
-		0 4px 18px rgba(194, 65, 12, 0.55),
-		0 2px 6px rgba(0, 0, 0, 0.2);
+	background: var(--btn-bg-green);
+	box-shadow: var(--btn-relief-green);
 	transition:
 		background 0.2s ease,
 		border-color 0.2s ease,
@@ -4812,13 +4801,10 @@ body.nav-menu-open::before {
 
 .hero-cta-after__ghost-btn:hover {
 	color: #fff;
-	background: linear-gradient(180deg, #fdba74 0%, #fb923c 50%, #9a3412 100%);
-	border-color: rgba(255, 255, 255, 0.48);
+	background: var(--btn-bg-green-hover);
+	border-color: rgba(255, 255, 255, 0.45);
 	transform: translateY(-1px);
-	box-shadow:
-		0 2px 0 rgba(255, 255, 255, 0.12) inset,
-		0 6px 22px rgba(234, 88, 12, 0.5),
-		0 3px 8px rgba(0, 0, 0, 0.15);
+	box-shadow: var(--btn-relief-green-hover);
 }
 
 .hero-cta-after__ghost-btn:focus-visible {
