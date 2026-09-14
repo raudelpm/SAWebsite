@@ -1,4 +1,4 @@
-import { json, parseJsonBody, requireAdmin } from "../lib/admin-http.js";
+import { json, parseJsonBody, requireAdmin } from "../_lib/admin-http.js";
 import {
   deleteEstimate,
   estimateBelongsTo,
@@ -7,7 +7,7 @@ import {
   normalizeEstimateInput,
   saveEstimate,
   storageMode,
-} from "../lib/porch-estimates-store.js";
+} from "../_lib/porch-estimates-store.js";
 
 function getId(req, body) {
   const fromQuery =

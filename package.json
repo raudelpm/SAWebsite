@@ -8,7 +8,7 @@
   "scripts": {
     "dev:site": "npx serve Website -l 3000",
     "dev:api": "npx vercel dev --listen 3000",
-    "test:service-area": "node api/lib/service-area.test.js"
+    "test:service-area": "node api/_lib/service-area.test.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.0",

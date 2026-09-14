@@ -3,7 +3,7 @@
  * Supports conversational estimate lead capture via OpenAI tool calling + Resend.
  */
 
-import { generateChatReply, MAX_USER_MESSAGE_LENGTH } from "./lib/screen-armors-ai.js";
+import { generateChatReply, MAX_USER_MESSAGE_LENGTH } from "./_lib/screen-armors-ai.js";
 
 function json(res, status, body) {
   return res

@@ -5,7 +5,7 @@ import {
   parseEmailList,
   sendCustomerConfirmationEmail,
   sendInternalLeadEmail,
-} from "./lib/lead-email.js";
+} from "./_lib/lead-email.js";
 
 function json(res, status, body) {
   return res

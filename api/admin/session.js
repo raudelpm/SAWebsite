@@ -1,7 +1,7 @@
 import {
   getSessionFromRequest,
   sessionCookieHeader,
-} from "../lib/admin-auth.js";
+} from "../_lib/admin-auth.js";
 
 function json(res, status, body, headers = {}) {
   const response = res.status(status).setHeader("Content-Type", "application/json; charset=utf-8");
