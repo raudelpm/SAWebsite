@@ -219,13 +219,13 @@
       var link = document.createElement('link');
       link.id = 'saAiChatStyles';
       link.rel = 'stylesheet';
-      link.href = '/ai-chat.css?v=ai-chat-12';
+      link.href = '/ai-chat.css?v=ai-chat-13';
       document.head.appendChild(link);
     }
 
     if (!document.querySelector('script[data-sa-ai-chat]')) {
       var script = document.createElement('script');
-      script.src = '/ai-chat.js?v=ai-chat-12';
+      script.src = '/ai-chat.js?v=ai-chat-13';
       script.defer = true;
       script.setAttribute('data-sa-ai-chat', '1');
       (document.body || document.head).appendChild(script);

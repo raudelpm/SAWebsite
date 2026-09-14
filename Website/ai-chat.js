@@ -32,6 +32,7 @@
     sending: false,
     leadSubmitted: false,
     welcomeDismissed: false,
+    welcomeUnlocked: false,
   };
 
   var els = {};
@@ -164,6 +165,7 @@
 
     var welcome = createEl("div", "sa-ai-chat__welcome", {
       id: "saAiChatWelcome",
+      hidden: "true",
     });
 
     var welcomeDismiss = createEl("button", "sa-ai-chat__welcome-dismiss", {
@@ -401,14 +403,26 @@
     el.style.height = Math.min(el.scrollHeight, 120) + "px";
   }
 
+  function pageScrollY() {
+    return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+  }
+
   function syncWelcomeVisibility() {
     if (!els.welcome) return;
-    var show = !state.open && !state.welcomeDismissed;
+    var show = state.welcomeUnlocked && !state.open && !state.welcomeDismissed;
     els.welcome.hidden = !show;
     els.root.setAttribute("data-welcome", show ? "true" : "false");
     if (els.welcomeOpen) {
       els.welcomeOpen.setAttribute("aria-expanded", state.open ? "true" : "false");
     }
+  }
+
+  function unlockWelcomeOnScroll() {
+    if (state.welcomeUnlocked) return;
+    if (pageScrollY() < 64) return;
+    state.welcomeUnlocked = true;
+    window.removeEventListener("scroll", unlockWelcomeOnScroll);
+    syncWelcomeVisibility();
   }
 
   function dismissWelcome() {
@@ -602,6 +616,7 @@
       window.visualViewport.addEventListener("scroll", syncKeyboardInset);
     }
     window.addEventListener("resize", syncKeyboardInset);
+    window.addEventListener("scroll", unlockWelcomeOnScroll, { passive: true });
   }
 
   function init() {
@@ -620,6 +635,7 @@
     syncKeyboardInset();
     syncSendEnabled();
     syncWelcomeVisibility();
+    unlockWelcomeOnScroll();
 
     if (state.open) {
       setOpen(true, { skipFocus: true });
