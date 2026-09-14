@@ -23,7 +23,14 @@ const MAX = {
   projectDescription: 2000,
   currentPath: 300,
   conversationSummary: 2000,
+  leadSource: 120,
 };
+
+const FALLBACK_LEAD_SOURCE = "Website Chat";
+const BLOCKED_LEAD_SOURCES = new Set([
+  "ai website chat",
+  "ai websitechat",
+]);
 
 /** In-memory dedupe for warm serverless instances (best-effort). */
 const recentSubmissions = new Map();
@@ -76,6 +83,25 @@ export function normalizeUsPhone(raw) {
   return { ok: true, formatted, digits };
 }
 
+function isTruthyToolFlag(value) {
+  if (value === true) return true;
+  const s = getString(value).toLowerCase();
+  return s === "true" || s === "1" || s === "yes";
+}
+
+/**
+ * Customer-facing lead source for the Resend email Source field.
+ * Empty / blocked values fall back to "Website Chat".
+ */
+export function normalizeLeadSource(raw) {
+  const value = getString(raw).replace(/\s+/g, " ").slice(0, MAX.leadSource);
+  if (!value) return FALLBACK_LEAD_SOURCE;
+  if (BLOCKED_LEAD_SOURCES.has(value.toLowerCase())) {
+    return FALLBACK_LEAD_SOURCE;
+  }
+  return value;
+}
+
 /**
  * Validate and normalize submit_estimate_request tool arguments.
  * Never trust model output blindly.
@@ -111,6 +137,8 @@ export function validateEstimateLeadArgs(rawArgs, { currentPathFallback = "" } =
     MAX.conversationSummary
   );
   const cityHint = getString(args.city).slice(0, 80);
+  const leadSourceRaw = getString(args.leadSource).slice(0, MAX.leadSource);
+  const leadSourceAsked = isTruthyToolFlag(args.leadSourceAsked);
 
   if (!name) return { ok: false, error: "Name is required." };
   if (!serviceAddress) return { ok: false, error: "Service address is required." };
@@ -136,6 +164,16 @@ export function validateEstimateLeadArgs(rawArgs, { currentPathFallback = "" } =
   }
   const email = emailRaw;
 
+  const blockedOrEmptySource =
+    !leadSourceRaw || BLOCKED_LEAD_SOURCES.has(leadSourceRaw.toLowerCase());
+  if (blockedOrEmptySource && !leadSourceAsked) {
+    return {
+      ok: false,
+      error:
+        'Ask this question first, then submit: "One last question — how did you hear about Screen Armors?" Wait for the visitor\'s answer. Call this tool again with leadSource set to their answer (for example Google, Facebook, Referral). If they skip or do not answer after you asked, call again with leadSourceAsked: true.',
+    };
+  }
+
   const extracted = extractCityFromAddress(serviceAddress);
   const cityForCheck = cityHint || extracted.city || "";
   const zipForCheck = extracted.zip || "";
@@ -153,7 +191,8 @@ export function validateEstimateLeadArgs(rawArgs, { currentPathFallback = "" } =
       projectDescription,
       currentPath,
       conversationSummary,
-      source: "AI Website Chat",
+      leadSource: normalizeLeadSource(leadSourceRaw),
+      source: normalizeLeadSource(leadSourceRaw),
       cityHint: cityHint || extracted.city || "",
       areaStatus: area.status,
       areaCity: area.normalizedCity,
@@ -292,6 +331,7 @@ export async function submitEstimateRequest(rawArgs, options = {}) {
     name: lead.name,
     phone: lead.phone,
     hasEmail: Boolean(lead.email),
+    leadSource: lead.source || "(none)",
     path: lead.currentPath || "(none)",
     areaStatus: lead.areaStatus || "(none)",
   });
@@ -336,7 +376,7 @@ export const SUBMIT_ESTIMATE_TOOL = {
   type: "function",
   name: "submit_estimate_request",
   description:
-    "Submit a Screen Armors estimate/quote request after collecting ALL required visitor details. Only call when name, phone, email, serviceAddress, and projectDescription are all known. Prefer calling check_service_area first when a city is known. Submit for in_area and unknown locations (unknown is emailed as Needs Confirmation). Never submit for known out_of_area. Never invent an email. The server validates fields and sends email via Resend. Never claim success until this tool returns ok: true.",
+    "Submit a Screen Armors estimate/quote request after collecting ALL required visitor details. Only call when name, phone, email, serviceAddress, and projectDescription are all known, AND after you have asked how they heard about Screen Armors. Prefer calling check_service_area first when a city is known. Submit for in_area and unknown locations (unknown is emailed as Needs Confirmation). Never submit for known out_of_area. Never invent an email. Never use AI WEBSITE CHAT as the source. The server validates fields and sends email via Resend. Never claim success until this tool returns ok: true.",
   parameters: {
     type: "object",
     properties: {
@@ -374,7 +414,18 @@ export const SUBMIT_ESTIMATE_TOOL = {
       },
       conversationSummary: {
         type: "string",
-        description: "Brief summary of the chat for the Screen Armors team",
+        description:
+          "Brief summary of the chat for the Screen Armors team, including appointment or estimate timing if the visitor mentioned it",
+      },
+      leadSource: {
+        type: "string",
+        description:
+          "How the visitor heard about Screen Armors, in their own words (for example Google, Facebook, Instagram, Yelp, Referral, Yard sign). Do not use AI WEBSITE CHAT. Omit only if they were asked and did not answer.",
+      },
+      leadSourceAsked: {
+        type: "boolean",
+        description:
+          "Set true only if you already asked how they heard about Screen Armors and they skipped or did not answer. Then the Source field falls back to Website Chat.",
       },
     },
     required: ["name", "phone", "email", "serviceAddress", "projectDescription"],
