@@ -2604,8 +2604,7 @@ footer {
 
 /* Navigation Cards */
 
-/* Floating Get Quote — bottom right (above safe area / home indicator)
-   Hidden sitewide in favor of the AI chat launcher. */
+/* Floating Get Quote — hidden sitewide in favor of the AI chat launcher. */
 .floating-quote-btn {
     position: fixed;
     z-index: 10050;
@@ -2627,10 +2626,6 @@ footer {
     border: 1px solid rgba(255, 220, 220, 0.5);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
     transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.floating-quote-btn[aria-label="Back to home"] {
-    display: inline-flex !important;
 }
 
 /* Blog: transparent header like the rest of the site (no gray bar over hero/image) */
