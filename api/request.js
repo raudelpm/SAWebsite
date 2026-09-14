@@ -1,39 +1,17 @@
-import { Resend } from "resend";
+import {
+  escapeHtml,
+  getString,
+  isValidEmail,
+  parseEmailList,
+  sendCustomerConfirmationEmail,
+  sendInternalLeadEmail,
+} from "./lib/lead-email.js";
 
 function json(res, status, body) {
   return res
     .status(status)
     .setHeader("Content-Type", "application/json; charset=utf-8")
     .send(JSON.stringify(body));
-}
-
-function getString(value) {
-  if (value == null) return "";
-  if (typeof value === "string") return value.trim();
-  return String(value).trim();
-}
-
-function escapeHtml(s) {
-  return s
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function parseEmailList(value) {
-  const raw = getString(value);
-  if (!raw) return [];
-  return raw
-    .split(/[;,]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
-function isValidEmail(value) {
-  if (!value) return false;
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function isTestApiRequest(body) {
@@ -52,9 +30,7 @@ const CONFIRMATION_FROM =
   process.env.CONFIRMATION_FROM_EMAIL || "Screen Armors <info@screenarmors.com>";
 
 function buildConfirmationHtml(firstName) {
-  const greeting = firstName
-    ? `Hi ${escapeHtml(firstName)},`
-    : "Hi,";
+  const greeting = firstName ? `Hi ${escapeHtml(firstName)},` : "Hi,";
   return `
     <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; line-height: 1.6; color: #1a1a1a;">
       <p style="margin:0 0 16px;">${greeting}</p>
@@ -219,34 +195,21 @@ export default async function handler(req, res) {
     hasAttachments: Boolean(resendAttachments),
   });
 
-  const resend = new Resend(apiKey);
-
   try {
-    console.log("[api/request] Sending internal notification", {
-      from: fromEmail,
-      to: toEmails,
-    });
-
-    const internalResult = await resend.emails.send({
-      from: fromEmail,
-      to: toEmails.length === 1 ? toEmails[0] : toEmails,
-      ...(email ? { replyTo: email } : {}),
+    const internalResult = await sendInternalLeadEmail({
       subject,
       html,
-      ...(resendAttachments ? { attachments: resendAttachments } : {}),
+      replyTo: email || undefined,
+      attachments: resendAttachments,
+      logPrefix: "[api/request]",
     });
 
-    if (internalResult.error) {
-      console.error("[api/request] Internal notification failed", internalResult.error);
-      return json(res, 502, {
+    if (!internalResult.ok) {
+      return json(res, internalResult.status || 502, {
         ok: false,
-        error: internalResult.error.message || "Resend error (internal)",
+        error: internalResult.error || "Resend error (internal)",
       });
     }
-
-    console.log("[api/request] Internal notification sent", {
-      id: internalResult.data?.id,
-    });
 
     let confirmationSent = false;
     let confirmationId = null;
@@ -257,31 +220,26 @@ export default async function handler(req, res) {
         to: email,
       });
 
-      const confirmationResult = await resend.emails.send({
-        from: CONFIRMATION_FROM,
+      const confirmationResult = await sendCustomerConfirmationEmail({
         to: email,
         subject: "We Received Your Request",
         html: buildConfirmationHtml(greetingName),
+        from: CONFIRMATION_FROM,
+        logPrefix: "[api/request]",
       });
 
-      if (confirmationResult.error) {
-        console.error("[api/request] Customer confirmation failed", {
-          to: email,
-          error: confirmationResult.error,
-        });
-
+      if (!confirmationResult.ok) {
         return json(res, 200, {
           ok: true,
-          id: internalResult.data?.id,
+          id: internalResult.id,
           confirmationSent: false,
           confirmationError:
-            confirmationResult.error.message ||
-            "Resend error (customer confirmation)",
+            confirmationResult.error || "Resend error (customer confirmation)",
         });
       }
 
       confirmationSent = true;
-      confirmationId = confirmationResult.data?.id;
+      confirmationId = confirmationResult.id;
       console.log("[api/request] Customer confirmation sent", {
         to: email,
         id: confirmationId,
@@ -294,7 +252,7 @@ export default async function handler(req, res) {
 
     return json(res, 200, {
       ok: true,
-      id: internalResult.data?.id,
+      id: internalResult.id,
       confirmationSent,
       ...(confirmationId ? { confirmationId } : {}),
     });

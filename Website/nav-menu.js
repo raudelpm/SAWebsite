@@ -201,6 +201,37 @@
     }
   }
 
+  /**
+   * Load the floating AI chat once for all public pages that include nav-menu.js.
+   * Uses root-absolute URLs so nested /blog/ pages resolve correctly.
+   * Skips /admin/ tools. Guards against duplicate injection if this file runs twice.
+   */
+  function ensureAiChat() {
+    if (window.__SA_AI_CHAT_ASSETS) return;
+    if (!document.head) return;
+
+    var path = (window.location.pathname || '').replace(/\\/g, '/');
+    if (path.indexOf('/admin/') !== -1) return;
+
+    window.__SA_AI_CHAT_ASSETS = true;
+
+    if (!document.getElementById('saAiChatStyles')) {
+      var link = document.createElement('link');
+      link.id = 'saAiChatStyles';
+      link.rel = 'stylesheet';
+      link.href = '/ai-chat.css?v=ai-chat-11';
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector('script[data-sa-ai-chat]')) {
+      var script = document.createElement('script');
+      script.src = '/ai-chat.js?v=ai-chat-11';
+      script.defer = true;
+      script.setAttribute('data-sa-ai-chat', '1');
+      (document.body || document.head).appendChild(script);
+    }
+  }
+
   function ensureBackToTopButton() {
     if (!document.body) return;
     if (document.getElementById('backToTopBtn')) return;
@@ -387,6 +418,7 @@
       ensureBlogNavItem();
       ensureFooterSocialLinks();
       ensureBackToTopButton();
+      ensureAiChat();
       syncBodyOpenClass();
     });
   } else {
@@ -396,6 +428,7 @@
     ensureBlogNavItem();
     ensureFooterSocialLinks();
     ensureBackToTopButton();
+    ensureAiChat();
     syncBodyOpenClass();
   }
 
