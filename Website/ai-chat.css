@@ -14,8 +14,8 @@
   --sa-ai-radius: 18px;
   --sa-ai-launcher-size: 58px;
   --sa-ai-gap: 0.75rem;
-  /* Bottom-right edge (former Get Quote Now slot) */
-  --sa-ai-clearance-bottom: 1rem;
+  /* Sit above the floating Get Quote button when that CTA is on the page */
+  --sa-ai-clearance-bottom: var(--sa-floating-stack-clearance, 1rem);
   --sa-ai-keyboard-inset: 0px;
   --sa-ai-z: 10100;
   position: relative;
@@ -582,8 +582,7 @@ body.sa-ai-chat-open {
   .sa-ai-chat {
     --sa-ai-gap: 0.5rem;
     --sa-ai-launcher-size: 54px;
-    /* Same bottom-right edge as the old mobile Get Quote CTA */
-    --sa-ai-clearance-bottom: 0.85rem;
+    --sa-ai-clearance-bottom: var(--sa-floating-stack-clearance, 0.85rem);
   }
 
   .sa-ai-chat__dock {
