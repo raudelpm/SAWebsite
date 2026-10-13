@@ -7,7 +7,7 @@
     <link rel="icon" type="image/jpeg" href="../public/Logo Black Yes Background.JPG">
     <title>Admin | Porch Enclosure Estimate | SCREEN ARMORS</title>
     <link rel="preload" href="../styles.css" as="style">
-    <link rel="stylesheet" href="../styles.css?v=admin-black-nav">
+    <link rel="stylesheet" href="../styles.css?v=saved-search">
     <style>
         html body.page-admin-porch nav,
         html body.page-admin-porch nav.nav-compact {
@@ -77,6 +77,10 @@
                         <button type="button" class="btn btn-secondary" id="porchNewEstimateBtn">New</button>
                     </div>
                     <p id="porchStorageMode" class="admin-porch-hint"></p>
+                    <label class="admin-porch-saved-search" for="porchSavedSearch">
+                        <span class="sr-only">Search saved estimates by client name</span>
+                        <input id="porchSavedSearch" type="search" placeholder="Client name" autocomplete="off" enterkeyhint="search">
+                    </label>
                     <ul id="porchSavedList" class="admin-porch-saved-list"></ul>
                     <p id="porchSavedEmpty" class="admin-porch-hint">No saved estimates yet.</p>
                 </aside>
@@ -393,6 +397,6 @@
     </script>
     <script src="../nav-menu.js"></script>
     <script src="porch-screen.js"></script>
-    <script src="porch-calculator.js"></script>
+    <script src="porch-calculator.js?v=saved-search"></script>
 </body>
 </html>

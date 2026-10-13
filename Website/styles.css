@@ -7613,6 +7613,20 @@ body.page-blog-post .nav-compact {
     margin: 0;
     font-size: 1rem;
 }
+.admin-porch-saved-search {
+    display: block;
+    margin: 0.15rem 0 0;
+}
+.admin-porch-saved-search input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 8px;
+    background: #fff;
+    padding: 0.38rem 0.65rem;
+    font: inherit;
+    font-size: 0.85rem;
+}
 .admin-porch-saved-item {
     width: 100%;
     text-align: left;
@@ -8189,6 +8203,20 @@ body.page-estimator-panel footer {
 .admin-estimator-saved[hidden] {
     display: none !important;
 }
+.admin-estimator-saved__search {
+    display: block;
+}
+.admin-estimator-saved__search input {
+    width: 100%;
+    max-width: 280px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 8px;
+    background: #fff;
+    padding: 0.38rem 0.65rem;
+    font: inherit;
+    font-size: 0.85rem;
+}
 .admin-estimator-saved__status {
     margin: 0;
     font-size: 0.88rem;
@@ -8225,6 +8253,36 @@ body.page-estimator-panel footer {
 .admin-estimator-saved__item span {
     font-size: 0.8rem;
     color: rgba(0, 0, 0, 0.52);
+}
+.admin-estimator-saved__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+}
+.admin-estimator-saved__actions button {
+    font: inherit;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #fff;
+    padding: 0.28rem 0.6rem;
+    cursor: pointer;
+}
+.admin-estimator-saved__actions button:hover,
+.admin-estimator-saved__actions button:focus-visible {
+    border-color: rgba(143, 12, 37, 0.45);
+    color: #8f0c25;
+}
+@media (min-width: 900px) {
+    .admin-estimator-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .admin-estimator-card--featured {
+        grid-column: auto;
+    }
 }
 .admin-estimator-gallery {
     margin-top: 2rem;

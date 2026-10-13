@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/jpeg" href="../public/Logo Black Yes Background.JPG">
+    <title>Pool Cage Layout Designer | SCREEN ARMORS</title>
+    <link rel="stylesheet" href="../styles.css?v=pool-cage-designer">
+    <link rel="stylesheet" href="pool-cage.css?v=21">
+    <style>
+        html body.page-pool-cage nav,
+        html body.page-pool-cage nav.nav-compact {
+            background: #0b0c0f !important;
+            background-color: #0b0c0f !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
+        }
+        html body.page-pool-cage .nav-compact .nav-links {
+            background: #0b0c0f !important;
+        }
+    </style>
+</head>
+<body class="page-admin-porch page-pool-cage">
+    <nav style="background:#0b0c0f !important;background-color:#0b0c0f !important;">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <img src="../public/Logo White No Background .png" alt="SCREEN ARMORS Logo" class="logo-img" width="120" height="50" decoding="async">
+                <span class="logo-wordmark">SCREEN ARMORS</span>
+            </a>
+            <button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navLinks">
+                <span class="menu-toggle-icon" aria-hidden="true">☰</span>
+                <span class="menu-toggle-label">Menu</span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/admin/estimator-panel.html">Estimator Panel</a></li>
+                <li><a href="../index.html">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <p id="adminBootStatus" class="admin-porch-boot" role="status">Checking access…</p>
+
+    <div id="pcdApp" class="pcd-app" hidden>
+        <header class="pcd-top">
+            <div>
+                <p class="admin-porch-eyebrow"><a href="/admin/estimator-panel.html">Estimator Panel</a></p>
+                <h1>Pool Cage Layout Designer</h1>
+            </div>
+            <div class="pcd-top__user">
+                <span id="pcdUser"></span>
+                <button type="button" class="btn btn-secondary" id="pcdLogout">Log out</button>
+            </div>
+        </header>
+
+        <div class="pcd-toolbar" id="pcdToolbar" role="toolbar" aria-label="Drawing tools">
+            <button type="button" class="pcd-tool is-active" data-tool="select" title="Select and move">Select</button>
+            <button type="button" class="pcd-tool" data-tool="beam" title="Add a roof beam">+ Beam</button>
+            <button type="button" class="pcd-tool" data-action="add-door" title="Add a door you can drag along a wall">+ Door</button>
+            <button type="button" class="pcd-tool" data-action="add-gutter" title="Add a break in the gutter, then drag it to set the angle">+ Gutter break</button>
+            <button type="button" class="pcd-tool" data-action="split" title="Split the selected roof beam">Split</button>
+            <button type="button" class="pcd-tool" data-action="delete" title="Delete the selection">Delete</button>
+            <span class="pcd-toolbar__gap"></span>
+            <button type="button" class="pcd-tool" data-action="undo" title="Undo">Undo</button>
+            <button type="button" class="pcd-tool" data-action="redo" title="Redo">Redo</button>
+            <button type="button" class="pcd-tool" data-action="zoom-in" title="Zoom in">+</button>
+            <button type="button" class="pcd-tool" data-action="zoom-out" title="Zoom out">−</button>
+            <button type="button" class="pcd-tool" data-action="fit" title="Fit to screen">Fit</button>
+            <button type="button" class="pcd-tool" data-action="auto" title="Generate the roof grid">Generate roof</button>
+            <button type="button" class="pcd-tool is-active" data-action="grid" title="Show or hide the grid">Grid</button>
+            <button type="button" class="pcd-tool is-active" data-action="snap" title="Snap to grid, nodes, and midpoints">Snap</button>
+            <button type="button" class="pcd-tool pcd-client-only" data-action="print" title="Print the client layout">Print</button>
+            <button type="button" class="pcd-tool pcd-panel-toggle" data-action="panel" data-panel="sidebar">Project</button>
+            <button type="button" class="pcd-tool pcd-panel-toggle" data-action="panel" data-panel="props">Properties</button>
+        </div>
+
+        <div class="pcd-body">
+            <aside id="pcdSidebar" class="pcd-side admin-porch-card" aria-label="Project"></aside>
+            <section class="pcd-stage">
+                <div class="pcd-stage-bar">
+                    <div class="pcd-tabs" id="pcdTabs" role="tablist">
+                        <button type="button" data-view="floor" class="is-active">Floor plan</button>
+                        <button type="button" data-view="roof">Roof</button>
+                        <button type="button" data-view="walls">Walls</button>
+                        <button type="button" data-view="client">Client view</button>
+                    </div>
+                    <label id="pcdWallSwitch" class="pcd-wall-switch" hidden>Wall
+                        <select id="pcdWallSelect"></select>
+                    </label>
+                </div>
+                <div id="pcdCanvas" class="pcd-canvas"></div>
+                <p id="pcdStatus" class="pcd-status" role="status"></p>
+            </section>
+            <aside id="pcdProps" class="pcd-side admin-porch-card" aria-label="Properties"></aside>
+        </div>
+    </div>
+
+    <div id="pcdSetup" class="pcd-setup" hidden>
+        <form id="pcdSetupForm" class="pcd-setup__card admin-porch-card">
+            <p class="admin-porch-eyebrow">New project</p>
+            <h2>Pool cage dimensions</h2>
+            <p class="pcd-note">Every cage is attached to the house. Enter the height and each screened wall the way it is measured in the field. The house side and the roof footprint are calculated from those walls.</p>
+            <label>Project name<input id="pcdProjectName" type="text" maxlength="160" placeholder="Smith pool cage" required></label>
+            <label>Customer name<input id="pcdCustomer" type="text" maxlength="160" placeholder="Optional"></label>
+            <label>Estimator notes<textarea id="pcdNotes" maxlength="4000" rows="2" placeholder="Optional"></textarea></label>
+            <label>Cage height
+                <span class="pcd-measure"><input id="pcdHeightFt" type="number" min="0" value="10"> <span>ft</span><input id="pcdHeightIn" type="number" min="0" max="11" value="0"> <span>in</span></span>
+            </label>
+            <label>Number of screened walls
+                <input id="pcdWallCount" type="number" min="2" max="16" value="3">
+            </label>
+            <div id="pcdWallCards"></div>
+            <p id="pcdHouseNote" class="pcd-note"></p>
+            <p id="pcdSideWarn" class="pcd-warn"></p>
+            <fieldset>
+                <legend>Roof grid</legend>
+                <p class="pcd-note">Standard grid. Columns run along the house. Rows run out from the house. Roof length and depth come from the walls.</p>
+                <div class="pcd-setup__size">
+                    <label>Columns <input id="pcdRoofCols" type="number" min="1" max="24" value="5"></label>
+                    <label>Rows <input id="pcdRoofRows" type="number" min="1" max="24" value="4"></label>
+                </div>
+            </fieldset>
+            <p id="pcdSetupStatus" class="pcd-note" role="status"></p>
+            <div class="pcd-side-actions">
+                <button type="submit" class="btn btn-quote">Create layout</button>
+                <button type="button" class="btn btn-secondary" id="pcdSetupCancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="pcdDialog" class="pcd-dialog" hidden>
+        <div class="pcd-dialog__card admin-porch-card" role="dialog" aria-modal="true" aria-labelledby="pcdDialogText">
+            <p id="pcdDialogText"></p>
+            <div class="pcd-side-actions">
+                <button type="button" class="btn btn-quote" id="pcdDialogOk">Replace layout</button>
+                <button type="button" class="btn btn-secondary" id="pcdDialogCancel">Keep edits</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("navLinks").classList.toggle("active");
+        }
+        (function () {
+            const navEl = document.querySelector("nav");
+            if (!navEl) return;
+            function setSpacer() {
+                const h = navEl.offsetHeight;
+                document.body.style.paddingTop = h + "px";
+                document.documentElement.style.setProperty("--nav-height", h + "px");
+            }
+            window.addEventListener("load", setSpacer);
+            window.addEventListener("resize", setSpacer);
+            setSpacer();
+        })();
+    </script>
+    <script src="../nav-menu.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "./pool-cage/vendor/three.module.js",
+            "three/addons/": "./pool-cage/vendor/addons/"
+        }
+    }
+    </script>
+    <script type="module" src="pool-cage/designer.js?v=22"></script>
+</body>
+</html>

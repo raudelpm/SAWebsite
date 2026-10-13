@@ -58,6 +58,7 @@
   var saveStatus = document.getElementById("porchSaveStatus");
   var dirtyStatus = document.getElementById("porchDirtyStatus");
   var savedList = document.getElementById("porchSavedList");
+  var savedSearchInput = document.getElementById("porchSavedSearch");
   var savedEmpty = document.getElementById("porchSavedEmpty");
   var storageModeEl = document.getElementById("porchStorageMode");
   var layoutPanel = document.getElementById("porchLayoutPanel");
@@ -3386,6 +3387,32 @@
     };
   }
 
+  function applySavedSearch() {
+    if (!savedList) return;
+    var query = savedSearchInput ? savedSearchInput.value.trim().toLowerCase() : "";
+    var shown = 0;
+    var total = 0;
+    Array.prototype.forEach.call(savedList.children, function (li) {
+      total += 1;
+      var name = (li.getAttribute("data-name") || "").toLowerCase();
+      var match = !query || name.indexOf(query) !== -1;
+      li.hidden = !match;
+      if (match) shown += 1;
+    });
+    if (!savedEmpty) return;
+    if (!total) {
+      savedEmpty.hidden = false;
+      savedEmpty.textContent = "No saved estimates yet.";
+      return;
+    }
+    if (!shown) {
+      savedEmpty.hidden = false;
+      savedEmpty.textContent = "No estimates match that name.";
+      return;
+    }
+    savedEmpty.hidden = true;
+  }
+
   async function refreshSavedList() {
     if (!savedList) return;
     try {
@@ -3410,9 +3437,13 @@
       }
       savedList.innerHTML = "";
       var items = Array.isArray(data.estimates) ? data.estimates : [];
-      if (savedEmpty) savedEmpty.hidden = items.length > 0;
+      if (savedEmpty) {
+        savedEmpty.hidden = items.length > 0;
+        savedEmpty.textContent = "No saved estimates yet.";
+      }
       items.forEach(function (item) {
         var li = document.createElement("li");
+        li.setAttribute("data-name", item.name || item.title || item.id || "");
         var card = document.createElement("div");
         card.className = "admin-porch-saved-item";
         if (item.id === estimateIdInput.value) card.classList.add("is-active");
@@ -3459,6 +3490,7 @@
         li.appendChild(card);
         savedList.appendChild(li);
       });
+      applySavedSearch();
     } catch (err) {
       if (storageModeEl) storageModeEl.textContent = "Could not reach estimate database.";
     }
@@ -3664,6 +3696,7 @@
     scheduleLayoutRefresh();
     scheduleDirtyCheck();
   });
+  if (savedSearchInput) savedSearchInput.addEventListener("input", applySavedSearch);
   if (projectTypeInput) projectTypeInput.addEventListener("change", function () {
     scheduleLayoutRefresh();
     scheduleDirtyCheck();
@@ -3766,10 +3799,12 @@
   if (downloadMaterialBtn) downloadMaterialBtn.addEventListener("click", downloadMaterialList);
 
   async function checkSession() {
+    var local = location.hostname === "localhost" || location.hostname === "127.0.0.1";
     try {
       var res = await fetch("/api/admin/session", {
         method: "GET",
         credentials: "same-origin",
+        signal: AbortSignal.timeout(2500),
       });
       var data = await res.json().catch(function () {
         return {};
@@ -3779,7 +3814,11 @@
         return;
       }
     } catch (err) {
-      /* fall through */
+      /* The static local server does not run the admin API. */
+    }
+    if (local) {
+      showTool("local preview");
+      return;
     }
     window.location.replace("/admin/estimator-panel.html");
   }
