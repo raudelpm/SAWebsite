@@ -11,6 +11,7 @@
   var STORAGE_OPEN = "sa-ai-chat-open";
   var STORAGE_LEAD = "sa-ai-chat-lead-submitted";
   var STORAGE_WELCOME = "sa-ai-chat-welcome-dismissed";
+  var STORAGE_POP = "sa-ai-chat-welcome-pop-v4";
   var MAX_HISTORY = 12;
   var API_URL = "/api/chat";
   var GREETING =
@@ -33,7 +34,10 @@
     leadSubmitted: false,
     welcomeDismissed: false,
     welcomeUnlocked: false,
+    welcomePopPlayed: false,
   };
+
+  var popAudio = null;
 
   var els = {};
 
@@ -73,6 +77,7 @@
     state.open = sessionStorage.getItem(STORAGE_OPEN) === "1";
     state.leadSubmitted = sessionStorage.getItem(STORAGE_LEAD) === "1";
     state.welcomeDismissed = sessionStorage.getItem(STORAGE_WELCOME) === "1";
+    state.welcomePopPlayed = sessionStorage.getItem(STORAGE_POP) === "1";
   }
 
   function sanitizeLinks(raw) {
@@ -99,6 +104,7 @@
       sessionStorage.setItem(STORAGE_OPEN, state.open ? "1" : "0");
       sessionStorage.setItem(STORAGE_LEAD, state.leadSubmitted ? "1" : "0");
       sessionStorage.setItem(STORAGE_WELCOME, state.welcomeDismissed ? "1" : "0");
+      sessionStorage.setItem(STORAGE_POP, state.welcomePopPlayed ? "1" : "0");
     } catch (e) {
       /* private mode / quota — ignore */
     }
@@ -407,14 +413,56 @@
     return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
   }
 
+  function welcomeBubbleVisible() {
+    if (!els.welcome || els.welcome.hidden) return false;
+    if (window.matchMedia && window.matchMedia("(max-width: 300px)").matches) return false;
+    return true;
+  }
+
+  var POP_SOUND_URL = "/public/dragon-studio-pop-402324.mp3";
+
+  function ensurePopAudio() {
+    if (popAudio) return popAudio;
+    popAudio = new Audio(POP_SOUND_URL);
+    popAudio.preload = "auto";
+    popAudio.volume = 1;
+    return popAudio;
+  }
+
+  function playWelcomePop() {
+    if (state.welcomePopPlayed || document.hidden) return;
+    if (!welcomeBubbleVisible()) return;
+
+    var audio = ensurePopAudio();
+    try {
+      audio.currentTime = 0;
+    } catch (e) {}
+
+    var pending = audio.play();
+    var markPlayed = function () {
+      if (state.welcomePopPlayed) return;
+      state.welcomePopPlayed = true;
+      persistSession();
+    };
+
+    if (pending && typeof pending.then === "function") {
+      pending.then(markPlayed).catch(function () {});
+      return;
+    }
+
+    markPlayed();
+  }
+
   function syncWelcomeVisibility() {
     if (!els.welcome) return;
     var show = state.welcomeUnlocked && !state.open && !state.welcomeDismissed;
+    var becameVisible = show && !!els.welcome.hidden;
     els.welcome.hidden = !show;
     els.root.setAttribute("data-welcome", show ? "true" : "false");
     if (els.welcomeOpen) {
       els.welcomeOpen.setAttribute("aria-expanded", state.open ? "true" : "false");
     }
+    if (becameVisible) playWelcomePop();
   }
 
   function unlockWelcomeOnScroll() {
@@ -632,6 +680,7 @@
 
     renderMessages();
     bindEvents();
+    ensurePopAudio();
     syncKeyboardInset();
     syncSendEnabled();
     syncWelcomeVisibility();

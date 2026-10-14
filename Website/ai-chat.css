@@ -67,6 +67,26 @@
   background: #fff;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
   overflow: visible;
+  transform-origin: right center;
+}
+
+.sa-ai-chat[data-welcome="true"] .sa-ai-chat__welcome {
+  animation: sa-ai-welcome-pop 0.38s cubic-bezier(0.18, 0.9, 0.32, 1.25);
+}
+
+@keyframes sa-ai-welcome-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  62% {
+    opacity: 1;
+    transform: scale(1.045);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .sa-ai-chat__welcome[hidden] {
@@ -671,5 +691,9 @@ body.sa-ai-chat-open {
   .sa-ai-chat__chip,
   .sa-ai-chat__send {
     transition: none;
+  }
+
+  .sa-ai-chat[data-welcome="true"] .sa-ai-chat__welcome {
+    animation: none;
   }
 }
