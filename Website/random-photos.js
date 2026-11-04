@@ -17,6 +17,17 @@
     { thumb: "public/thumbs/photopool.webp", full: "public/photopool.webp" },
   ];
 
+  const PORCH_PHOTOS = [
+    { thumb: "public/thumbs/en1.webp", full: "public/en1.webp", alt: "Screened porch enclosure with a flat roof and dark aluminum frame" },
+    { thumb: "public/thumbs/en2.webp", full: "public/en2.webp", alt: "Front porch entry enclosure with a decorative screen door" },
+    { thumb: "public/thumbs/en3.webp", full: "public/en3.webp", alt: "White screen door set in a stone entry porch" },
+    { thumb: "public/thumbs/en4.webp", full: "public/en4.webp", alt: "Arched screened entry porch with a dark screen door" },
+  ];
+
+  function isCustomEnclosuresPage(path) {
+    return /\/service-custom-enclosures(?:\.html)?$/.test(path);
+  }
+
   function pickUnique(arr, count) {
     const copy = arr.slice();
     for (let i = copy.length - 1; i > 0; i--) {
@@ -46,7 +57,8 @@
 
       const img = document.createElement("img");
       img.src = photo.thumb;
-      img.alt = "";
+      img.alt = photo.alt || "";
+      if (photo.alt) btn.setAttribute("aria-label", "Open photo: " + photo.alt);
       img.width = 400;
       img.height = 400;
       img.loading = "lazy";
@@ -124,7 +136,7 @@
 
       if (contentSection.parentNode.querySelector(":scope > .random-photos-strip")) return;
 
-      const photos = pickUnique(PHOTO_POOL, 4);
+      const photos = isCustomEnclosuresPage(path) ? PORCH_PHOTOS : pickUnique(PHOTO_POOL, 4);
       if (photos.length < 4) return;
 
       const section = buildSection(photos);
