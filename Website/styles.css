@@ -4137,6 +4137,10 @@ body.nav-menu-open::before {
 	color: #3d3d3d;
 }
 
+.enc-type__body strong {
+	color: var(--color-brand-red);
+}
+
 .enc-type__subhead {
 	margin: 1.35rem 0 0.85rem;
 	font-family: var(--font-display), system-ui, sans-serif;
