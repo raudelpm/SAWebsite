@@ -3808,6 +3808,11 @@ body.nav-menu-open::before {
 		grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
 	}
 
+	.enc-type--doors .enc-type__top {
+		grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.8fr);
+		align-items: center;
+	}
+
 	.enc-type--flip .enc-type__media {
 		order: 2;
 	}
