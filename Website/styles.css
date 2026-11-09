@@ -4722,6 +4722,127 @@ body.nav-menu-open::before {
 	}
 }
 
+/* service-screening.html — Send a Picture, Get a Repair */
+.scr-picture {
+	scroll-margin-top: calc(var(--nav-height, 80px) + 0.75rem);
+	padding: clamp(0.5rem, 2vw, 1.25rem) 0 clamp(2rem, 4vw, 3rem);
+	background:
+		radial-gradient(ellipse 55% 45% at 100% 0%, rgba(183, 28, 28, 0.09) 0%, transparent 58%),
+		#f6f7fa;
+}
+
+.scr-picture__card {
+	display: grid;
+	background: #fff;
+	border-radius: 24px;
+	overflow: hidden;
+	border: 1px solid rgba(30, 40, 60, 0.1);
+	box-shadow: 0 22px 50px rgba(20, 35, 65, 0.08);
+}
+
+@media (min-width: 960px) {
+	.scr-picture__card {
+		grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+		align-items: center;
+	}
+}
+
+.scr-picture__copy {
+	padding: clamp(1.4rem, 3vw, 2.4rem);
+}
+
+.scr-picture__title {
+	margin: 0 0 0.75rem;
+	font-family: var(--font-display), system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(1.85rem, 1.15rem + 2vw, 2.6rem);
+	line-height: 1.08;
+	letter-spacing: -0.03em;
+	color: #141414;
+}
+
+.scr-picture__lead strong {
+	color: var(--color-brand-red);
+}
+
+@media (min-width: 980px) {
+	.enc-type--text .enc-type__top {
+		grid-template-columns: 1fr;
+	}
+}
+
+.mesh-types__more {
+	margin: 1.25rem 0 0;
+	max-width: 68ch;
+	color: #475569;
+	line-height: 1.55;
+}
+
+.scr-picture__lead,
+.scr-picture__note {
+	margin: 0 0 1rem;
+	font-size: clamp(1rem, 0.95rem + 0.2vw, 1.08rem);
+	line-height: 1.62;
+	color: #3a3a3a;
+}
+
+.scr-picture__note {
+	margin-bottom: 1.1rem;
+}
+
+.scr-picture__tips {
+	margin: 0 0 1.15rem;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+
+.scr-picture__tips li {
+	position: relative;
+	padding-left: 1.15rem;
+	font-size: 0.95rem;
+	line-height: 1.45;
+	color: #333;
+}
+
+.scr-picture__tips li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.55em;
+	width: 0.45rem;
+	height: 0.45rem;
+	border-radius: 50%;
+	background: var(--color-brand-red);
+}
+
+.scr-picture .scr-text-estimate__steps {
+	margin-bottom: 1.1rem;
+}
+
+.scr-picture__media {
+	margin: 0;
+	padding: clamp(0.85rem, 2vw, 1.35rem);
+	background: #f3f4f6;
+}
+
+.scr-picture__media img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 16px;
+	box-shadow: 0 16px 36px rgba(20, 35, 65, 0.14);
+}
+
+.scr-picture__caption {
+	margin: 0.75rem 0.1rem 0.1rem;
+	font-size: 0.88rem;
+	line-height: 1.5;
+	color: #4a4a4a;
+}
+
 /* about.html — Our Story + branded van */
 .about-story__grid {
 	display: grid;
