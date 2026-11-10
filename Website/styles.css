@@ -7529,6 +7529,17 @@ footer {
         font-size: 1.15rem;
     }
 
+    .cta-buttons .btn {
+        width: 100%;
+        max-width: 22rem;
+        box-sizing: border-box;
+        white-space: normal;
+        text-align: center;
+        line-height: 1.25;
+        font-size: 0.92rem;
+        padding: 0.85rem 1rem;
+    }
+
     .btn-quote {
         order: 1; /* Most important on top for mobile */
     }
