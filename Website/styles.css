@@ -3736,6 +3736,12 @@ body.nav-menu-open::before {
 	}
 }
 
+@media (min-width: 720px) {
+	.enc-lp__pick-grid.enc-lp__pick-grid--four {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
 .enc-pick {
 	display: flex;
 	flex-direction: column;
@@ -4713,6 +4719,11 @@ body.nav-menu-open::before {
 	color: #555;
 }
 
+.scr-text-estimate__tagline a {
+	color: var(--color-brand-red);
+	font-weight: 800;
+}
+
 @media (max-width: 519px) {
 	.scr-text-estimate__sms {
 		display: flex;
@@ -5243,6 +5254,10 @@ body.nav-menu-open::before {
 	flex-wrap: nowrap;
 	gap: 0.45rem;
 	margin-bottom: 0.55rem;
+}
+
+.hero-cta-after--repair-lp .hero-cta-after__repair-ctas + .hero-cta-after__lead--repair-lp {
+	margin-top: 0.75rem;
 }
 
 /* Long selector beats .hero-cta-after__lead a[href^="tel:"] (same-ish specificity, later in file) */
