@@ -17,7 +17,7 @@
       t.src = 'https://www.clarity.ms/tag/' + i;
       y = l.getElementsByTagName(r)[0];
       if (y && y.parentNode) y.parentNode.insertBefore(t, y);
-    })(window, document, 'clarity', 'script', 'wifrjpxrbv');
+    })(window, document, 'clarity', 'script', 'zc5ywmeod5');
   }
   if ('requestIdleCallback' in window) {
     requestIdleCallback(loadClarity, { timeout: 12000 });
