@@ -6149,6 +6149,16 @@ body.nav-menu-open::before {
     background: #0b0f16;
 }
 
+.mesh-card__media--compare {
+    aspect-ratio: 1 / 1;
+}
+
+@media (min-width: 769px) {
+    .mesh-card__media--compare {
+        aspect-ratio: 4 / 3;
+    }
+}
+
 .mesh-card__badge {
     position: absolute;
     top: 0.6rem;
@@ -6176,6 +6186,11 @@ body.nav-menu-open::before {
 .mesh-card__badge--privacy {
     background: #f5c400;
     color: #1a1a1a;
+}
+
+.mesh-card__badge--shade {
+    background: #7c3aed;
+    color: #ffffff;
 }
 
 .mesh-card__media img {
