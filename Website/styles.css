@@ -4333,6 +4333,16 @@ body.nav-menu-open::before {
 	color: #444;
 }
 
+.enc-type__body a,
+.enc-type__feature-body a {
+	color: var(--color-brand-red);
+	font-weight: 700;
+}
+
+#restoration-steps .enc-type__feature:last-child:nth-child(odd) {
+	grid-column: 1 / -1;
+}
+
 .enc-type__cta {
 	display: flex;
 	flex-wrap: wrap;
