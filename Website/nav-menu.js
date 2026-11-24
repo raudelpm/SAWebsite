@@ -282,7 +282,7 @@
   }
 
   function careersHref() {
-    return '/careers';
+    return '/careers.html';
   }
 
   function ensureCareersNavItem() {
