@@ -77,7 +77,8 @@
   "routes": [
     { "handle": "filesystem" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "^/careers/?$", "dest": "/Website/careers.html" },
+    { "src": "/careers", "dest": "/Website/careers.html" },
+    { "src": "/careers/", "dest": "/Website/careers.html" },
     { "src": "/(.*)", "dest": "/Website/$1" }
   ]
 }
