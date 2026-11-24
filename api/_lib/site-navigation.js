@@ -265,6 +265,27 @@ export const APPROVED_SITE_PAGES = [
     ctaLabel: "About Screen Armors",
   },
   {
+    id: "careers",
+    title: "Careers",
+    path: "/careers",
+    description:
+      "Apply to join the Screen Armors crew for screen repair, rescreening, and aluminum screen enclosure work.",
+    keywords: [
+      "careers",
+      "jobs",
+      "job",
+      "hiring",
+      "employment",
+      "apply",
+      "application",
+      "join the team",
+      "empleo",
+      "trabajo",
+      "trabajos",
+    ],
+    ctaLabel: "Apply for a job",
+  },
+  {
     id: "reviews",
     title: "Customer Reviews",
     path: "/reviews.html",

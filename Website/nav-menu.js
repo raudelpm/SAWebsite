@@ -281,6 +281,52 @@
     return '/blog.html';
   }
 
+  function careersHref() {
+    return '/careers';
+  }
+
+  function ensureCareersNavItem() {
+    var links = navLinksEl();
+    if (!links) return;
+
+    var already = links.querySelector(
+      'a[href="careers.html"], a[href="./careers.html"], a[href="/careers"], a[href="/careers/"], a[href="/careers.html"], a[href="../careers"], a[href="../careers.html"]'
+    );
+    if (already) return;
+
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = careersHref();
+    a.textContent = 'Careers';
+    var path = (window.location.pathname || '').replace(/\\/g, '/');
+    if (/\/careers(?:\.html)?\/?$/.test(path)) {
+      a.setAttribute('aria-current', 'page');
+    }
+    li.appendChild(a);
+
+    var blogA = links.querySelector(
+      'a[href="blog.html"], a[href="./blog.html"], a[href="/blog.html"], a[href="../blog.html"]'
+    );
+    var blogLi = blogA && blogA.parentElement;
+    var quickA = document.getElementById('quickScreenQuoteNav');
+    var quickLi = quickA && quickA.parentElement;
+    var ctaA = links.querySelector('a.nav-cta-btn');
+    var ctaLi = ctaA && ctaA.parentElement;
+    var insertBefore =
+      blogLi && blogLi.parentElement === links
+        ? blogLi
+        : quickLi && quickLi.parentElement === links
+          ? quickLi
+          : ctaLi && ctaLi.parentElement === links
+            ? ctaLi
+            : null;
+    if (insertBefore) {
+      links.insertBefore(li, insertBefore);
+    } else {
+      links.appendChild(li);
+    }
+  }
+
   function ensureBlogNavItem() {
     var links = navLinksEl();
     if (!links) return;
@@ -416,6 +462,7 @@
       normalizePhoneLinks();
       ensureOutboundExternalLinkUx();
       ensureBlogNavItem();
+      ensureCareersNavItem();
       ensureFooterSocialLinks();
       ensureBackToTopButton();
       ensureAiChat();
@@ -426,6 +473,7 @@
     normalizePhoneLinks();
     ensureOutboundExternalLinkUx();
     ensureBlogNavItem();
+    ensureCareersNavItem();
     ensureFooterSocialLinks();
     ensureBackToTopButton();
     ensureAiChat();
