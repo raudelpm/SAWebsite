@@ -60,8 +60,33 @@ function enqueue(task) {
   return run;
 }
 
+/** People added after the first seed. Inserted once into an existing list, then left alone if removed. */
+const BACKFILL_IDS = new Set(["app_jose_aoki"]);
+
 export function seedApplicants() {
   return [
+    {
+      id: "app_jose_aoki",
+      fullName: "Jose Aoki",
+      phone: "9415445652",
+      email: "eduardoaokiflores@gmail.com",
+      city: "Sarasota",
+      birthYear: "1969",
+      birthYearEstimated: false,
+      schedule: "full-time",
+      screenExperience: "yes",
+      aluminumExperience: "yes",
+      cageExperience: "",
+      yearsExperience: "",
+      experienceDescription:
+        "5 years in CRA Comercial & residential Aluminum\nCut and assembling roof\n5 years in Gulf Gate reescreen\nCut and assembling roof",
+      availability: "immediate",
+      language: "es",
+      notes: "",
+      source: "website",
+      createdAt: "2026-11-26T14:26:00.000Z",
+      updatedAt: "2026-11-26T14:26:00.000Z",
+    },
     {
       id: "app_tyler_steger",
       fullName: "Tyler Steger",
@@ -302,22 +327,50 @@ async function readBlobJson(pathname) {
   }
 }
 
+function backfillApplicants(applicants, ensuredIds) {
+  const list = Array.isArray(applicants) ? applicants.slice() : [];
+  const ensured = new Set(Array.isArray(ensuredIds) ? ensuredIds : []);
+  let changed = !Array.isArray(ensuredIds);
+  for (const person of seedApplicants()) {
+    if (!BACKFILL_IDS.has(person.id) || ensured.has(person.id)) continue;
+    if (!list.some((item) => item.id === person.id)) {
+      list.unshift(person);
+      changed = true;
+    }
+    ensured.add(person.id);
+    changed = true;
+  }
+  return { applicants: list, ensuredIds: [...ensured], changed };
+}
+
 async function readBlobAll() {
   const data = await readBlobJson(BLOB_PATH);
-  if (data && data.seeded) return Array.isArray(data.applicants) ? data.applicants : [];
+  if (data && data.seeded) {
+    const next = backfillApplicants(data.applicants, data.ensuredIds);
+    if (next.changed) await writeBlobAll(next.applicants, next.ensuredIds);
+    return next.applicants;
+  }
   const seeded = seedApplicants();
-  await writeBlobAll(seeded);
+  await writeBlobAll(seeded, [...BACKFILL_IDS]);
   return seeded;
 }
 
-async function writeBlobAll(applicants) {
-  await put(BLOB_PATH, JSON.stringify({ seeded: true, applicants, updatedAt: new Date().toISOString() }, null, 2), {
-    access: "private",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-    token: process.env.BLOB_READ_WRITE_TOKEN,
-  });
+async function writeBlobAll(applicants, ensuredIds = [...BACKFILL_IDS]) {
+  await put(
+    BLOB_PATH,
+    JSON.stringify(
+      { seeded: true, ensuredIds, applicants, updatedAt: new Date().toISOString() },
+      null,
+      2
+    ),
+    {
+      access: "private",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: "application/json",
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    }
+  );
 }
 
 async function readLocalAll() {
@@ -326,26 +379,32 @@ async function readLocalAll() {
     const data = JSON.parse(raw);
     if (!data || data.seeded !== true) {
       const seeded = seedApplicants();
-      await writeLocalAll(seeded);
+      await writeLocalAll(seeded, [...BACKFILL_IDS]);
       return seeded;
     }
-    return Array.isArray(data.applicants) ? data.applicants : [];
+    const next = backfillApplicants(data.applicants, data.ensuredIds);
+    if (next.changed) await writeLocalAll(next.applicants, next.ensuredIds);
+    return next.applicants;
   } catch (error) {
     if (error && error.code === "ENOENT") {
       const seeded = seedApplicants();
-      await writeLocalAll(seeded);
+      await writeLocalAll(seeded, [...BACKFILL_IDS]);
       return seeded;
     }
     throw error;
   }
 }
 
-async function writeLocalAll(applicants) {
+async function writeLocalAll(applicants, ensuredIds = [...BACKFILL_IDS]) {
   const file = localFile();
   await fs.mkdir(path.dirname(file), { recursive: true });
   await fs.writeFile(
     file,
-    JSON.stringify({ seeded: true, applicants, updatedAt: new Date().toISOString() }, null, 2),
+    JSON.stringify(
+      { seeded: true, ensuredIds, applicants, updatedAt: new Date().toISOString() },
+      null,
+      2
+    ),
     "utf8"
   );
 }
@@ -354,9 +413,24 @@ async function readAll() {
   return hasBlob() ? readBlobAll() : readLocalAll();
 }
 
+async function currentEnsuredIds() {
+  if (hasBlob()) {
+    const data = await readBlobJson(BLOB_PATH);
+    return Array.isArray(data?.ensuredIds) ? data.ensuredIds : [...BACKFILL_IDS];
+  }
+  try {
+    const raw = await fs.readFile(localFile(), "utf8");
+    const data = JSON.parse(raw);
+    return Array.isArray(data?.ensuredIds) ? data.ensuredIds : [...BACKFILL_IDS];
+  } catch {
+    return [...BACKFILL_IDS];
+  }
+}
+
 async function writeAll(applicants) {
-  if (hasBlob()) await writeBlobAll(applicants);
-  else await writeLocalAll(applicants);
+  const ensuredIds = await currentEnsuredIds();
+  if (hasBlob()) await writeBlobAll(applicants, ensuredIds);
+  else await writeLocalAll(applicants, ensuredIds);
 }
 
 export async function listApplicants() {

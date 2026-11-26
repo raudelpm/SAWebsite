@@ -25,7 +25,10 @@ function assert(label, condition) {
   }
 }
 
-const [tyler, austin, frank] = seedApplicants();
+const seededPeople = seedApplicants();
+const tyler = seededPeople.find((item) => item.id === "app_tyler_steger");
+const austin = seededPeople.find((item) => item.id === "app_austin_yerian");
+const frank = seededPeople.find((item) => item.id === "app_frank");
 
 assert("screen keeps Frank and Tyler", matchesApplicant(frank, { screen: true }) && matchesApplicant(tyler, { screen: true }) && !matchesApplicant(austin, { screen: true }));
 assert(
@@ -65,8 +68,29 @@ assert("age becomes an estimated birth year", fromAge.ok === true && fromAge.app
 const bad = normalizeApplicantInput({ fullName: "A", phone: "123", city: "" });
 assert("phone intake rejects a bad phone", bad.ok === false && bad.fields.includes("phone") && bad.fields.includes("fullName"));
 
+await fs.mkdir(path.dirname(file), { recursive: true });
+await fs.writeFile(
+  file,
+  JSON.stringify({
+    seeded: true,
+    applicants: seedApplicants().filter((item) => item.id !== "app_jose_aoki"),
+  })
+);
+const migrated = await listApplicants();
+assert(
+  "an existing list gains Jose once",
+  migrated.some((item) => item.fullName === "Jose Aoki" && item.language === "es" && item.screenExperience === "yes")
+);
+await deleteApplicant("app_jose_aoki");
+const afterJoseDelete = await listApplicants();
+assert("removing Jose stays removed", afterJoseDelete.every((item) => item.id !== "app_jose_aoki"));
+
+await fs.unlink(file);
 const listed = await listApplicants();
-assert("empty store seeds Tyler, Austin, and Frank", listed.length === 3 && listed[0].fullName === "Tyler Steger");
+assert(
+  "empty store seeds Jose, Tyler, Austin, and Frank",
+  listed.length === 4 && listed[0].fullName === "Jose Aoki" && listed.some((item) => item.fullName === "Tyler Steger")
+);
 
 await saveWebsiteApplicant({
   fullName: "Maria Lopez",
