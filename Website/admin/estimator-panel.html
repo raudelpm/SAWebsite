@@ -7,7 +7,7 @@
     <link rel="icon" type="image/jpeg" href="../public/Logo Black Yes Background.JPG">
     <title>Admin | Estimator Panel | SCREEN ARMORS</title>
     <link rel="preload" href="../styles.css" as="style">
-    <link rel="stylesheet" href="../styles.css?v=saved-search">
+    <link rel="stylesheet" href="../styles.css?v=applicants">
     <style>
         html body.page-estimator-panel nav,
         html body.page-estimator-panel nav.nav-compact {
@@ -87,6 +87,137 @@
             </div>
 
             <div id="estimatorToolGrid" class="admin-estimator-grid" aria-label="Estimating tools"></div>
+
+            <section class="admin-applicants" id="applicantBoard" aria-labelledby="applicantBoardTitle">
+                <div class="admin-applicants__head">
+                    <div>
+                        <p class="admin-porch-eyebrow">Hiring</p>
+                        <h2 id="applicantBoardTitle" class="admin-porch-title">Job applicants</h2>
+                        <p class="admin-porch-lead">Check a box to keep only people who match it. Check several boxes to keep people who match every one.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="applicantAddToggle" aria-expanded="false" aria-controls="applicantAddForm">Add phone applicant</button>
+                </div>
+
+                <form id="applicantAddForm" class="admin-applicants__form" hidden>
+                    <div class="form-field">
+                        <label for="ap_fullName">Name</label>
+                        <input id="ap_fullName" name="fullName" type="text" autocomplete="name" maxlength="120" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_phone">Phone</label>
+                        <input id="ap_phone" name="phone" type="tel" autocomplete="tel" maxlength="40" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_email">Email (optional)</label>
+                        <input id="ap_email" name="email" type="email" autocomplete="email" maxlength="200">
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_city">City</label>
+                        <input id="ap_city" name="city" type="text" autocomplete="address-level2" maxlength="120" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_birthYear">Year of birth</label>
+                        <input id="ap_birthYear" name="birthYear" type="text" inputmode="numeric" maxlength="4" placeholder="1990">
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_age">Age, if the year is unknown</label>
+                        <input id="ap_age" name="age" type="text" inputmode="numeric" maxlength="2" placeholder="23">
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_schedule">Looking for</label>
+                        <select id="ap_schedule" name="schedule" required>
+                            <option value="">Select</option>
+                            <option value="full-time">Full time</option>
+                            <option value="part-time">Part time</option>
+                            <option value="either">Part time or full time</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_years">Years of experience (optional)</label>
+                        <input id="ap_years" name="yearsExperience" type="text" maxlength="40" placeholder="3-4">
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_screen">Screen repair or rescreening</label>
+                        <select id="ap_screen" name="screenExperience" required>
+                            <option value="">Select</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_aluminum">Aluminum / metal work</label>
+                        <select id="ap_aluminum" name="aluminumExperience" required>
+                            <option value="">Select</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_cage">Builds cages</label>
+                        <select id="ap_cage" name="cageExperience">
+                            <option value="">Not asked</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_availability">Available to start</label>
+                        <select id="ap_availability" name="availability">
+                            <option value="">Not specified</option>
+                            <option value="immediate">Right away</option>
+                            <option value="1-2-weeks">In 1–2 weeks</option>
+                            <option value="over-2-weeks">In more than 2 weeks</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ap_language">Language</label>
+                        <select id="ap_language" name="language">
+                            <option value="">Not specified</option>
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                            <option value="both">Both / Ambos</option>
+                        </select>
+                    </div>
+                    <div class="form-field admin-applicants__span">
+                        <label for="ap_work">Work described</label>
+                        <textarea id="ap_work" name="experienceDescription" rows="3" maxlength="2000"></textarea>
+                    </div>
+                    <div class="form-field admin-applicants__span">
+                        <label for="ap_notes">Notes from the call</label>
+                        <textarea id="ap_notes" name="notes" rows="2" maxlength="2000"></textarea>
+                    </div>
+                    <div class="admin-applicants__span admin-applicants__form-actions">
+                        <button type="submit" class="btn btn-quote" id="applicantSaveBtn">Save applicant</button>
+                        <p id="applicantFormStatus" class="form-status" role="status"></p>
+                    </div>
+                </form>
+
+                <div class="admin-applicants__filters">
+                    <label class="admin-applicants__search">
+                        <span class="sr-only">Search applicants by name, phone, or city</span>
+                        <input id="applicantSearch" type="search" placeholder="Name, phone, or city" autocomplete="off" enterkeyhint="search">
+                    </label>
+                    <fieldset class="admin-applicants__checks">
+                        <legend>Skills</legend>
+                        <label><input type="checkbox" data-filter="screen"> Has worked with screen</label>
+                        <label><input type="checkbox" data-filter="aluminum"> Works with metal / aluminum</label>
+                        <label><input type="checkbox" data-filter="cages"> Builds cages</label>
+                    </fieldset>
+                    <fieldset class="admin-applicants__checks">
+                        <legend>Looking for</legend>
+                        <label><input type="checkbox" data-filter="partTime"> Part time</label>
+                        <label><input type="checkbox" data-filter="fullTime"> Full time</label>
+                    </fieldset>
+                    <fieldset class="admin-applicants__checks">
+                        <legend>Language</legend>
+                        <label><input type="checkbox" data-filter="english"> English</label>
+                        <label><input type="checkbox" data-filter="spanish"> Español</label>
+                    </fieldset>
+                </div>
+                <p class="admin-applicants__hint">Someone open to part time or full time still matches each schedule box. Both / Ambos still matches English and Español. Check both boxes in a group to keep only people who do both.</p>
+                <p id="applicantCount" class="admin-applicants__count" role="status" aria-live="polite">Loading applicants…</p>
+                <div id="applicantList" class="admin-applicants__list"></div>
+            </section>
 
             <section class="admin-estimator-gallery" aria-label="Field photos">
                 <h2 class="admin-estimator-gallery__title">From the field</h2>
@@ -177,6 +308,6 @@
         })();
     </script>
     <script src="../nav-menu.js"></script>
-    <script src="estimator-panel.js?v=saved-search"></script>
+    <script src="estimator-panel.js?v=applicants"></script>
 </body>
 </html>

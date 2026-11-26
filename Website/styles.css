@@ -9363,6 +9363,179 @@ body.page-estimator-panel footer {
         height: 180px;
     }
 }
+.admin-applicants {
+    margin-top: 1.75rem;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 18px;
+    padding: 1.15rem 1.1rem 1.25rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+}
+.admin-applicants__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.85rem 1.25rem;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+}
+.admin-applicants__head .admin-porch-title {
+    margin-bottom: 0.25rem;
+}
+.admin-applicants__head .admin-porch-lead {
+    margin: 0;
+    max-width: 40rem;
+}
+.admin-applicants__form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem 1rem;
+    margin: 0 0 1.1rem;
+    padding: 0.9rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    background: #fafafa;
+}
+.admin-applicants__form[hidden] {
+    display: none;
+}
+.admin-applicants__span,
+.admin-applicants__form-actions {
+    grid-column: 1 / -1;
+}
+.admin-applicants__form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+.admin-applicants__form textarea {
+    width: 100%;
+    min-height: 4.5rem;
+    font: inherit;
+}
+.admin-applicants__filters {
+    display: grid;
+    gap: 0.75rem;
+}
+.admin-applicants__search input {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: 12px;
+    padding: 0.55rem 0.8rem;
+    font: inherit;
+}
+.admin-applicants__checks {
+    margin: 0;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem 1.1rem;
+}
+.admin-applicants__checks legend {
+    padding: 0 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.admin-applicants__checks label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+.admin-applicants__checks input {
+    width: 1.15rem;
+    height: 1.15rem;
+    accent-color: #b71c1c;
+}
+.admin-applicants__hint,
+.admin-applicants__count {
+    margin: 0.75rem 0 0;
+    color: rgba(0, 0, 0, 0.62);
+    font-size: 0.92rem;
+}
+.admin-applicants__count {
+    font-weight: 700;
+    color: #111;
+}
+.admin-applicants__list {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.85rem;
+}
+.admin-applicant {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 14px;
+    padding: 0.9rem 1rem 1rem;
+    background: #fff;
+}
+.admin-applicant__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+.admin-applicant__name {
+    margin: 0;
+    font-size: 1.15rem;
+}
+.admin-applicant__source {
+    margin: 0.15rem 0 0;
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 0.82rem;
+}
+.admin-applicant__remove {
+    font: inherit;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    background: #fff;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+}
+.admin-applicant__remove:hover,
+.admin-applicant__remove:focus-visible {
+    border-color: rgba(143, 12, 37, 0.5);
+    color: #8f0c25;
+}
+.admin-applicant dl {
+    display: grid;
+    grid-template-columns: minmax(9.5rem, 15rem) 1fr;
+    gap: 0.35rem 1rem;
+    margin: 0.8rem 0 0;
+}
+.admin-applicant dt {
+    font-weight: 800;
+}
+.admin-applicant dd {
+    margin: 0;
+}
+.admin-applicant a {
+    color: #8f0c25;
+    font-weight: 700;
+}
+@media (min-width: 800px) {
+    .admin-applicants__form {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .admin-applicant dl {
+        grid-template-columns: 1fr;
+        gap: 0.1rem 0;
+    }
+    .admin-applicant dt {
+        margin-top: 0.45rem;
+    }
+}
 @media (max-width: 700px) {
     .admin-estimator-hero__mosaic {
         grid-template-columns: repeat(2, 1fr);

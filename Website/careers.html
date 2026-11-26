@@ -29,7 +29,7 @@
     </script>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=2262905341202822&ev=PageView&noscript=1" alt=""></noscript>
     <link rel="stylesheet" href="styles.css?v=mosaic-site-8">
-    <link rel="stylesheet" href="careers.css?v=5">
+    <link rel="stylesheet" href="careers.css?v=6">
 </head>
 <body class="page-careers">
     <nav>
@@ -59,6 +59,7 @@
                 <div class="careers-language__actions">
                     <button type="button" class="careers-language__btn" id="chooseEn">English</button>
                     <button type="button" class="careers-language__btn" id="chooseEs">Español</button>
+                    <button type="button" class="careers-language__btn" id="chooseBoth">Both / Ambos</button>
                 </div>
                 <noscript>
                     <p class="careers-noscript">Please enable JavaScript to apply. / Activa JavaScript para enviar tu solicitud.</p>
@@ -131,6 +132,14 @@
                                 <option value="over-2-weeks" id="optLater"></option>
                             </select>
                         </div>
+                        <fieldset class="form-field" id="fieldLanguage">
+                            <legend id="labelSpoken"></legend>
+                            <div class="careers-choice careers-choice--three">
+                                <label><input type="radio" name="spokenLanguage" value="en"> <span id="spokenEn"></span></label>
+                                <label><input type="radio" name="spokenLanguage" value="es"> <span id="spokenEs"></span></label>
+                                <label><input type="radio" name="spokenLanguage" value="both"> <span id="spokenBoth"></span></label>
+                            </div>
+                        </fieldset>
                         <div class="form-field form-field--hp" aria-hidden="true">
                             <label for="ca_website">Website</label>
                             <input id="ca_website" name="website" type="text" tabindex="-1" autocomplete="off">
@@ -220,7 +229,7 @@
             }, { passive: true });
         })();
     </script>
-    <script src="careers.js?v=3"></script>
+    <script src="careers.js?v=4"></script>
     <script src="nav-menu.js" defer></script>
     <script src="call-tracking.js" defer></script>
 </body>

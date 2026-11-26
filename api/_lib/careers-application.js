@@ -10,7 +10,7 @@ import { escapeHtml, getString, isValidEmail } from "./lead-email.js";
 export const EXPERIENCE_ANSWERS = new Set(["yes", "no"]);
 export const SCHEDULE_VALUES = new Set(["full-time", "part-time"]);
 export const AVAILABILITY_VALUES = new Set(["", "immediate", "1-2-weeks", "over-2-weeks"]);
-export const APPLICATION_LANGUAGES = new Set(["en", "es"]);
+export const APPLICATION_LANGUAGES = new Set(["en", "es", "both"]);
 
 const LIMITS = {
   fullName: 120,
@@ -65,6 +65,12 @@ function yesNoLabel(value) {
 
 function scheduleLabel(value) {
   return value === "part-time" ? "Part time" : "Full time";
+}
+
+function languageLabel(value) {
+  if (value === "es") return "Español";
+  if (value === "both") return "Both / Ambos";
+  return "English";
 }
 
 /**
@@ -140,7 +146,7 @@ export function buildCareersEmail(application) {
     ["Aluminum screen enclosure work", yesNoLabel(application.aluminumExperience)],
     ["Work described", application.experienceDescription || "—"],
     ["Available to start", availabilityLabel(application.availability)],
-    ["Language", application.language === "es" ? "Español" : "English"]
+    ["Language", languageLabel(application.language)]
   );
 
   const html = `

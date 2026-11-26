@@ -25,6 +25,10 @@
       startImmediate: "Right away",
       startTwoWeeks: "In 1–2 weeks",
       startLater: "In more than 2 weeks",
+      spoken: "Which language do you speak? *",
+      spokenEn: "English",
+      spokenEs: "Español",
+      spokenBoth: "Both / Ambos",
       namePlaceholder: "Your full name",
       emailPlaceholder: "you@email.com",
       cityPlaceholder: "Sarasota",
@@ -43,7 +47,7 @@
         aluminumExperience: "Please choose Yes or No for aluminum screen enclosure work.",
         experienceDescription: "Please shorten what you wrote.",
         availability: "Choose one of the start dates, or leave it blank.",
-        language: "Choose a language.",
+        language: "Choose English, Español, or Both / Ambos.",
         sendFailed: "We couldn’t send your application. Please try again."
       }
     },
@@ -72,6 +76,10 @@
       startImmediate: "De inmediato",
       startTwoWeeks: "En 1–2 semanas",
       startLater: "En más de 2 semanas",
+      spoken: "¿Qué idioma hablas? *",
+      spokenEn: "English",
+      spokenEs: "Español",
+      spokenBoth: "Both / Ambos",
       namePlaceholder: "Tu nombre completo",
       emailPlaceholder: "tu@correo.com",
       cityPlaceholder: "Sarasota",
@@ -90,7 +98,7 @@
         aluminumExperience: "Elige Sí o No para trabajo con estructuras de aluminio.",
         experienceDescription: "Acorta un poco lo que escribiste.",
         availability: "Elige una opción de inicio o déjala en blanco.",
-        language: "Elige un idioma.",
+        language: "Elige English, Español o Both / Ambos.",
         sendFailed: "No pudimos enviar tu solicitud. Inténtalo de nuevo."
       }
     }
@@ -179,6 +187,10 @@
     text("optImmediate", t.startImmediate);
     text("optTwoWeeks", t.startTwoWeeks);
     text("optLater", t.startLater);
+    text("labelSpoken", t.spoken);
+    text("spokenEn", t.spokenEn);
+    text("spokenEs", t.spokenEs);
+    text("spokenBoth", t.spokenBoth);
     text("careersSubmit", inFlight ? t.sending : t.submit);
     langSwitch.textContent = t.switchLabel;
     langSwitch.setAttribute("aria-label", t.switchAria);
@@ -194,8 +206,11 @@
     if (statusKey) statusEl.textContent = t.errors[statusKey] || t.errors.sendFailed;
   }
 
-  function showForm(lang) {
+  function showForm(lang, spoken) {
     applyCopy(lang);
+    var spokenValue = spoken === "es" || spoken === "both" ? spoken : "en";
+    var radio = form.querySelector('input[name="spokenLanguage"][value="' + spokenValue + '"]');
+    if (radio) radio.checked = true;
     languagePanel.hidden = true;
     applicationPanel.hidden = false;
     var title = document.getElementById("careersTitle");
@@ -227,6 +242,7 @@
     if (field === "schedule") el = document.getElementById("fieldSchedule");
     else if (field === "screenExperience") el = document.getElementById("fieldScreen");
     else if (field === "aluminumExperience") el = document.getElementById("fieldAluminum");
+    else if (field === "language") el = document.getElementById("fieldLanguage");
     else if (map[field]) el = document.getElementById(map[field]);
     if (!el) return;
     el.classList.add("is-invalid");
@@ -253,7 +269,7 @@
       aluminumExperience: radioValue("aluminumExperience"),
       experienceDescription: fieldValue("ca_work"),
       availability: fieldValue("ca_availability"),
-      language: currentLang,
+      language: radioValue("spokenLanguage"),
       website: fieldValue("ca_website")
     };
   }
@@ -269,14 +285,18 @@
     if (payload.aluminumExperience !== "yes" && payload.aluminumExperience !== "no") return "aluminumExperience";
     if (payload.experienceDescription.length > 2000) return "experienceDescription";
     if (["", "immediate", "1-2-weeks", "over-2-weeks"].indexOf(payload.availability) === -1) return "availability";
+    if (payload.language !== "en" && payload.language !== "es" && payload.language !== "both") return "language";
     return "";
   }
 
   document.getElementById("chooseEn").addEventListener("click", function () {
-    showForm("en");
+    showForm("en", "en");
   });
   document.getElementById("chooseEs").addEventListener("click", function () {
-    showForm("es");
+    showForm("es", "es");
+  });
+  document.getElementById("chooseBoth").addEventListener("click", function () {
+    showForm("en", "both");
   });
   langSwitch.addEventListener("click", function () {
     applyCopy(currentLang === "en" ? "es" : "en");

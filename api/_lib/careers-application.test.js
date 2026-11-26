@@ -94,6 +94,14 @@ assert("no reply-to when email is blank", noEmail.replyTo === undefined);
 assert("blank email is omitted from the body", !noEmail.html.includes(">Email<"));
 assert("no experience is still included", noEmail.html.includes("No") && noEmail.html.includes("Not specified"));
 assert("chosen language is included", noEmail.html.includes("Español"));
+
+const bothLang = validateCareersApplication({ ...validBase, language: "both" });
+assert("both languages is accepted", bothLang.ok === true && bothLang.application.language === "both");
+const bothEmail = buildCareersEmail(bothLang.application);
+assert("both languages is labeled Both / Ambos", bothEmail.html.includes("Both / Ambos"));
+
+const unknownLang = validateCareersApplication({ ...validBase, language: "fr" });
+assert("unknown language fails", unknownLang.ok === false && unknownLang.fields.includes("language"));
 assert("birth year is included", noEmail.html.includes("1990") && noEmail.html.includes("Year of birth"));
 assert("full time is included", noEmail.html.includes("Looking for") && noEmail.html.includes("Full time"));
 const partTimeEmail = buildCareersEmail(partTime.application);

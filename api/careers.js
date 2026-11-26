@@ -1,3 +1,4 @@
+import { saveWebsiteApplicant } from "./_lib/applicants-store.js";
 import { getString, sendInternalLeadEmail } from "./_lib/lead-email.js";
 import { buildCareersEmail, validateCareersApplication } from "./_lib/careers-application.js";
 
@@ -59,6 +60,12 @@ export default async function handler(req, res) {
 
     if (!internalResult.ok) {
       return json(res, internalResult.status || 502, { ok: false, error: "send_failed" });
+    }
+
+    try {
+      await saveWebsiteApplicant(application);
+    } catch (error) {
+      console.error("[api/careers] Could not store application", error);
     }
 
     return json(res, 200, { ok: true, id: internalResult.id });

@@ -61,13 +61,13 @@ body.page-careers .nav-compact .nav-links {
 
 .careers-language__actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 0.75rem;
 }
 
-@media (max-width: 420px) {
+@media (min-width: 640px) {
   .careers-language__actions {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -138,6 +138,16 @@ body.page-careers .nav-compact .nav-links {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.65rem;
+}
+
+.careers-choice--three {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .careers-choice--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .careers-page .careers-choice label {

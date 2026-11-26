@@ -1,4 +1,12 @@
+import os from "os";
+import path from "path";
 import handler from "./careers.js";
+
+const applicantsFile = path.join(os.tmpdir(), `sa-careers-applicants-${Date.now()}.json`);
+const previousApplicantsFile = process.env.APPLICANTS_FILE;
+const previousBlobToken = process.env.BLOB_READ_WRITE_TOKEN;
+process.env.APPLICANTS_FILE = applicantsFile;
+delete process.env.BLOB_READ_WRITE_TOKEN;
 
 let failed = 0;
 
@@ -152,6 +160,10 @@ try {
 } finally {
   restoreEnv(prevEnv);
   globalThis.fetch = originalFetch;
+  if (previousApplicantsFile == null) delete process.env.APPLICANTS_FILE;
+  else process.env.APPLICANTS_FILE = previousApplicantsFile;
+  if (previousBlobToken == null) delete process.env.BLOB_READ_WRITE_TOKEN;
+  else process.env.BLOB_READ_WRITE_TOKEN = previousBlobToken;
 }
 
 if (failed > 0) {
